@@ -57,7 +57,7 @@ sonar {
     properties {
         property "sonar.projectKey", "sopra-fs24-group-38_sopra-fs24-group-38-server"
         property "sonar.organization", "sopra-fs24-group-38"
-        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.host.url", "https://sonarcloud.io."
     }
 }
 
