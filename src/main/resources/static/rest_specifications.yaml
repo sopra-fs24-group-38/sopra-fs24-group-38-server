@@ -16,37 +16,32 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: user
-    description: Operations about user
+    description: Operations about user using nobody is perfect
 paths:
   /user:
     post:
       tags:
         - user
-      summary: Create user
-      description: This can only be done by the logged in user.
+      summary: Create user with a provided username and password.
+      description: This will then return a corresponding status code and in the case of success also a token (id) which uniqluey identifies a Userentity.
       operationId: createUser
       requestBody:
         description: Created user object
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserCreation'
       responses:
-        default:
-          description: successful operation
+        '200':
+          description: Successfully created a new user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
+        '409':
+          description: username already taken
+
+
   /user/login:
     get:
       tags:
@@ -177,13 +172,9 @@ paths:
           description: User not found
 components:
   schemas:
-    User:
+    UserCreation:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
         username:
           type: string
           example: theUser
@@ -198,17 +189,29 @@ components:
           example: john@email.com
         password:
           type: string
-          example: '12345'
-        phone:
+          example: SuperSecretPW
+
+
+    User:
+      type: object
+      properties:
+        id:
           type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
-      xml:
-        name: user
+          format: UUID
+          example: 82a49ae2-9b1f-4460-993e-cc93396cc8c7
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+
 
     ApiResponse:
       type: object
