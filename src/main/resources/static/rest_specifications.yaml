@@ -4,6 +4,7 @@ info:
   description: |-
     This UI represents our REST specification for endpoints we plan on implementing in the SoPra group project. We also plan on keeping the specification up-to-date during milestone 2 and 3 as it is going to help us also with the communication between frontend and backend team.
       It should be possible to test the implemented endpoints at all times.
+      All requests except for the login and register endpoint are eexpected to be authorized through a Authorization header containing the token.
 
     Some useful links:
     - [Corresponding Frontend](https://sopra-fs24-group-38-client.oa.r.appspot.com)
@@ -16,76 +17,61 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: user
-    description: Operations about user using nobody is perfect
+    description: Operations related to users playing nobody is perfect.
+  - name: lobby
+    description: Endpoints related to lobbies during the game of nobody is perfect
+security:
+  - api_key: []
 paths:
-  /user:
+  /users:
     post:
       tags:
         - user
       summary: Create user with a provided username and password.
       description: This will then return a corresponding status code and in the case of success also a token (id) which uniqluey identifies a Userentity.
       operationId: createUser
+      security: []
       requestBody:
         description: Created user object
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreation'
+              $ref: '#/components/schemas/UserLog'
       responses:
-        '200':
+        '201':
           description: Successfully created a new user.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserToken'
         '409':
           description: username already taken
 
-
-  /user/login:
-    get:
+  /users/login:
+    post:
       tags:
         - user
-      summary: Logs user into the system
+      summary: Logs user into the system and returns the corresponding ID.
       description: ''
       operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: false
-          schema:
-            type: string
+      security: []
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLog'
       responses:
         '200':
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
+          description: Successfully logged in as a user.
           content:
-            application/xml:
-              schema:
-                type: string
             application/json:
               schema:
-                type: string
-        '400':
-          description: Invalid username/password supplied
-  /user/logout:
+                $ref: '#/components/schemas/UserToken'
+
+        '401':
+          description: Invalid credentials
+  /users/logout:
     get:
       tags:
         - user
@@ -94,137 +80,336 @@ paths:
       operationId: logoutUser
       parameters: []
       responses:
-        default:
-          description: successful operation
-  /user/{username}:
-    get:
-      tags:
-        - user
-      summary: Get user by user name
-      description: ''
-      operationId: getUserByName
-      parameters:
-        - name: username
-          in: path
-          description: 'The name that needs to be fetched. Use user1 for testing. '
-          required: true
-          schema:
-            type: string
-      responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username supplied
+          description: Successfully logged out user
+
+        '401':
+          description: Not Authorized
+
         '404':
           description: User not found
+  /users/{userID}:
     put:
       tags:
         - user
       summary: Update user
-      description: This can only be done by the logged in user.
+      description: This endpoint provides a possibility to adjust a user.
       operationId: updateUser
       parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
+        - in: path
+          name: userID
           schema:
-            type: string
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
       requestBody:
         description: Update an existent user in the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserUpdate'
+
       responses:
-        default:
-          description: successful operation
+        '200':
+          description: Succesfully updated User
+        '404':
+          description: User not found
+        '401':
+          description: Not Authorized
     delete:
       tags:
         - user
       summary: Delete user
-      description: This can only be done by the logged in user.
       operationId: deleteUser
       parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
+        - in: path
+          name: userID
           schema:
-            type: string
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
       responses:
-        '400':
-          description: Invalid username supplied
+        '200':
+          description: Successfully deleted User.
+        '401':
+          description: Not Authorized
         '404':
           description: User not found
+
+  /lobbies:
+    post:
+      tags:
+        - lobby
+      summary: Creates a lobby
+      description: 'Creates a lobby and automatically joins the user corresponding to the token in the header as the gamemaster'
+      operationId: createLobby
+      parameters: []
+      responses:
+        '201':
+          description: Successfully created a new Lobby.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyGamePin'
+        '401':
+          description: Not authenticated
+        '400':
+          description: Bad requets
+  /lobbies/users:
+    post:
+      tags:
+        - lobby
+      summary: Join a user to the lobby
+      description: 'Joins the user corresponding to the token in the header in the lobby'
+      operationId: joinUser
+      parameters: []
+      responses:
+        '201':
+          description: Successfully created a new Lobby.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyGamePin'
+        '401':
+          description: Not authenticated
+        '403':
+          description: Lobby full
+        '400':
+          description: Bad requets
+
+  /lobbies/{gamePin}:
+    put:
+      tags:
+        - lobby
+      summary: Adjust the lobby's setting.
+      description: 'This endpoint is corresponding to the optional userstory where it should be possible to customize the settings before a round'
+      operationId: adjustSettings
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LobbyCustomize'
+      responses:
+        '200':
+          description: Successfully customized a lobby.
+        '401':
+          description: Not authenticated
+        '400':
+          description: Bad requets
+    get:
+      tags:
+        - lobby
+      summary: Get information about the lobby and the game in it.
+      description: 'This endpoint is very important and will be used often throughout the gameflow. '
+      operationId: getLobbyInfo
+
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
+
+      responses:
+        '200':
+          description: Successfully returned lobby information. Field Vote 0 indicates that the player choose the right answer. Otherwise the number indicates which definition the player chose (corresponds to the position of the user in the player array)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyInfo'
+        '401':
+          description: Not authenticated
+        '400':
+          description: Bad requets
+
+  /lobbies/users/definitions :
+    put:
+      tags:
+        - lobby
+      summary: Register definition.
+      description: 'This Endpoint allows user to enter the definition which they think will fool their friends'
+      operationId: receiveDefinition
+
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Definition'
+      responses:
+        '200':
+          description: Successfully registered definition.
+        '401':
+          description: Not authenticated.
+  /lobbies/users/votes :
+    put:
+      tags:
+        - lobby
+      summary: Register definition.
+      description: 'This Endpoint allows user to register a vote (the definition which they think is right)'
+      operationId: receiveVote
+
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vote'
+      responses:
+        '200':
+          description: Successfully registered a vote .
+        '401':
+          description: Not authenticated.
+
+
+
+
+
+
 components:
   schemas:
-    UserCreation:
+    LobbyInfo:
+      type: object
+      properties:
+        game_pin:
+          type: integer
+          example: 4321
+        game_details:
+          $ref: '#/components/schemas/GameDetails'
+    GameDetails:
+      type: object
+      properties:
+        game_over:
+          type: boolean
+          example: false
+        challange:
+          type: string
+          example: Flimflam
+        solution:
+          type: string
+          example: Tricking someone with nonsense or lies
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+    Player:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Player_1"
+        token:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        score:
+          type: integer
+          example: 10
+        definition:
+          type: string
+          example: An oldtimer car part which broke.
+        voted_for:
+          type: integer
+          example: 0
+
+
+
+    UserLog:
       type: object
       properties:
         username:
           type: string
           example: theUser
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: James
-        email:
-          type: string
-          example: john@email.com
         password:
           type: string
           example: SuperSecretPW
-
+    UserToken:
+      type: object
+      properties:
+        token:
+          type: string
+          format: UUID
+          example: 82a49ae2-9b1f-4460-993e-cc93396cc8c7
+        id:
+          type: integer
+          format: id
+          example: 4
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          format: UUID
+          example: 82a49ae2-9b1f-4460-993e-cc93396cc8c7
+        password:
+          type: string
+          example: NewSuperSecretPW
+        new_player_fooled:
+          type: integer
+          example: 5
+        new_rounds_won:
+          type: integer
+          example: 1
 
     User:
       type: object
       properties:
-        id:
-          type: string
-          format: UUID
-          example: 82a49ae2-9b1f-4460-993e-cc93396cc8c7
         username:
           type: string
           example: theUser
-        firstName:
+        points:
+          type: integer
+          example: 8
+        vote:
+          type: integer
+          example: 2
+        definition:
           type: string
-          example: John
-        lastName:
-          type: string
-          example: James
-        email:
-          type: string
-          example: john@email.com
-
-
-    ApiResponse:
+          example: "A decent way to pay for a coffee."
+    Definition:
       type: object
       properties:
-        code:
+        definition:
+          type: string
+          example: An oldtimer car part which broke.
+    Vote:
+      type: object
+      properties:
+        definition:
           type: integer
-          format: int32
-        type:
+          example: 2
+
+    LobbyGamePin:
+      type: object
+      properties:
+        game_pin:
+          type: integer
+          example: 4321
+    LobbyCustomize:
+      type: object
+      properties:
+        game_pin:
+          type: integer
+          example: 4321
+        game_modes:
           type: string
-        message:
+          example: [DEFINITIONS, JOKES, LASTWORDS]
+        rounds:
           type: string
-      xml:
-        name: '##default'
+          example: 30
+
+
+
+
   requestBodies:
     UserArray:
       description: List of user object
@@ -234,16 +419,12 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/User'
+
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
+
     api_key:
       type: apiKey
-      name: api_key
+      name: Authorization
       in: header
+
+      
