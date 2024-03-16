@@ -156,7 +156,7 @@ paths:
         '400':
           description: Bad requets
   /lobbies/users:
-    post:
+    put:
       tags:
         - lobby
       summary: Join a user to the lobby
@@ -427,4 +427,3 @@ components:
       name: Authorization
       in: header
 
-      
