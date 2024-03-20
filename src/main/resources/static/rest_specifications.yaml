@@ -288,10 +288,19 @@ components:
     GameDetails:
       type: object
       properties:
+        game_state:
+          type: string
+          enum:
+            - LOBBY
+            - DEFINITIONS
+            - VOTES
+            - EVALUATION
+            - GAMEOVER
+          example: LOBBY
         game_over:
           type: boolean
           example: false
-        challange:
+        challenge:
           type: string
           example: Flimflam
         solution:
