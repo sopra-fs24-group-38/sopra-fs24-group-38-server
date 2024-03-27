@@ -1,57 +1,80 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
-import ch.uzh.ifi.hase.soprafs24.entity.User;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
+
+import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
+import ch.uzh.ifi.hase.soprafs24.model.response.UserGet;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.Valid;
 
-/**
- * User Controller
- * This class is responsible for handling all REST request that are related to
- * the user.
- * The controller will receive the request and delegate the execution to the
- * UserService and finally return the result.
- */
+import java.util.UUID;
+
+@RequestMapping("/users")
 @RestController
 public class UserController {
 
-  private final UserService userService;
+    private final UserService userService;
 
-  UserController(UserService userService) {
-    this.userService = userService;
-  }
-
-  @GetMapping("/users")
-  @ResponseStatus(HttpStatus.OK)
-  @ResponseBody
-  public List<UserGetDTO> getAllUsers() {
-    // fetch all users in the internal representation
-    List<User> users = userService.getUsers();
-    List<UserGetDTO> userGetDTOs = new ArrayList<>();
-
-    // convert each user to the API representation
-    for (User user : users) {
-      userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+    UserController(UserService userService) {
+        this.userService = userService;
     }
-    return userGetDTOs;
-  }
 
-  @PostMapping("/users")
-  @ResponseStatus(HttpStatus.CREATED)
-  @ResponseBody
-  public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
-    // convert API user to internal representation
-    User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserGet> createUser(@Valid @RequestBody(required = true) UserPost userToBeCreated) {
 
-    // create user
-    User createdUser = userService.createUser(userInput);
-    // convert internal representation of user back to API
-    return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
-  }
+        //TODO real creation logic in userService class
+        UserGet user = new UserGet();
+        user.setToken(UUID.randomUUID().toString());
+        user.setId(23L);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserGet> login(@Valid @RequestBody(required = true) UserPost userToBeLoggedIn) {
+
+        //TODO real login logic in userService class
+        UserGet user = new UserGet();
+        user.setToken(UUID.randomUUID().toString());
+        user.setId(23L);
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping(value = "/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(@RequestHeader(required = true, value = "Authorization") UUID token) {
+
+        //TODO real logout logic in userService class
+        System.out.println("logged out user");
+
+    }
+
+    @PutMapping(value = "/{userID}")
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@RequestHeader(required = true, value = "Authorization") UUID token,
+                       @PathVariable int userID) {
+
+        //TODO real PUT operation logic in userService class
+        System.out.println("updated user " + userID);
+
+
+    }
+
+    @DeleteMapping(value = "/{userID}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@RequestHeader(required = true, value = "Authorization") UUID token,
+                       @PathVariable int userID) {
+
+        //TODO real PUT operation logic in userService class
+        System.out.println("deleted user " + userID);
+
+
+    }
+
 }

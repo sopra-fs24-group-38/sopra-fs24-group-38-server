@@ -13,7 +13,7 @@ import java.util.Optional;
 @Configuration
 public class SpringDocConfig {
     @Bean
-    SpringDocConfiguration springDocConfiguration(){
+    SpringDocConfiguration springDocConfiguration() {
         return new SpringDocConfiguration();
     }
 
@@ -23,12 +23,12 @@ public class SpringDocConfig {
     }
 
     @Bean
-    ObjectMapperProvider objectMapperProvider(SpringDocConfigProperties springDocConfigProperties){
+    ObjectMapperProvider objectMapperProvider(SpringDocConfigProperties springDocConfigProperties) {
         return new ObjectMapperProvider(springDocConfigProperties);
     }
 
     @Bean
-    SpringDocUIConfiguration SpringDocUIConfiguration(Optional<SwaggerUiConfigProperties> optionalSwaggerUiConfigProperties){
+    SpringDocUIConfiguration SpringDocUIConfiguration(Optional<SwaggerUiConfigProperties> optionalSwaggerUiConfigProperties) {
         return new SpringDocUIConfiguration(optionalSwaggerUiConfigProperties);
     }
 }
