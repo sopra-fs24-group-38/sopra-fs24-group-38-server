@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class LobbyGet {
     @JsonProperty("game_pin")
-    private int gamePin;
+    private Long gamePin;
 
     @JsonProperty("game_details")
     private GameDetails gameDetails;
 
 
-    public int getGamePin() {
+    public Long getGamePin() {
         return gamePin;
     }
 
-    public void setGamePin(int gamePin) {
+    public void setGamePin(Long gamePin) {
         this.gamePin = gamePin;
     }
 

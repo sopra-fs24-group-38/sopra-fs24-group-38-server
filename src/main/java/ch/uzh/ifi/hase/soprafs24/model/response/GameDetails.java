@@ -11,7 +11,9 @@ public class GameDetails {
     @JsonProperty("game_over")
     private boolean gameOver;
 
+    @JsonProperty
     private String challenge;
+    @JsonProperty
     private String solution;
 
     private List<Player> players;

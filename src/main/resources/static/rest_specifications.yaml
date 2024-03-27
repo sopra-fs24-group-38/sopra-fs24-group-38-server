@@ -406,7 +406,7 @@ components:
     Vote:
       type: object
       properties:
-        definition:
+        vote:
           type: integer
           example: 2
 
