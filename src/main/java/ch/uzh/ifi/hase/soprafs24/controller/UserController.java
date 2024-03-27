@@ -36,12 +36,9 @@ public class UserController {
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> login(@Valid @RequestBody(required = true) UserPost userToBeLoggedIn) {
 
-        //TODO real login logic in userService class
-        UserResponse user = new UserResponse();
-        user.setToken(UUID.randomUUID().toString());
-        user.setId(23L);
+        UserResponse userResponse = userService.loginUser(userToBeLoggedIn);
 
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     @GetMapping(value = "/logout")

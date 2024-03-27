@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -48,5 +49,17 @@ public class UserService {
         log.debug("Created User: {}", newUser);
 
         return objectMapper.convertValue(newUser,UserResponse.class);
+    }
+
+    public UserResponse loginUser(UserPost userPost) {
+        User user = userRepository.findByUsername(userPost.getUsername());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with that name doesnt exist");
+        }
+        if(!Objects.equals(user.getPassword(), userPost.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+        }
+
+        return objectMapper.convertValue(user, UserResponse.class);
     }
 }
