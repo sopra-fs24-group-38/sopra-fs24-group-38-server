@@ -1,8 +1,9 @@
 # 28.03 - 11.04
 ## Harris Alem Yar
--   Sample Summary of contribution:
-    -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
-    -   SampleSubSummary1 of contribution ([#18 (sample issue done 1)](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
+-   Added Registration functionality:
+    -   ([#28](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/28))
+    -   ([#31](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/31))
+- Call with Elia to align on fundamental architectural decisions
 ## Elia Aeberhard
 -   Sample Summary of contribution:
     -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
