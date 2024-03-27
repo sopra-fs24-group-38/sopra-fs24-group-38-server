@@ -1,12 +1,16 @@
 package ch.uzh.ifi.hase.soprafs24.model.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
+
 public class UserPost {
-    @JsonProperty("username")
+    @JsonProperty(value = "username", required = true)
+    @NotNull
     String username;
 
-    @JsonProperty("password")
-    Long password;
+    @JsonProperty(value = "password", required = true)
+    @NotNull
+    String password;
 
     public String getUsername() {
         return username;
@@ -16,11 +20,11 @@ public class UserPost {
         this.username = username;
     }
 
-    public Long getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(Long password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

@@ -13,8 +13,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://sopra-fs24-group-38-server.oa.r.appspot.com
   - url: http://localhost:8080
+  - url: https://sopra-fs24-group-38-server.oa.r.appspot.com
+
 tags:
   - name: user
     description: Operations related to users playing nobody is perfect.
@@ -46,6 +47,8 @@ paths:
                 $ref: '#/components/schemas/UserToken'
         '409':
           description: username already taken
+        '400':
+          description: Bad request
 
   /users/login:
     post:
@@ -71,6 +74,8 @@ paths:
 
         '401':
           description: Invalid credentials
+        '400':
+          description: Bad request
   /users/logout:
     get:
       tags:
@@ -82,12 +87,12 @@ paths:
       responses:
         '200':
           description: Successfully logged out user
-
         '401':
           description: Not Authorized
-
         '404':
           description: User not found
+        '400':
+          description: Bad request
   /users/{userID}:
     put:
       tags:
@@ -116,6 +121,8 @@ paths:
           description: User not found
         '401':
           description: Not Authorized
+        '400':
+          description: Bad request
     delete:
       tags:
         - user
@@ -135,6 +142,8 @@ paths:
           description: Not Authorized
         '404':
           description: User not found
+        '400':
+          description: Bad request
 
   /lobbies:
     post:
@@ -154,7 +163,7 @@ paths:
         '401':
           description: Not authenticated
         '400':
-          description: Bad requets
+          description: Bad request
   /lobbies/users:
     put:
       tags:
@@ -175,7 +184,7 @@ paths:
         '403':
           description: Lobby full
         '400':
-          description: Bad requets
+          description: Bad request
 
   /lobbies/{gamePin}:
     put:
@@ -203,7 +212,7 @@ paths:
         '401':
           description: Not authenticated
         '400':
-          description: Bad requets
+          description: Bad request
     get:
       tags:
         - lobby
@@ -229,7 +238,7 @@ paths:
         '401':
           description: Not authenticated
         '400':
-          description: Bad requets
+          description: Bad request
 
   /lobbies/users/definitions :
     put:
@@ -250,6 +259,8 @@ paths:
           description: Successfully registered definition.
         '401':
           description: Not authenticated.
+        '400':
+          description: Bad request
   /lobbies/users/votes :
     put:
       tags:
@@ -269,6 +280,8 @@ paths:
           description: Successfully registered a vote .
         '401':
           description: Not authenticated.
+        '400':
+          description: Bad request
 
 
 
