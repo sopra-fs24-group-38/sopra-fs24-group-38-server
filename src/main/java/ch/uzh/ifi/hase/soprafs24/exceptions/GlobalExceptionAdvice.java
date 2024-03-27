@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,17 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "This should be application specific";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<Object> handleMissingRequestHeader(MissingRequestHeaderException ex, WebRequest request) {
+        if ("Authorization".equals(ex.getHeaderName())) {
+            String bodyOfResponse = "Authorization header is required";
+            log.error(bodyOfResponse);
+            return new ResponseEntity<>(bodyOfResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+        }
+
+        return handleExceptionInternal(ex, "Missing header: " + ex.getHeaderName(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
