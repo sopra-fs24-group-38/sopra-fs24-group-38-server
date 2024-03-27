@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs24.entity;
+package ch.uzh.ifi.hase.soprafs24.model.database;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 
