@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.model.database;
 
-import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -16,17 +14,14 @@ public class User implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, unique = true)
     private String token;
-
-    @Column(nullable = false)
-    private UserStatus status;
 
     public Long getId() {
         return id;
@@ -34,14 +29,6 @@ public class User implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {
@@ -60,11 +47,7 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public UserStatus getStatus() {
-        return status;
-    }
+    public String getPassword() {return password;}
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
+    public void setPassword(String password) {this.password = password;}
 }

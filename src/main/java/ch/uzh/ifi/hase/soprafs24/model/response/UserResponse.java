@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserGet {
+public class UserResponse {
     @JsonProperty("token")
     String token;
 

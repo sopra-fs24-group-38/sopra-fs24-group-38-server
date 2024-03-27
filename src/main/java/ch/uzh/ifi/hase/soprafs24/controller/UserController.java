@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
-import ch.uzh.ifi.hase.soprafs24.model.response.UserGet;
+import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -25,21 +26,18 @@ public class UserController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserGet> createUser(@Valid @RequestBody(required = true) UserPost userToBeCreated) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody(required = true) UserPost userToBeCreated) {
 
-        //TODO real creation logic in userService class
-        UserGet user = new UserGet();
-        user.setToken(UUID.randomUUID().toString());
-        user.setId(23L);
+        UserResponse userResponse = userService.createUser(userToBeCreated);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserGet> login(@Valid @RequestBody(required = true) UserPost userToBeLoggedIn) {
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody(required = true) UserPost userToBeLoggedIn) {
 
         //TODO real login logic in userService class
-        UserGet user = new UserGet();
+        UserResponse user = new UserResponse();
         user.setToken(UUID.randomUUID().toString());
         user.setId(23L);
 
