@@ -54,7 +54,7 @@ public class UserService {
     public UserResponse loginUser(UserPost userPost) {
         User user = userRepository.findByUsername(userPost.getUsername());
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with that name doesnt exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This username does not exist");
         }
         if(!Objects.equals(user.getPassword(), userPost.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
