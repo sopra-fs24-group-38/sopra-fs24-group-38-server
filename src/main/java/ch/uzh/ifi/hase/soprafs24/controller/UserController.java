@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 
-import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
@@ -26,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody(required = true) UserPost userToBeCreated) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserPost userToBeCreated) {
 
         UserResponse userResponse = userService.createUser(userToBeCreated);
 
@@ -34,43 +33,40 @@ public class UserController {
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody(required = true) UserPost userToBeLoggedIn) {
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody UserPost userToBeLoggedIn) {
 
-        //TODO real login logic in userService class
-        UserResponse user = new UserResponse();
-        user.setToken(UUID.randomUUID().toString());
-        user.setId(23L);
+        UserResponse userResponse = userService.loginUser(userToBeLoggedIn);
 
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     @GetMapping(value = "/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(@RequestHeader(required = true, value = "Authorization") UUID token) {
+    public void logout(@RequestHeader(value = "Authorization") UUID token) {
 
         //TODO real logout logic in userService class
-        System.out.println("logged out user");
+        System.out.println("logged out user" + token);
 
     }
 
     @PutMapping(value = "/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestHeader(required = true, value = "Authorization") UUID token,
+    public void update(@RequestHeader(value = "Authorization") UUID token,
                        @PathVariable int userID) {
 
         //TODO real PUT operation logic in userService class
-        System.out.println("updated user " + userID);
+        System.out.println("updated user " + userID + token);
 
 
     }
 
     @DeleteMapping(value = "/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestHeader(required = true, value = "Authorization") UUID token,
+    public void delete(@RequestHeader(value = "Authorization") UUID token,
                        @PathVariable int userID) {
 
         //TODO real PUT operation logic in userService class
-        System.out.println("deleted user " + userID);
+        System.out.println("deleted user " + userID + token);
 
 
     }
