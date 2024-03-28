@@ -14,9 +14,9 @@
     -   SampleSubSummary1 of contribution ([#18 (sample issue done 1)](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
 ## Cédric Styner
 -   Login & Registration: 
-    -   ([#16](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/16))
-    -   ([#15](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/15))
-    -   ([#20](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/20))
+    -   ([#16](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/16))
+    -   ([#15](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/15))
+    -   ([#20](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/20))
 ## Samuel Frank
 -   Cleaned up the template:
     - Adjusted service, controller and tests ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
