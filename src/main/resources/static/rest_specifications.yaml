@@ -116,7 +116,7 @@ paths:
 
       responses:
         '200':
-          description: Succesfully updated User
+          description: Successfully updated User
         '404':
           description: User not found
         '401':
@@ -171,7 +171,13 @@ paths:
       summary: Join a user to the lobby
       description: 'Joins the user corresponding to the token in the header in the lobby'
       operationId: joinUser
-      parameters: []
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
       responses:
         '201':
           description: Successfully created a new Lobby.

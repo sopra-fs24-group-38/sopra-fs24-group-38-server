@@ -4,6 +4,12 @@
     -   ([#28](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
     -   ([#31](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/31))
 - Call with Elia to align on fundamental architectural decisions
+- Call with Samuel to pair-program on Websocket config
+- Added CreateLobby and JoinLobby Functionality: 
+    -   ([#39](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
+    -   ([#47](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
+    -   ([#40](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
+    -   ([#54](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
 ## Elia Aeberhard
 -   Added login functionality:
     -   ([#37](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/37))

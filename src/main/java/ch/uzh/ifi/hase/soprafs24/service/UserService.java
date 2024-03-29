@@ -33,6 +33,10 @@ public class UserService {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    public User getUserById(Long userId) {
+        return userRepository.findUserById(userId);
+    }
+
     public UserResponse createUser(UserPost userPost) {
 
         if (userRepository.findByUsername(userPost.getUsername()) != null) {
@@ -61,5 +65,23 @@ public class UserService {
         }
 
         return objectMapper.convertValue(user, UserResponse.class);
+    }
+
+    public void addSessionToPlayer(String sessionId, Long userId) {
+        User user = userRepository.findUserById(userId);
+        user.setSessionId(sessionId);
+        userRepository.save(user);
+        userRepository.flush();
+
+    }
+
+    public Long getUserIdByToken(String token) {
+        User user = userRepository.findByToken(token);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated (bad token)");
+        }
+        else {
+            return user.getId();
+        }
     }
 }
