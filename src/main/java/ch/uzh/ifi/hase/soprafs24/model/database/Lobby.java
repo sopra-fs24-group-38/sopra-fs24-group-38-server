@@ -1,17 +1,25 @@
 package ch.uzh.ifi.hase.soprafs24.model.database;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "LOBBY")
 public class Lobby {
     private static final long serialVersionUID = 1L;
 
+    //Also the gamepin:
     @Id
     @GeneratedValue
     private Long id;
+    @Column
+    private String challenge;
+
+    @Column
+    private LobbyState lobbyState;
+
+
+
 
 }
