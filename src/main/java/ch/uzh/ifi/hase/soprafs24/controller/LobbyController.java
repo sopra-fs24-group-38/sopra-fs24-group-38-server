@@ -65,7 +65,7 @@ public class LobbyController {
 
         Long userId = userService.getUserIdByToken(token);
 
-        lobbyService.addPlayerToLobby(gamePin, userId);
+        lobbyService.addPlayerToLobby(userId, gamePin);
 
         LobbyGetId lobbyGetId = new LobbyGetId();
         lobbyGetId.setGamePin(gamePin);
