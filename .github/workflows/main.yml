@@ -7,22 +7,6 @@ on:
   # run the workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
-  test:
-    name: Test and Sonarqube
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v4
-      - name: Install Java 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "17"
-      - name: Test and analyze
-        run: ./gradlew test jacocoTestReport sonar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   deploy:
     name: Deploying to Google Cloud
     runs-on: ubuntu-latest
@@ -45,3 +29,19 @@ jobs:
 
       - name: Check deployment
         run: curl "${{ steps.deploy.outputs.url }}"
+  test:
+    name: Test and Sonarqube
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - name: Install Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+      - name: Test and analyze
+        run: ./gradlew test jacocoTestReport sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
