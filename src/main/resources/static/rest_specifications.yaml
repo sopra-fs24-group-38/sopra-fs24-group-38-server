@@ -164,7 +164,7 @@ paths:
           description: Not authenticated
         '400':
           description: Bad request
-  /lobbies/users:
+  /lobbies/users/{gamePin}:
     put:
       tags:
         - lobby
