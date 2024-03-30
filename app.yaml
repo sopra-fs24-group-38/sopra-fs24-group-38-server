@@ -4,4 +4,5 @@
 runtime: java17
 instance_class: F2
 
-env: flex
+network:
+  session_affinity: true
