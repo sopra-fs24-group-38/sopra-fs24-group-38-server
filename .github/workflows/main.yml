@@ -48,4 +48,5 @@ jobs:
           credentials: ${{ secrets.GCP_SERVICE_CREDENTIALS }}
 
       - name: Test
-        run: curl "${{ steps.deploy.outputs.url }} --verbosity=debug"
+        run: curl "${{ steps.deploy.outputs.url }}" --verbosity=debug
+ 
