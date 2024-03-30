@@ -23,7 +23,7 @@ jobs:
 
       - name: Deploy to App Engine with verbosity debug
         run: |
-          gcloud app deploy app.yaml --version=v3 --verbosity=debug --project=sopra-fs24-group-38-server
+          gcloud app deploy app.yaml --version=v4 --verbosity=debug --project=sopra-fs24-group-38-server
         env:
           GCP_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
 
