@@ -60,7 +60,7 @@ public class LobbyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(lobbyGetId);
     }
 
-    @PutMapping(value = "/users{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/users/{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> joinLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
 
         Long userId = userService.getUserIdByToken(token);
