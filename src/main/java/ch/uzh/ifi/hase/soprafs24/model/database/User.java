@@ -23,6 +23,9 @@ public class User implements Serializable {
     @Column(nullable = false, unique = true)
     private String token;
 
+    @Column
+    private String sessionId;
+
     public Long getId() {
         return id;
     }
@@ -50,4 +53,10 @@ public class User implements Serializable {
     public String getPassword() {return password;}
 
     public void setPassword(String password) {this.password = password;}
+    public String getSessionId() {
+        return sessionId;
+    }
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 }

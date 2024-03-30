@@ -11,9 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import java.util.UUID;
-
 @RequestMapping("/users")
 @RestController
 public class UserController {
@@ -42,7 +39,7 @@ public class UserController {
 
     @GetMapping(value = "/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(@RequestHeader(value = "Authorization") UUID token) {
+    public void logout(@RequestHeader(value = "Authorization") String token) {
 
         //TODO real logout logic in userService class
         System.out.println("logged out user" + token);
@@ -51,7 +48,7 @@ public class UserController {
 
     @PutMapping(value = "/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestHeader(value = "Authorization") UUID token,
+    public void update(@RequestHeader(value = "Authorization") String token,
                        @PathVariable int userID) {
 
         //TODO real PUT operation logic in userService class
@@ -62,7 +59,7 @@ public class UserController {
 
     @DeleteMapping(value = "/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestHeader(value = "Authorization") UUID token,
+    public void delete(@RequestHeader(value = "Authorization") String token,
                        @PathVariable int userID) {
 
         //TODO real PUT operation logic in userService class
