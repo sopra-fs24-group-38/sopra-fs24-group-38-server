@@ -34,12 +34,10 @@ public class SocketHandler extends TextWebSocketHandler {
         Map messageMap = objectMapper.readValue(message.getPayload(), Map.class);
 
         if ("init".equals(messageMap.get("action"))) {
-            Long userId = Long.parseLong((String) messageMap.get("userId"));
-            long lobbyId = Long.parseLong((String) messageMap.get("lobbyId"));
-
+            long userId = Long.parseLong((String) messageMap.get("userId"));
             userService.addSessionToPlayer(session.getId(), userId);
 
-            log.debug("received initial ws message for " + userId + "and lobby " + lobbyId);
+            log.debug("received initial ws message for userId" + userId);
         }
         // Handle other textmessages: add else {}
     }
