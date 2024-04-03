@@ -207,7 +207,7 @@ paths:
           required: true
           description: Numeric ID of the lobby
       requestBody:
-        description: Update an existent user in the store
+        description: It is possible to adjust the lobby in terms of gamemodes and rounds played. Currently available modes are defintions and Dutch word guessing. The game allows for games with 5 up to 15  rounds.
         content:
           application/json:
             schema:
@@ -422,18 +422,20 @@ components:
         game_pin:
           type: integer
           example: 4321
+
     LobbyCustomize:
       type: object
       properties:
-        game_pin:
-          type: integer
-          example: 4321
         game_modes:
-          type: string
-          example: [DEFINITIONS, JOKES, LASTWORDS]
+          type: array
+          items:
+            type: string
+            enum: [DEFINITIONS, DUTCH]
+          example: [DEFINITIONS, DUTCH]
         rounds:
-          type: string
-          example: 30
+          type: integer
+          example: 15
+
 
 
 
