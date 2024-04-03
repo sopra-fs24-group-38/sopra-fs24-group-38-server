@@ -51,7 +51,7 @@ public class LobbyController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> createLobby(@RequestHeader(value = "Authorization") String token){
 
-        Long userId = userService.getUserIdByToken(token);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
         LobbyGetId lobbyGetId = new LobbyGetId();
 
@@ -64,7 +64,7 @@ public class LobbyController {
     @PutMapping(value = "/users/{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> joinLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
 
-        Long userId = userService.getUserIdByToken(token);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
         lobbyService.addPlayerToLobby(userId, gamePin);
 
@@ -80,7 +80,7 @@ public class LobbyController {
                                     @Valid @RequestBody LobbyPut settingsToBeRegistered){
 
         //TODO real adjusting settings logic in lobbyService class
-
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
         System.out.println("user with token " + token + " adjusted settings of lobby with pin "+ gamePin);
 
 
