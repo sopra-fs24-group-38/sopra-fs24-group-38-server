@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,11 +26,13 @@ public class Lobby {
     private LobbyState lobbyState;
 
     @Column
-    private int numberRounds;
+    private int numberRounds = 10;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    private Set<LobbyModes> lobbyModes = new HashSet<>();
+    //Definition is the default mode :
+    private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.DEFINITIONS));
+
 
     //FIXME map properly to the lobby? set a lobby in the user db model?
     @OneToMany

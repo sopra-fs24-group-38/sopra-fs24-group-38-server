@@ -123,24 +123,6 @@ public class LobbyController {
 
         gameDetails.setPlayers(player);
         lobbyGet.setGameDetails(gameDetails);
-        //commented out but might become useful later on :
-        /**
-        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(gamePin);
-        Set<User> users = lobby.getPlayers();
-        Iterator<User> userIterator = users.iterator();
-        while(userIterator.hasNext()){
-            User user = userIterator.next();
-            System.out.println("User with username: " + user.getUsername() + " is in lobby");
-        }
-        Iterator<LobbyModes> modiIterator = lobby.getLobbyModes().iterator();
-        System.out.println("The following gameModes are selected: ");
-        while(modiIterator.hasNext()){
-            LobbyModes lobbyMode = modiIterator.next();
-            System.out.println("Lobby has activated the Mode: " + lobbyMode.toString());
-        }
-        System.out.println("The Lobby round length is: " + lobby.getNumberRounds());
-         **/
-
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGet);
 
     }
