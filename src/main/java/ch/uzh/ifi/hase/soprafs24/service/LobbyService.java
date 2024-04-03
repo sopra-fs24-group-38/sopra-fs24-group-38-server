@@ -40,9 +40,12 @@ public class LobbyService {
 
     public void addPlayerToLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        checkWhetherPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
         log.debug("user with id " + userId + " joined lobby " + lobbyId);
     }
+
+
 
     public Set<User> getPlayerSet(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
@@ -109,5 +112,16 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist");
         }
         return lobbyToReturn;
+    }
+
+    private void checkWhetherPlayerInLobby(Long userId) {
+        List<Lobby> allLobbies = lobbyRepository.findAll();
+
+        for(Lobby lobby : allLobbies) {
+            Set<User> players = lobby.getPlayers();
+            if(players.stream().anyMatch(user -> user.getId().equals(userId))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+            }
+        }
     }
 }

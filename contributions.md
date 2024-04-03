@@ -14,6 +14,8 @@
 -   Added login functionality:
     -   ([#37](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/37))
     -   ([#38](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/38))
+-   Added check for players who want to join a lobby whether they are already in a lobby
+    - ([#53](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/53))
 ## Markus Senn
 -   Sample Summary of contribution:
     -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
