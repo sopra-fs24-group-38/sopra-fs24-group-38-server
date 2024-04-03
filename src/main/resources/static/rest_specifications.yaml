@@ -207,7 +207,7 @@ paths:
           required: true
           description: Numeric ID of the lobby
       requestBody:
-        description: It is possible to adjust the lobby in terms of gamemodes and rounds played. Currently available modes are defintions and Dutch word guessing. The game allows for games with 5 up to 15  rounds.
+        description: It is possible to adjust the lobby in terms of gamemodes and rounds played. Currently available modes are defintions and Dutch word guessing. The modes can be chosen additively The game allows for games with 5 up to 15  rounds.
         content:
           application/json:
             schema:
@@ -218,7 +218,7 @@ paths:
         '401':
           description: Not authenticated
         '400':
-          description: Bad request
+          description: Bad request (bad amount of rounds, bad chosen modes, ... )
     get:
       tags:
         - lobby

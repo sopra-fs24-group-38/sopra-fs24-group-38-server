@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
+import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
 import ch.uzh.ifi.hase.soprafs24.model.response.*;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
@@ -75,11 +76,13 @@ public class LobbyController {
 
     @PutMapping(value = "/{gamePin}")
     @ResponseStatus(HttpStatus.OK)
-    public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
+    public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,
+                                    @Valid @RequestBody LobbyPut settingsToBeRegistered){
 
         //TODO real adjusting settings logic in lobbyService class
 
         System.out.println("user with token " + token + " adjusted settings of lobby with pin "+ gamePin);
+
 
     }
 

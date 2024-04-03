@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.model.database;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,10 +24,20 @@ public class Lobby {
     @Column
     private LobbyState lobbyState;
 
+    @Column
+    private int numberRounds;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private Set<LobbyModes> lobbyModes = new HashSet<>();
+
     //FIXME map properly to the lobby? set a lobby in the user db model?
     @OneToMany
     private Set<User> players = new HashSet<>();
 
+
+    public int getNumberRounds() {return numberRounds;}
+    public void setNumberRounds(int numberRounds) {this.numberRounds = numberRounds;}
     public Long getId() {
         return id;
     }
