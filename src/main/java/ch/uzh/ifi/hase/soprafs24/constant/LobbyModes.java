@@ -5,5 +5,6 @@ package ch.uzh.ifi.hase.soprafs24.constant;
  */
 public enum LobbyModes {
     DEFINITIONS,
-    DUTCH
+    DUTCH,
+    URBAN
 }

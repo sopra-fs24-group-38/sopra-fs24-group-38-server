@@ -123,6 +123,8 @@ public class LobbyController {
 
         gameDetails.setPlayers(player);
         lobbyGet.setGameDetails(gameDetails);
+        //commented out but might become useful later on :
+        /**
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(gamePin);
         Set<User> users = lobby.getPlayers();
         Iterator<User> userIterator = users.iterator();
@@ -136,6 +138,8 @@ public class LobbyController {
             LobbyModes lobbyMode = modiIterator.next();
             System.out.println("Lobby has activated the Mode: " + lobbyMode.toString());
         }
+        System.out.println("The Lobby round length is: " + lobby.getNumberRounds());
+         **/
 
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGet);
 
