@@ -180,7 +180,7 @@ paths:
           description: Numeric ID of the lobby
       responses:
         '201':
-          description: Successfully created a new Lobby.
+          description: Successfully joined a user to the lobby.
           content:
             application/json:
               schema:
@@ -207,7 +207,10 @@ paths:
           required: true
           description: Numeric ID of the lobby
       requestBody:
-        description: Update an existent user in the store
+        description: It is possible to adjust the lobby in terms of gamemodes and rounds played. Currently available modes are defintions, Dutch word guessing and Urban defintion.
+          The modes can be chosen additively The game allows for games with 5 up to 15  rounds. Per default only DEFINTION is activated
+          and 10 rounds are being played.
+
         content:
           application/json:
             schema:
@@ -218,7 +221,7 @@ paths:
         '401':
           description: Not authenticated
         '400':
-          description: Bad request
+          description: Bad request (bad amount of rounds, bad chosen modes, ... )
     get:
       tags:
         - lobby
@@ -422,18 +425,20 @@ components:
         game_pin:
           type: integer
           example: 4321
+
     LobbyCustomize:
       type: object
       properties:
-        game_pin:
-          type: integer
-          example: 4321
         game_modes:
-          type: string
-          example: [DEFINITIONS, JOKES, LASTWORDS]
+          type: array
+          items:
+            type: string
+            enum: [DEFINITIONS, DUTCH, URBAN]
+          example: [DEFINITIONS, DUTCH, URBAN]
         rounds:
-          type: string
-          example: 30
+          type: integer
+          example: 15
+
 
 
 

@@ -1,6 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
+import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
 import ch.uzh.ifi.hase.soprafs24.model.response.*;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 @RequestMapping("/lobbies")
@@ -50,7 +56,7 @@ public class LobbyController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> createLobby(@RequestHeader(value = "Authorization") String token){
 
-        Long userId = userService.getUserIdByToken(token);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
         LobbyGetId lobbyGetId = new LobbyGetId();
 
@@ -63,7 +69,7 @@ public class LobbyController {
     @PutMapping(value = "/users/{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> joinLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
 
-        Long userId = userService.getUserIdByToken(token);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
         lobbyService.addPlayerToLobby(userId, gamePin);
 
@@ -75,12 +81,13 @@ public class LobbyController {
 
     @PutMapping(value = "/{gamePin}")
     @ResponseStatus(HttpStatus.OK)
-    public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
+    public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,
+                                    @Valid @RequestBody LobbyPut settingsToBeRegistered){
 
-        //TODO real adjusting settings logic in lobbyService class
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.adjustSettings(settingsToBeRegistered, gamePin);
 
         System.out.println("user with token " + token + " adjusted settings of lobby with pin "+ gamePin);
-
     }
 
     @GetMapping(value = "/{gamePin}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -116,7 +123,6 @@ public class LobbyController {
 
         gameDetails.setPlayers(player);
         lobbyGet.setGameDetails(gameDetails);
-
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGet);
 
     }
