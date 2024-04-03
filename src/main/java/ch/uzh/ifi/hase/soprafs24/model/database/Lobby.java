@@ -35,6 +35,17 @@ public class Lobby {
     @OneToMany
     private Set<User> players = new HashSet<>();
 
+    public Set<LobbyModes> getLobbyModes() {
+        return lobbyModes;
+    }
+
+    public void setLobbyModes(Set<LobbyModes> lobbyModes) {
+        this.lobbyModes = lobbyModes;
+    }
+
+    public void setPlayers(Set<User> players) {
+        this.players = players;
+    }
 
     public int getNumberRounds() {return numberRounds;}
     public void setNumberRounds(int numberRounds) {this.numberRounds = numberRounds;}

@@ -180,7 +180,7 @@ paths:
           description: Numeric ID of the lobby
       responses:
         '201':
-          description: Successfully created a new Lobby.
+          description: Successfully joined a user to the lobby.
           content:
             application/json:
               schema:

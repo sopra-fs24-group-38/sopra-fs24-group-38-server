@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 @RequestMapping("/lobbies")
@@ -79,11 +84,10 @@ public class LobbyController {
     public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,
                                     @Valid @RequestBody LobbyPut settingsToBeRegistered){
 
-        //TODO real adjusting settings logic in lobbyService class
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.adjustSettings(settingsToBeRegistered, gamePin);
+
         System.out.println("user with token " + token + " adjusted settings of lobby with pin "+ gamePin);
-
-
     }
 
     @GetMapping(value = "/{gamePin}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -119,6 +123,19 @@ public class LobbyController {
 
         gameDetails.setPlayers(player);
         lobbyGet.setGameDetails(gameDetails);
+        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(gamePin);
+        Set<User> users = lobby.getPlayers();
+        Iterator<User> userIterator = users.iterator();
+        while(userIterator.hasNext()){
+            User user = userIterator.next();
+            System.out.println("User with username: " + user.getUsername() + " is in lobby");
+        }
+        Iterator<LobbyModes> modiIterator = lobby.getLobbyModes().iterator();
+        System.out.println("The following gameModes are selected: ");
+        while(modiIterator.hasNext()){
+            LobbyModes lobbyMode = modiIterator.next();
+            System.out.println("Lobby has activated the Mode: " + lobbyMode.toString());
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGet);
 
