@@ -10,12 +10,16 @@
     -   ([#47](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
     -   ([#40](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
     -   ([#54](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
+-   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Samuel:
+    - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
 ## Elia Aeberhard
 -   Added login functionality:
     -   ([#37](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/37))
     -   ([#38](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/38))
 -   Added check for players who want to join a lobby whether they are already in a lobby
     - ([#53](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/53))
+-   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Harris and Samuel:
+    - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
 ## Markus Senn
 -   Sample Summary of contribution:
     -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
@@ -32,3 +36,5 @@
 -   Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} : 
     -  [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/45)
     - [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/44)
+-   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Harris:  
+    - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
