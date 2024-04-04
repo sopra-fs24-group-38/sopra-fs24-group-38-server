@@ -144,4 +144,17 @@ public class LobbyController {
         System.out.println("user with token "+ token + " registered vote: " + voteToBeRegistered.getVote());
     }
 
+    @DeleteMapping(value = "/users/{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<LobbyGetId> leaveLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+
+        lobbyService.removePlayerFromLobby(userId, gamePin);
+
+        LobbyGetId lobbyGetId = new LobbyGetId();
+        lobbyGetId.setGamePin(gamePin);
+
+        return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
+    }
 }
