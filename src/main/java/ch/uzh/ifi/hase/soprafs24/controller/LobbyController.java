@@ -70,7 +70,7 @@ public class LobbyController {
     public ResponseEntity<LobbyGetId> joinLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
 
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-
+        socketHandler.sendMessageToLobby(gamePin, "user_joined");
         lobbyService.addPlayerToLobby(userId, gamePin);
 
         LobbyGetId lobbyGetId = new LobbyGetId();
