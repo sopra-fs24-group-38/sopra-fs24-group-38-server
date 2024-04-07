@@ -45,7 +45,13 @@ public class LobbyService {
         log.debug("user with id " + userId + " joined lobby " + lobbyId);
     }
 
-
+    public void removePlayerFromLobby(Long userId, Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        User user = userService.getUserById(userId);
+        if(!lobby.getPlayers().contains(user)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
+        lobby.removePlayer(user);
+        log.debug("user with id " + userId + " removed from lobby " + lobbyId);
+    }
 
     public Set<User> getPlayerSet(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
