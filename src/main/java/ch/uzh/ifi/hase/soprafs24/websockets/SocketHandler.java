@@ -29,15 +29,14 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         webSocketSessionManager.registerSession(session);
-        log.debug(message.toString());
-        log.debug(message.getPayload());
+        log.warn(message.toString());
+        log.warn(message.getPayload());
         Map messageMap = objectMapper.readValue(message.getPayload(), Map.class);
 
         if ("init".equals(messageMap.get("action"))) {
             long userId = Long.parseLong((String) messageMap.get("userId"));
             userService.addSessionToPlayer(session.getId(), userId);
-
-            log.debug("received initial ws message for userId" + userId);
+            log.warn("received initial ws message for userId" + userId);
         }
         // Handle other textmessages: add else {}
     }
