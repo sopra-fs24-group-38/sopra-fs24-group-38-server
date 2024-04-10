@@ -20,6 +20,9 @@
     - ([#53](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/53))
 -   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Harris and Samuel:
     - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
+    -   ([#53](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/53))
+-   Added functionality (endpoint) to remove a player from a lobby
+    -   ([#56](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/56))
 ## Markus Senn
 -   Sample Summary of contribution:
     -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))

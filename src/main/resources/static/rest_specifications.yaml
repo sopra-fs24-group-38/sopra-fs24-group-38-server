@@ -191,6 +191,31 @@ paths:
           description: Lobby full
         '400':
           description: Bad request
+    delete:
+      tags:
+        - lobby
+      summary: Remove a user from the lobby
+      description: 'Removes the user from the lobby'
+      operationId: removeUser
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
+      responses:
+        '200':
+          description: Successfully removed a user from the lobby.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyGamePin'
+        '401':
+          description: Not authenticated
+        '400':
+          description: Bad request
+
 
   /lobbies/{gamePin}:
     put:
