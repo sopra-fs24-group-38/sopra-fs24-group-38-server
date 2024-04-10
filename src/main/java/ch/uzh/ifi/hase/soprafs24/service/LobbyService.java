@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,11 @@ public class LobbyService {
         checkWhetherPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
         log.debug("user with id " + userId + " joined lobby " + lobbyId);
+    }
+
+    public LobbyGet fetchLobbyInfo(Long gamePin) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+        return gather
     }
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
@@ -130,4 +136,6 @@ public class LobbyService {
             }
         }
     }
+
+
 }

@@ -11,6 +11,8 @@ import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,6 +40,7 @@ public class LobbyController {
 
     @Autowired
     LobbyRepository lobbyRepository;
+    private final Logger log = LoggerFactory.getLogger(LobbyController.class);
 
     public LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
@@ -92,10 +95,11 @@ public class LobbyController {
 
     @GetMapping(value = "/{gamePin}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGet> getLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
-        System.out.println("user with token " + token + " requested information of lobby with pin "+ gamePin);
+        log.warn("user with token " + token + " requested information of lobby with pin "+ gamePin);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
         //TODO real Get Logic with lobbyService:
-
+        LobbyGet lobbyInformation = lobbyService.fetchLobbyInfo(gamePin);
         LobbyGet lobbyGet = new LobbyGet();
         lobbyGet.setGamePin(1234L);
 
