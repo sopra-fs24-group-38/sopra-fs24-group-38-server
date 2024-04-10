@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
+import ch.uzh.ifi.hase.soprafs24.model.response.Player;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -47,8 +47,16 @@ public class LobbyService {
     }
 
     public LobbyGet fetchLobbyInfo(Long gamePin) {
-        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
-        return gather
+        Lobby lobbyInternal = getLobbyAndExistenceCheck(gamePin);
+        LobbyGet infoLobbyJson = new LobbyGet();
+        infoLobbyJson.setGamePin(gamePin);
+        //Set the GameDetails field of LobbyGet class ...
+        setGameState(lobbyInternal, infoLobbyJson);
+        setGameOver(lobbyInternal, infoLobbyJson);
+        setChallengeAndSolution(lobbyInternal, infoLobbyJson);
+        setPlayer(lobbyInternal, infoLobbyJson);
+        // ... Set the GameDetails field of LobbyGet class
+        return infoLobbyJson;
     }
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
@@ -136,6 +144,48 @@ public class LobbyService {
             }
         }
     }
+
+    private void setGameState(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
+        //TODO REAL LOGIC OF current game state probably with new entity GameRound
+        GameDetails gameDetails = new GameDetails();
+        gameDetails.setGameState(LobbyState.WAITING.toString());
+        infoLobbyJson.setGameDetails(gameDetails);
+    }
+
+    private void setGameOver(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
+        //TODO set real game over logic
+        infoLobbyJson.getGameDetails().setGameOver(false);
+    }
+    private void setChallengeAndSolution(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
+        //TODO real set challenge probably with new entity GameRound with a UUID as a field in Lobby entity
+        //containing all information about the round which can be accessed here to
+        //provide the gamelogic info in GetLobby object
+        //Dummyvalues :
+        GameDetails gameDetails = infoLobbyJson.getGameDetails();
+        gameDetails.setGameOver(false);
+        gameDetails.setChallenge("Who or what is flibbertigibbet ?");
+        gameDetails.setGameState("LOBBY");
+        gameDetails.setSolution("A chattering person");
+        infoLobbyJson.setGameDetails(gameDetails);
+
+    }
+    private void setPlayer(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
+        GameDetails gameDetails = infoLobbyJson.getGameDetails();
+        List<Player> players = new ArrayList<>();
+        Set<User> users = lobbyInternal.getPlayers();
+        for (User user : users) {
+            Player player = new Player();
+            player.setName(user.getUsername());
+            player.setToken(user.getToken());
+            players.add(player);
+        }
+        gameDetails.setPlayers(players);
+    }
+
+
+
+
+
 
 
 }
