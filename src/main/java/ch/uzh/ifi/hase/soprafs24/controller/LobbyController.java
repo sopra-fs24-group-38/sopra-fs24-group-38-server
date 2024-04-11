@@ -1,13 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
-import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
-import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
-import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
-import ch.uzh.ifi.hase.soprafs24.model.response.*;
-import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
+import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
+import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
+import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGetId;
+import ch.uzh.ifi.hase.soprafs24.model.response.Player;
 import ch.uzh.ifi.hase.soprafs24.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.UUID;
 
 @RequestMapping("/lobbies")
@@ -35,14 +32,6 @@ public class LobbyController {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    LobbyRepository lobbyRepository;
-
-    public LobbyController(LobbyService lobbyService) {
-        this.lobbyService = lobbyService;
-    }
-
 
     /**
      * Endpoint solely for testing purposes
@@ -157,4 +146,16 @@ public class LobbyController {
 
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
     }
+
+    @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+
+        lobbyService.startGame(userId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
 }

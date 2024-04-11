@@ -60,7 +60,7 @@ If you want to avoid running all tests with every change, use the following comm
 
 ### Contributors 
 
-- Harris Alem Yar (https://github.com/so-ri) 
+- Harris A (https://github.com/so-ri) 
 - Elia Aeberhard (https://github.com/Elyisha)
 - Samuel Frank (https://github.com/samuelfrnk)
 - Markus Senn (https://github.com/iKusii)

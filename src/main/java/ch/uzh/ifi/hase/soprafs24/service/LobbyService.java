@@ -1,10 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
+import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -32,6 +31,8 @@ public class LobbyService {
 
     @Autowired
     UserService userService;
+    @Autowired
+    private SocketHandler socketHandler;
 
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
@@ -40,16 +41,20 @@ public class LobbyService {
 
     public void addPlayerToLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        User user = userService.getUserById(userId);
         checkWhetherPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
+        user.setLobbyId(lobbyId);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
-        if(!lobby.getPlayers().contains(user)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
+        if (!lobby.getPlayers().contains(user))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
+        user.setLobbyId(null);
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
@@ -69,6 +74,7 @@ public class LobbyService {
         } while (lobbyRepository.findLobbyByLobbyPin(pin) != null);
 
         lobby.setLobbyPin(pin);
+        lobby.setGameMaster(userId);
         lobby.addPlayer(userService.getUserById(userId));
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -82,10 +88,10 @@ public class LobbyService {
         int roundUpdate = settingsToBeRegistered.getRounds();
         List<String> gameModes = settingsToBeRegistered.getGameModes();
         Lobby lobby = getLobbyAndExistenceCheck(gamePin);
-        if(gameModes != null){
+        if (gameModes != null) {
             setGameModes(gameModes, lobby);
         }
-        if(gameModes != null){
+        if (gameModes != null) {
             setRounds(roundUpdate, lobby);
         }
         lobbyRepository.save(lobby);
@@ -93,7 +99,7 @@ public class LobbyService {
     }
 
     private void setRounds(int roundUpdate, Lobby lobby) {
-        if(roundUpdate < 5 || roundUpdate > 15){
+        if (roundUpdate < 5 || roundUpdate > 15) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
         }
         lobby.setNumberRounds(roundUpdate);
@@ -101,20 +107,21 @@ public class LobbyService {
 
     private void setGameModes(List<String> gameModes, Lobby lobby) {
         Set<LobbyModes> lobbyModes = new HashSet<>();
-        for(String gameModeNotValidated : gameModes){
+        for (String gameModeNotValidated : gameModes) {
             try {
                 LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
                 lobbyModes.add(lobbyMode);
-            } catch(IllegalArgumentException e){
+            }
+            catch (IllegalArgumentException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
             }
         }
         lobby.setLobbyModes(lobbyModes);
     }
 
-    private Lobby getLobbyAndExistenceCheck(Long gamePin) {
+    public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
-        if(lobbyToReturn == null){
+        if (lobbyToReturn == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist");
         }
         return lobbyToReturn;
@@ -123,11 +130,31 @@ public class LobbyService {
     private void checkWhetherPlayerInLobby(Long userId) {
         List<Lobby> allLobbies = lobbyRepository.findAll();
 
-        for(Lobby lobby : allLobbies) {
+        for (Lobby lobby : allLobbies) {
             Set<User> players = lobby.getPlayers();
-            if(players.stream().anyMatch(user -> user.getId().equals(userId))) {
+            if (players.stream().anyMatch(user -> user.getId().equals(userId))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
             }
         }
+    }
+
+    public void startGame(Long userId) {
+
+        User user = userService.getUserById(userId);
+        Long lobbyId = user.getLobbyId();
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+
+        if (!Objects.equals(userId, lobby.getGameMaster())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
+        }
+
+        lobby.setState(LobbyState.DEFINITION);
+        lobby.setGameOver(false);
+        //lobby.setChallenges(apiHandler.generateChallenges(gameMode, gameRounds));
+        lobby.setRoundNumber(1L);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+
+        socketHandler.sendMessageToLobby(lobbyId, "game_start");
     }
 }

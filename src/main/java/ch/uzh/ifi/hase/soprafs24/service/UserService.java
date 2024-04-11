@@ -34,7 +34,11 @@ public class UserService {
     }
 
     public User getUserById(Long userId) {
-        return userRepository.findUserById(userId);
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist");
+        }
+        return user;
     }
 
     public UserResponse createUser(UserPost userPost) {
@@ -68,7 +72,7 @@ public class UserService {
     }
 
     public void addSessionToPlayer(String sessionId, Long userId) {
-        User user = userRepository.findUserById(userId);
+        User user = getUserById(userId);
         user.setSessionId(sessionId);
         userRepository.save(user);
         userRepository.flush();

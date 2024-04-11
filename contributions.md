@@ -1,5 +1,5 @@
 # 28.03 - 11.04
-## Harris Alem Yar
+## Harris A
 -   Added Registration functionality:
     -   ([#28](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
     -   ([#31](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/31))
@@ -49,6 +49,17 @@
     - Introduced contributions.md file ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
 -   Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} : 
     -  [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/45)
-    - [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/44)
+    -  [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/44)
 -   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Harris:  
     - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
+
+# 11.04 - 18.04
+## Harris A
+- started with startGame functionality:
+    -  [#177](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/177)
+    -  [#61](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/61)
+
+## Elia Aeberhard
+## Markus Senn
+## Cédric Styner
+## Samuel Frank
