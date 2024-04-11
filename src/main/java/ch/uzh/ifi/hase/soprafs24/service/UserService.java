@@ -50,7 +50,7 @@ public class UserService {
         newUser = userRepository.save(newUser);
         userRepository.flush();
 
-        log.debug("Created User: {}", newUser);
+        log.warn("Created User: {}", newUser);
 
         return objectMapper.convertValue(newUser,UserResponse.class);
     }
