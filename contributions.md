@@ -39,6 +39,10 @@
     -   ([#16](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/16))
     -   ([#15](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/15))
     -   ([#20](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/20))
+-   Challange and forwarding to Voting: 
+    -   ([#32](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/32))
+    -   ([#34](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/34))
+    -   ([#35](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/35))
 ## Samuel Frank
 -   Cleaned up the template:
     - Adjusted service, controller and tests ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
