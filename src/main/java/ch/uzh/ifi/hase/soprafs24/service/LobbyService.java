@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -38,6 +39,10 @@ public class LobbyService {
     UserService userService;
     @Autowired
     private SocketHandler socketHandler;
+
+    @Autowired
+    private ApiService apiService;
+
     ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
@@ -146,7 +151,9 @@ public class LobbyService {
 
         lobby.setState(LobbyState.DEFINITION);
         lobby.setGameOver(false);
-        //lobby.setChallenges(apiHandler.generateChallenges(gameMode, gameRounds));
+
+        lobby.setChallenges(apiService.generateChallenges(lobby.getLobbyModes(), lobby.getNumberRounds()));
+
         lobby.setRoundNumber(1L);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -164,12 +171,19 @@ public class LobbyService {
     private LobbyGet mapLobbyToLobbyGet(Lobby lobby) {
         LobbyGet lobbyGet = objectMapper.convertValue(lobby, LobbyGet.class);
 
-
+        Set<Challenge> challenges = lobby.getChallenges();
+        Iterator<Challenge> iterator = challenges.iterator();
         GameDetails gameDetails = new GameDetails();
+        while (iterator.hasNext()) {
+            Challenge challenge = iterator.next();
+            gameDetails.setChallenge(challenge.getChallenge());
+            gameDetails.setSolution(challenge.getSolution());
+        }
+
+
         gameDetails.setGameState(lobby.getState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
-        gameDetails.setChallenge(lobby.getChallenge());
-        gameDetails.setSolution("Mapped Solution Here");
+
 
 
         List<Player> players = new ArrayList<>();

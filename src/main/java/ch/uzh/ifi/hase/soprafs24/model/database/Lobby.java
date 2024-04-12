@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.model.database;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.ChallengeList;
 
 import javax.persistence.*;
@@ -46,6 +47,10 @@ public class Lobby {
 
     //@Column
     //private ChallengeList challenges; DOES NOT WORK
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column
+    private Set<Challenge> challenges = new HashSet<>();
+
 
     @Column
     private Long roundNumber;
@@ -139,5 +144,13 @@ public class Lobby {
 
     public void setRoundNumber(Long roundNumber) {
         this.roundNumber = roundNumber;
+    }
+
+    public Set<Challenge> getChallenges() {
+        return challenges;
+    }
+
+    public void setChallenges(Set<Challenge> challenges) {
+        this.challenges = challenges;
     }
 }
