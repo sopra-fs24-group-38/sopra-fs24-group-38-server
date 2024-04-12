@@ -16,7 +16,7 @@ public class ApiService {
 
     public Set<Challenge> generateChallenges(Set<LobbyModes> lobbyModes, int numberRounds) {
         Set<Challenge> challenges = new HashSet<>();
-        challenges.add(new Challenge("testchallenge", "testSolution"));
+        challenges.add(new Challenge("testchallenge", token));
         return challenges;
     }
 }
