@@ -88,4 +88,11 @@ public class UserService {
             return user.getId();
         }
     }
+
+    public void setLobbyIdForGameMaster(Long userId, Long gamePin) {
+        User userToBeMappedToLobby = userRepository.findUserById(userId);
+        userToBeMappedToLobby.setLobbyId(gamePin);
+        userRepository.save(userToBeMappedToLobby);
+        userRepository.flush();
+    }
 }

@@ -47,9 +47,11 @@ public class LobbyController {
 
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
 
+
         LobbyGetId lobbyGetId = new LobbyGetId();
 
         Long gamePin = lobbyService.createLobby(userId);
+        userService.setLobbyIdForGameMaster(userId, gamePin);
         lobbyGetId.setGamePin(gamePin);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(lobbyGetId);
