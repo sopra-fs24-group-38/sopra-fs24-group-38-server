@@ -24,14 +24,25 @@
 -   Added functionality (endpoint) to remove a player from a lobby
     -   ([#56](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/56))
 ## Markus Senn
--   Sample Summary of contribution:
-    -   SampleSubSummary1 of contribution ([#18 (sample issue done 1) ](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
-    -   SampleSubSummary1 of contribution ([#18 (sample issue done 1)](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
+-   Revamped client project structure
+-   Login password obfuscation + User token:
+    -   ([#18](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/18))
+    -   ([#17](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/17))
+-   Error handling capabilities added:
+    -   ([#19](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/19))
+-   Added Logout functionality:
+    -   ([#28](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/28))
+-   Added dynamic game PIN in Lobby:
+    -   ([#23](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/23))
 ## Cédric Styner
 -   Login & Registration: 
     -   ([#16](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/16))
     -   ([#15](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/15))
     -   ([#20](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/20))
+-   Challange and forwarding to Voting: 
+    -   ([#32](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/32))
+    -   ([#34](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/34))
+    -   ([#35](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/35))
 ## Samuel Frank
 -   Cleaned up the template:
     - Adjusted service, controller and tests ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
