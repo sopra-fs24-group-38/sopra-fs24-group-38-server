@@ -43,7 +43,7 @@ public class LobbyService {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         checkWhetherPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
-        log.debug("user with id " + userId + " joined lobby " + lobbyId);
+        log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
     public LobbyGet fetchLobbyInfo(Long gamePin) {
@@ -64,7 +64,7 @@ public class LobbyService {
         User user = userService.getUserById(userId);
         if(!lobby.getPlayers().contains(user)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
-        log.debug("user with id " + userId + " removed from lobby " + lobbyId);
+        log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
     public Set<User> getPlayerSet(Long lobbyId) {
@@ -87,7 +87,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        log.debug("created lobby with pin " + pin);
+        log.warn("created lobby with pin " + pin);
 
         return pin;
     }

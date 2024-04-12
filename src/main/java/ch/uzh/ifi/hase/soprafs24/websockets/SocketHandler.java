@@ -60,7 +60,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.debug(session.getId());
+        log.warn(session.getId());
         super.afterConnectionClosed(session, status);
     }
 }
