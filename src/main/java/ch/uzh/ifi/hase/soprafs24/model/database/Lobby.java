@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs24.model.database;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
-import ch.uzh.ifi.hase.soprafs24.model.response.ChallengeList;
 
 import javax.persistence.*;
 import java.util.*;
@@ -45,8 +44,7 @@ public class Lobby {
     @Column
     private boolean gameOver;
 
-    //@Column
-    //private ChallengeList challenges; DOES NOT WORK
+
     @ElementCollection(fetch = FetchType.LAZY)
     @Column
     private Set<Challenge> challenges = new HashSet<>();
