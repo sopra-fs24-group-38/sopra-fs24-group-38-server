@@ -10,6 +10,8 @@ import ch.uzh.ifi.hase.soprafs24.model.response.Player;
 import ch.uzh.ifi.hase.soprafs24.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +34,13 @@ public class LobbyController {
 
     @Autowired
     UserService userService;
+
+
+    private final Logger log = LoggerFactory.getLogger(LobbyController.class);
+
+    public LobbyController(LobbyService lobbyService) {
+        this.lobbyService = lobbyService;
+    }
 
     /**
      * Endpoint solely for testing purposes
@@ -83,39 +92,9 @@ public class LobbyController {
 
     @GetMapping(value = "/{gamePin}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGet> getLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
-        System.out.println("user with token " + token + " requested information of lobby with pin "+ gamePin);
-
-        //TODO real Get Logic with lobbyService:
-
-        LobbyGet lobbyGet = new LobbyGet();
-        lobbyGet.setGamePin(1234L);
-
-        GameDetails gameDetails = new GameDetails();
-        gameDetails.setGameOver(false);
-        gameDetails.setChallenge("Who or what is flibbertigibbet ?");
-        gameDetails.setGameState("LOBBY");
-        gameDetails.setSolution("A chattering person");
-
-        Player player1 = new Player();
-        player1.setName("Harris");
-        player1.setDefinition("To Help someone");
-        player1.setToken(UUID.randomUUID().toString());
-        player1.setScore(12);
-        player1.setVotedFor(1);
-        Player player2 = new Player();
-        player2.setName("Markus");
-        player2.setDefinition("a rare bird");
-        player2.setToken(UUID.randomUUID().toString());
-        player2.setScore(35);
-        player2.setVotedFor(3);
-        ArrayList<Player> player = new ArrayList<>();
-        player.add(player1);
-        player.add(player2);
-
-        gameDetails.setPlayers(player);
-        lobbyGet.setGameDetails(gameDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(lobbyGet);
-
+        log.warn("user with token " + token + " requested information of lobby with pin "+ gamePin);
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        return ResponseEntity.status(HttpStatus.OK).body(lobbyService.fetchLobbyInfo(gamePin));
     }
 
     @PutMapping(value = "/users/definitions",  consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -47,10 +47,12 @@
 -   Cleaned up the template:
     - Adjusted service, controller and tests ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
     - Introduced contributions.md file ([#145](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/145))
--   Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} : 
-    -  [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/45)
-    -  [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/44)
--   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Harris:  
+-   Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} :
+    - [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/45)
+    - [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/44)
+-   Provide Information over GET /lobbies for rendering names of player in joining lobby :
+    - [#172](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/172)
+-   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Harris:
     - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
 
 # 11.04 - 18.04
@@ -63,3 +65,7 @@
 ## Markus Senn
 ## Cédric Styner
 ## Samuel Frank
+
+
+
+
