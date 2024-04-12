@@ -10,6 +10,8 @@ import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +38,11 @@ public class LobbyService {
     UserService userService;
     @Autowired
     private SocketHandler socketHandler;
-
+    ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public void addPlayerToLobby(Long userId, Long lobbyId) {
@@ -51,18 +54,6 @@ public class LobbyService {
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
-    public LobbyGet fetchLobbyInfo(Long gamePin) {
-        Lobby lobbyInternal = getLobbyAndExistenceCheck(gamePin);
-        LobbyGet infoLobbyJson = new LobbyGet();
-        infoLobbyJson.setGamePin(gamePin);
-        //Set the GameDetails field of LobbyGet class ...
-        setGameState(lobbyInternal, infoLobbyJson);
-        setGameOver(lobbyInternal, infoLobbyJson);
-        setChallengeAndSolution(lobbyInternal, infoLobbyJson);
-        setPlayer(lobbyInternal, infoLobbyJson);
-        // ... Set the GameDetails field of LobbyGet class
-        return infoLobbyJson;
-    }
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
@@ -143,18 +134,6 @@ public class LobbyService {
         return lobbyToReturn;
     }
 
-    private void checkWhetherPlayerInLobby(Long userId) {
-        List<Lobby> allLobbies = lobbyRepository.findAll();
-
-        for (Lobby lobby : allLobbies) {
-            Set<User> players = lobby.getPlayers();
-            if (players.stream().anyMatch(user -> user.getId().equals(userId))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
-            }
-        }
-    }
-
-
     public void startGame(Long userId) {
 
         User user = userService.getUserById(userId);
@@ -175,42 +154,46 @@ public class LobbyService {
         socketHandler.sendMessageToLobby(lobbyId, "game_start");
     }
 
-    private void setGameState(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
-        //TODO REAL LOGIC OF current game state probably with new entity GameRound
+    public LobbyGet fetchLobbyInfo(Long gamePin) {
+        Lobby lobbyInternal = getLobbyAndExistenceCheck(gamePin);
+        LobbyGet infoLobbyJson = mapLobbyToLobbyGet(lobbyInternal);
+        infoLobbyJson.setGamePin(gamePin);
+
+        return infoLobbyJson;
+    }
+    private LobbyGet mapLobbyToLobbyGet(Lobby lobby) {
+        LobbyGet lobbyGet = objectMapper.convertValue(lobby, LobbyGet.class);
+
+
         GameDetails gameDetails = new GameDetails();
-        gameDetails.setGameState(LobbyState.WAITING.toString());
-        infoLobbyJson.setGameDetails(gameDetails);
-    }
+        gameDetails.setGameState(lobby.getState().toString());
+        gameDetails.setGameOver(lobby.isGameOver());
+        gameDetails.setChallenge(lobby.getChallenge());
+        gameDetails.setSolution("Mapped Solution Here");
 
-    private void setGameOver(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
-        //TODO set real game over logic
-        infoLobbyJson.getGameDetails().setGameOver(false);
-    }
-    private void setChallengeAndSolution(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
-        //TODO real set challenge probably with new entity GameRound with a UUID as a field in Lobby entity
-        //containing all information about the round which can be accessed here to
-        //provide the gamelogic info in GetLobby object
-        //Dummyvalues :
-        GameDetails gameDetails = infoLobbyJson.getGameDetails();
-        gameDetails.setGameOver(false);
-        gameDetails.setChallenge("Who or what is flibbertigibbet ?");
-        gameDetails.setGameState("LOBBY");
-        gameDetails.setSolution("A chattering person");
-        infoLobbyJson.setGameDetails(gameDetails);
 
-    }
-    private void setPlayer(Lobby lobbyInternal, LobbyGet infoLobbyJson) {
-        GameDetails gameDetails = infoLobbyJson.getGameDetails();
         List<Player> players = new ArrayList<>();
-        Set<User> users = lobbyInternal.getPlayers();
-        for (User user : users) {
-            Player player = new Player();
-            player.setName(user.getUsername());
-            player.setToken(user.getToken());
+        for (User user : lobby.getPlayers()) {
+            Player player = objectMapper.convertValue(user, Player.class);
             players.add(player);
         }
         gameDetails.setPlayers(players);
+
+        lobbyGet.setGameDetails(gameDetails);
+        return lobbyGet;
     }
+
+    private void checkWhetherPlayerInLobby(Long userId) {
+        List<Lobby> allLobbies = lobbyRepository.findAll();
+
+        for (Lobby lobby : allLobbies) {
+            Set<User> players = lobby.getPlayers();
+            if (players.stream().anyMatch(user -> user.getId().equals(userId))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+            }
+        }
+    }
+
 
 
 }
