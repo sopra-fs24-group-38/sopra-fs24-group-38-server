@@ -11,4 +11,4 @@ runtime_config:
 automatic_scaling:
   max_num_instances: 1
 env_variables:
-  TOKEN_API: 'superSecretToken'
+  TOKEN_API: ${TOKEN_API}
