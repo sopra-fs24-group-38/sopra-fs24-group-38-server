@@ -57,8 +57,7 @@ public class SocketHandler extends TextWebSocketHandler {
                 try {
                     session.sendMessage(new TextMessage(message));
                 } catch (Exception e) {
-                    // Handle exceptions, like logging errors or closing the session if needed
-                    log.warn("Failed to send message to user " + user.getId() + ": " + e.getMessage());
+                    System.err.println("Failed to send message to user " + user.getId() + ": " + e.getMessage());
                 }
             }
         }
