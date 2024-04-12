@@ -45,13 +45,20 @@ public class SocketHandler extends TextWebSocketHandler {
 
         Set<User> players = lobbyService.getPlayerSet(lobbyId);
         for (User user: players) {
-            WebSocketSession session = webSocketSessionManager.getSession(user.getSessionId());
+            WebSocketSession session = null;
+            try {
+                session = webSocketSessionManager.getSession(user.getSessionId());
+            } catch(Exception e){
+                String sessionInfo = "Couldn't fetch session (sessionID: " + user.getSessionId() + ")";
+                String userInfo = "For user with userID: " + user.getId() + " and username: "  + user.getUsername();
+                log.warn(sessionInfo + userInfo);
+            }
             if (session != null && session.isOpen()) {
                 try {
                     session.sendMessage(new TextMessage(message));
                 } catch (Exception e) {
                     // Handle exceptions, like logging errors or closing the session if needed
-                    System.err.println("Failed to send message to user " + user.getId() + ": " + e.getMessage());
+                    log.warn("Failed to send message to user " + user.getId() + ": " + e.getMessage());
                 }
             }
         }
