@@ -48,7 +48,7 @@ public class SocketHandler extends TextWebSocketHandler {
             WebSocketSession session = null;
             try {
                 session = webSocketSessionManager.getSession(user.getSessionId());
-            } catch(Exception e){
+            } catch(NullPointerException e){
                 String sessionInfo = "Couldn't fetch session (sessionID: " + user.getSessionId() + ")";
                 String userInfo = "For user with userID: " + user.getId() + " and username: "  + user.getUsername();
                 log.warn(sessionInfo + userInfo);
