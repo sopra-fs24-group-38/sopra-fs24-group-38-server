@@ -11,9 +11,6 @@ import java.util.Set;
 @Service
 public class ApiService {
 
-    @Value("${TOKEN_API}")
-    private String token;
-
     String secret = System.getenv("TOKEN_API");
 
     public Set<Challenge> generateChallenges(Set<LobbyModes> lobbyModes, int numberRounds) {
