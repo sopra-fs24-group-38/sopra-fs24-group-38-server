@@ -51,4 +51,4 @@ jobs:
       - name: Test
         run: curl "${{ steps.deploy.outputs.url }}"
         env:
-          TOKEN_API: ${{ secrets.TOKEN_API }}
+          OPENAITOKENMAINYAML: ${{ secrets.TOKEN_API }}

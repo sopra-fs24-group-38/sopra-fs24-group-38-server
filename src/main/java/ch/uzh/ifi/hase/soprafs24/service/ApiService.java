@@ -11,7 +11,7 @@ import java.util.Set;
 @Service
 public class ApiService {
 
-    @Value("${token.api}")
+    @Value("${OPENAITOKENMAINYAML}")
     private String token;
 
     public Set<Challenge> generateChallenges(Set<LobbyModes> lobbyModes, int numberRounds) {
