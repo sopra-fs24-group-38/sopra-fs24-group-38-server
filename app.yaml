@@ -10,5 +10,3 @@ runtime_config:
   runtime_version: "17"
 automatic_scaling:
   max_num_instances: 1
-env_variables:
-  TOKEN_API: ${{ secrets.TOKEN_API }}

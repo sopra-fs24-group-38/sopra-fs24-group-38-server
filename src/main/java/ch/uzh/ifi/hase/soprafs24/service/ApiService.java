@@ -14,9 +14,11 @@ public class ApiService {
     @Value("${TOKEN_API}")
     private String token;
 
+    String secret = System.getenv("TOKEN_API");
+
     public Set<Challenge> generateChallenges(Set<LobbyModes> lobbyModes, int numberRounds) {
         Set<Challenge> challenges = new HashSet<>();
-        challenges.add(new Challenge("testchallenge", token));
+        challenges.add(new Challenge("testchallenge", secret));
         return challenges;
     }
 }
