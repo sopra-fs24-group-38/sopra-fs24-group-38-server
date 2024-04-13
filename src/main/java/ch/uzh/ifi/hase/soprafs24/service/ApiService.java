@@ -11,11 +11,12 @@ import java.util.Set;
 @Service
 public class ApiService {
 
-    String secret = System.getenv("TOKEN_API");
+    @Value("${env_variables.TOKEN_API}")
+    private String token;
 
     public Set<Challenge> generateChallenges(Set<LobbyModes> lobbyModes, int numberRounds) {
         Set<Challenge> challenges = new HashSet<>();
-        challenges.add(new Challenge("testchallenge", secret));
+        challenges.add(new Challenge("testchallenge", token));
         return challenges;
     }
 }
