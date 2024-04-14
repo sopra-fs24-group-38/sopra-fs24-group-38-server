@@ -25,19 +25,13 @@ public class UserControllerTest {
     private TestRestTemplate restTemplate;
 
 
-    @DisplayName("UserController Test: Issue #38 Bad credentials")
-    @Test
-    public void badCredentialsRaisesError() {
-        // Register ...
-        createUser("dummyUserName", "password");
-        //Login with bad credential and expect error
-        assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
-    }
-
-
     @DisplayName("UserController Test: Issue #31 Token Generation")
     @Test
     public void generatesToken() {
+        /**
+         * The backend generates a token to enable authenatication and re-login.
+         * #31
+         */
         String response = createUser("username", "password");
         assertTrue(response.contains("\"token\""));
         String token = extractTokenFromResponse(response);
@@ -47,6 +41,10 @@ public class UserControllerTest {
     @DisplayName("UserController Test: Issue #28 Create User and backend receives credentials")
     @Test
     public void backendReceivesCredentials() {
+        /**
+         * The backend is able to receive credentials and create a user entity accordingly
+         * #28
+         */
         //createUser Method already performs an assert for created response status
         String responseRegister = createUser("User1", "password1");
 
@@ -59,7 +57,27 @@ public class UserControllerTest {
         String tokenFromLogin = extractTokenFromResponse(responseLogin);
         assertEquals(tokenFromRegister, tokenFromLogin);
     }
+    @DisplayName("UserController Test: Issue #37 token return")
+    @Test
+    public void issue38() {
+        /**
+         * The backend is able to check the user's credentials and return a token upon success
+         * #37
+         **/
 
+    }
+
+    @DisplayName("UserController Test: Issue #38 Bad credentials")
+    @Test
+    public void badCredentialsRaisesError() {
+        /**
+         * The backend returns a http error if the credentials do not match #38
+         */
+        // Register ...
+        createUser("dummyUserName", "password");
+        //Login with bad credential and expect error
+        assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
+    }
     private String createUser(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
         Map<String, Object> requestBody = new HashMap<>();
