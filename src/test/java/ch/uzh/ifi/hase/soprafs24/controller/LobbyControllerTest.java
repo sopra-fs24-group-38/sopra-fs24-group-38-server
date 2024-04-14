@@ -95,7 +95,7 @@ public class LobbyControllerTest {
         //Add player to lobby :
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user5", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
-        ResponseEntity<String> responsePlayerJoin = joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+        ResponseEntity<String> responsePlayerJoin = joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
         //and expect 200:
         assertEquals(HttpStatus.OK, responsePlayerJoin.getStatusCode());
@@ -133,7 +133,7 @@ public class LobbyControllerTest {
 
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user8", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
-        joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user7", "user8");
     }
@@ -153,9 +153,44 @@ public class LobbyControllerTest {
 
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user10", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
-        joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user9", "user10");
+    }
+
+    @DisplayName("LobbyControllerTest: Issue #53")
+    @Test
+    public void issue53() {
+        /**
+         The backend blocks the user from joining a lobby if he is in a lobby already
+         #53
+         */
+
+        //Create two lobbies
+        ResponseEntity<String> responseGM1 = createUserWithSuccessAssertion("user10", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(responseGM1.getBody());
+
+        ResponseEntity<String> responseGM2 = createUserWithSuccessAssertion("user11", "password");
+        String tokenGameMaster2 = extractTokenFromResponse(responseGM2.getBody());
+
+
+        ResponseEntity<String> responseLobbyCreation1 = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId1 = extractLobbyId(responseLobbyCreation1.getBody());
+
+        ResponseEntity<String> responseLobbyCreation2 = createLobbyWithSuccessCheck(tokenGameMaster2);
+        Long lobbyId2 = extractLobbyId(responseLobbyCreation2.getBody());
+
+        //Join Player in lobby1
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user12", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId1);
+
+        //Join same Player in lobby2 and expect error
+        ResponseEntity<String> responseSecondJoin = joinPlayerToLobby(tokenJoinPlayer, lobbyId2);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseSecondJoin.getStatusCode());
+
     }
 
     private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1, String username1, String username2) {
@@ -179,13 +214,22 @@ public class LobbyControllerTest {
         return headers;
     }
 
-    private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
+    private ResponseEntity<String> joinPlayerToLobbyAndSuccessCheck(String tokenJoinPlayer, Long lobbyId) {
         String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
         HttpHeaders headers = prepareHeader(tokenJoinPlayer);
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response;
+    }
+
+    private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
+        HttpHeaders headers = prepareHeader(tokenJoinPlayer);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
         return response;
     }
 
