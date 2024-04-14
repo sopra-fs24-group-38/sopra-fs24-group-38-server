@@ -223,11 +223,21 @@ public class LobbyService {
                 return;
             }
         }
-        evaluateVotes(lobbyId);
-        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+        evaluateVotes(lobby);
     }
 
-    private void evaluateVotes(Long lobbyId) {
-
+    private void evaluateVotes(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            for(User userz : users) {
+                if(!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())){
+                    user.setScore(user.getScore() + 2L);
+                }
+            }
+            if(user.getVotedForUserId().equals(0L)){
+                user.setScore(user.getScore() + 1L);
+            }
+        }
+        socketHandler.sendMessageToLobby(lobby.getId(), "votes_finished");
     }
 }

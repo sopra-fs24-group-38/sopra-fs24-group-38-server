@@ -40,6 +40,16 @@ public class User implements Serializable {
     @Column
     private Long votedForUserId = null;
 
+    @Column
+    private Long score;
+
+    public Long getScore() {
+        return score;
+    }
+
+    public void setScore(Long score) {
+        this.score = score;
+    }
 
     public Long getId() {
         return id;
