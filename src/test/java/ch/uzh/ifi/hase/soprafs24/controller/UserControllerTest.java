@@ -82,7 +82,8 @@ public class UserControllerTest {
         // Register ...
         createUser("dummyUserName", "password");
         //Login with bad credential and expect error
-        assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
+        ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
 
@@ -103,7 +104,7 @@ public class UserControllerTest {
         return response.getBody();
     }
 
-    private String login(String username, String password){
+    private ResponseEntity<String> login(String username, String password){
         String uri = "http://localhost:" + port + "/users/login";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("username", username);
@@ -113,7 +114,7 @@ public class UserControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-        return response.getBody();
+        return response;
     }
 
     private String loginWithSuccessAssertion(String username, String password){
