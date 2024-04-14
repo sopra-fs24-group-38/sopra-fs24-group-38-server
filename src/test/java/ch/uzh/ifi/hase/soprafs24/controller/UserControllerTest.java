@@ -27,44 +27,20 @@ public class UserControllerTest {
 
     @DisplayName("UserController Test: Issue #38 Bad credentials")
     @Test
-    public void badCredentialsRaises401() {
+    public void badCredentialsRaisesError() {
         // Register ...
         createUser("User1", "password");
-
-        // Try Login with bad credentials (pwd) ...
-        String uri = "http://localhost:" + port + "/users/login";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("username", "User1");
-        requestBody.put("password", "passwordFalse");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class));
+        //Login with bad credential and expect error
+        assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
     }
 
 
     @DisplayName("UserController Test: Issue #31 Token Generation")
     @Test
     public void generatesToken() {
-        String uri = "http://localhost:" + port + "/users";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("username", "testUsername");
-        requestBody.put("password", "testPassword");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-
-        assertEquals(201, response.getStatusCodeValue());
-
-        String responseBody = response.getBody();
-        assertNotNull(responseBody);
-        assertTrue(responseBody.contains("\"token\""));
-        String token = extractTokenFromResponse(responseBody);
+        String response = createUser("username", "password");
+        assertTrue(response.contains("\"token\""));
+        String token = extractTokenFromResponse(response);
         assertNotNull(token);
         assertValidUUID(token);
     }
@@ -72,22 +48,19 @@ public class UserControllerTest {
     @Test
     public void backendReceivesCredentials() {
         //createUser Method already performs an assert for created response status
-        createUser("User1", "password1");
+        String responseRegister = createUser("User1", "password1");
 
         // Try Login with good credentials (pwd) to check that credentials are being persisted
-        String uri = "http://localhost:" + port + "/users/login";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("username", "User1");
-        requestBody.put("password", "password1");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-        assertTrue(response.getStatusCode().is2xxSuccessful());
+        String responseLogin = login("User1", "password1");
+
+        // and tokens match
+        String tokenFromRegister = extractTokenFromResponse(responseRegister);
+        String tokenFromLogin = extractTokenFromResponse(responseLogin);
+        assertEquals(tokenFromRegister, tokenFromLogin);
     }
 
-    private void createUser(String username, String password) {
+    private String createUser(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("username", username);
@@ -100,6 +73,20 @@ public class UserControllerTest {
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        return response.getBody();
+    }
+
+    private String login(String username, String password){
+        String uri = "http://localhost:" + port + "/users/login";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", username);
+        requestBody.put("password", password);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        return response.getBody();
     }
 
     private String extractTokenFromResponse(String jsonResponse) {
