@@ -69,7 +69,7 @@ public class LobbyService {
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
-    public Set<User> getPlayerSet(Long lobbyId) {
+    public List<User> getUsers(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
         return lobby.getUsers();
     }
@@ -158,6 +158,8 @@ public class LobbyService {
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_start");
     }
 
+
+
     public LobbyGet getLobbyInfo(Long gamePin) {
         Lobby lobby = getLobbyAndExistenceCheck(gamePin);
 
@@ -188,10 +190,22 @@ public class LobbyService {
         List<Lobby> allLobbies = lobbyRepository.findAll();
 
         for (Lobby lobby : allLobbies) {
-            Set<User> players = lobby.getUsers();
-            if (players.stream().anyMatch(user -> user.getId().equals(userId))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+            List<User> users = lobby.getUsers();
+            for(User user : users) {
+                if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
             }
         }
+    }
+
+    public void checkIfAllDefinitionsReceived(Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            if(user.getIsConnected() && user.getDefinition() == null) {
+                log.warn("not all users in the lobby have submitted their definition");
+                return;
+            }
+        }
+        socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
     }
 }

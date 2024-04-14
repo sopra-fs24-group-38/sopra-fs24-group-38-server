@@ -30,6 +30,12 @@ public class User implements Serializable {
     private String sessionId;
 
     @Column
+    private Boolean isConnected = false;
+
+    @Column
+    private String definition;
+
+    @Column
     private Long avatarId;
 
     public Long getId() {
@@ -72,6 +78,22 @@ public class User implements Serializable {
 
     public void setLobbyId(Long gamePin) {
         this.lobbyId = gamePin;
+    }
+
+    public void setIsConnected (Boolean isConnected) {
+        this.isConnected = isConnected;
+    }
+
+    public Boolean getIsConnected () {
+        return this.isConnected;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public Long getAvatarId() {

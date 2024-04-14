@@ -32,7 +32,7 @@ public class Lobby {
 
     //FIXME map properly to the lobby? set a lobby in the user db model?
     @OneToMany
-    private Set<User> users = new HashSet<>();
+    private List<User> users = new ArrayList<>();
 
     @Column
     private Long gameMaster;
@@ -62,8 +62,8 @@ public class Lobby {
         this.lobbyModes = lobbyModes;
     }
 
-    public void setUsers(Set<User> players) {
-        this.users = players;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     public int getNumberRounds() {return numberRounds;}
@@ -88,7 +88,7 @@ public class Lobby {
         users.add(player);
     }
 
-    public Set<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
 

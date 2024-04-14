@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
+import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -15,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -23,6 +27,8 @@ import java.util.UUID;
 @Transactional
 public class UserService {
 
+    @Autowired
+    LobbyService lobbyService;
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -79,6 +85,14 @@ public class UserService {
 
     }
 
+    public void registerDefinitions(DefinitionPost definitionPost, Long userId) {
+        User user = getUserById(userId);
+        user.setDefinition(definitionPost.getDefinition());
+        userRepository.save(user);
+        userRepository.flush();
+        lobbyService.checkIfAllDefinitionsReceived(user.getLobbyId());
+    }
+
     public Long getUserIdByTokenAndAuthenticate(String token) {
         User user = userRepository.findByToken(token);
         if (user == null) {
@@ -94,6 +108,25 @@ public class UserService {
         userToBeMappedToLobby.setLobbyId(gamePin);
         userRepository.save(userToBeMappedToLobby);
         userRepository.flush();
+    }
+
+    public Long getUserIdBySessionId(String id) {
+        List<User> allUsers = userRepository.findAll();
+
+        for (User user : allUsers) {
+            if(Objects.equals(user.getSessionId(), id)) {
+                return user.getId();
+            }
+        }
+        return null;
+    }
+
+    public void setIsConnected(Long userId, Boolean connected) {
+        User user = getUserById(userId);
+        user.setIsConnected(connected);
+        userRepository.save(user);
+        userRepository.flush();
+
     }
 
     public void setAvatarPin(Long userId, Long avatarId) {
