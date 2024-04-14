@@ -148,14 +148,14 @@ public class Lobby {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
             return challenges.get((roundNumber.intValue())).getChallenge();
         }
-        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RoundNumber out of bounds");
+        else return null;
     }
 
     public String getCurrentSolution() {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
             return challenges.get((roundNumber.intValue())).getSolution();
         }
-        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RoundNumber out of bounds");
+        else return null;
     }
 
 }
