@@ -16,6 +16,9 @@ public class GameDetails {
     @JsonProperty
     private String solution;
 
+    @JsonProperty
+    private Long gameMaster;
+
     private List<Player> players;
 
 
@@ -57,5 +60,13 @@ public class GameDetails {
 
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public Long getGameMaster() {
+        return gameMaster;
+    }
+
+    public void setGameMaster(Long gameMaster) {
+        this.gameMaster = gameMaster;
     }
 }
