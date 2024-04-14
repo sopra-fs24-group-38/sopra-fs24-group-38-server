@@ -25,9 +25,9 @@ public class UserControllerTest {
     private TestRestTemplate restTemplate;
 
 
-    @DisplayName("UserController Test: Issue #31 Token Generation")
+    @DisplayName("UserController Test: Issue #31")
     @Test
-    public void generatesToken() {
+    public void issue31() {
         /**
          * The backend generates a token to enable authenatication and re-login.
          * #31
@@ -38,9 +38,9 @@ public class UserControllerTest {
         assertNotNull(token);
         assertValidUUID(token);
     }
-    @DisplayName("UserController Test: Issue #28 Create User and backend receives credentials")
+    @DisplayName("UserController Test: Issue #28")
     @Test
-    public void backendReceivesCredentials() {
+    public void issue28() {
         /**
          * The backend is able to receive credentials and create a user entity accordingly
          * #28
@@ -50,26 +50,32 @@ public class UserControllerTest {
 
         // Try Login with good credentials (pwd) to check that credentials are being persisted
 
-        String responseLogin = login("User1", "password1");
+        String responseLogin = loginWithSuccessAssertion("User1", "password1");
 
         // and tokens match
         String tokenFromRegister = extractTokenFromResponse(responseRegister);
         String tokenFromLogin = extractTokenFromResponse(responseLogin);
         assertEquals(tokenFromRegister, tokenFromLogin);
     }
-    @DisplayName("UserController Test: Issue #37 token return")
+    @DisplayName("UserController Test: Issue #37")
     @Test
-    public void issue38() {
+    public void issue37() {
         /**
          * The backend is able to check the user's credentials and return a token upon success
          * #37
          **/
+        createUser("testUser22", "pw22");
+        //login :
+        String responseLogin = loginWithSuccessAssertion("testUser22", "pw22");
+
+        String token = extractTokenFromResponse(responseLogin);
+        assertValidUUID(token);
 
     }
 
-    @DisplayName("UserController Test: Issue #38 Bad credentials")
+    @DisplayName("UserController Test: Issue #38")
     @Test
-    public void badCredentialsRaisesError() {
+    public void issue38() {
         /**
          * The backend returns a http error if the credentials do not match #38
          */
@@ -78,6 +84,9 @@ public class UserControllerTest {
         //Login with bad credential and expect error
         assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
     }
+
+
+    //UTILITY METHODS :
     private String createUser(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
         Map<String, Object> requestBody = new HashMap<>();
@@ -104,6 +113,21 @@ public class UserControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        return response.getBody();
+    }
+
+    private String loginWithSuccessAssertion(String username, String password){
+        String uri = "http://localhost:" + port + "/users/login";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", username);
+        requestBody.put("password", password);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+
+        assertEquals(HttpStatus.OK,response.getStatusCode());
         return response.getBody();
     }
 
