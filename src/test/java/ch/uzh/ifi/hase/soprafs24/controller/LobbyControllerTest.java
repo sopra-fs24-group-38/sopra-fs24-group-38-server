@@ -167,10 +167,10 @@ public class LobbyControllerTest {
          */
 
         //Create two lobbies
-        ResponseEntity<String> responseGM1 = createUserWithSuccessAssertion("user10", "password");
+        ResponseEntity<String> responseGM1 = createUserWithSuccessAssertion("user11", "password");
         String tokenGameMaster1 = extractTokenFromResponse(responseGM1.getBody());
 
-        ResponseEntity<String> responseGM2 = createUserWithSuccessAssertion("user11", "password");
+        ResponseEntity<String> responseGM2 = createUserWithSuccessAssertion("user12", "password");
         String tokenGameMaster2 = extractTokenFromResponse(responseGM2.getBody());
 
 
@@ -182,7 +182,7 @@ public class LobbyControllerTest {
 
         //Join Player in lobby1
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user12", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user13", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId1);
 
