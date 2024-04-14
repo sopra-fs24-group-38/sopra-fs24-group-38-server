@@ -8,7 +8,6 @@ import java.io.Serializable;
 @Table(name = "USER")
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
@@ -39,7 +38,7 @@ public class User implements Serializable {
     private Long avatarId;
 
     @Column
-    private Long votedForUserId;
+    private Long votedForUserId = null;
 
 
     public Long getId() {

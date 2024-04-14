@@ -213,4 +213,21 @@ public class LobbyService {
         }
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
     }
+
+    public void checkIfAllVotesReceived(Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            if (user.getIsConnected() && user.getVotedForUserId() == null) {
+                log.warn("not all users in the lobby have submitted their votes");
+                return;
+            }
+        }
+        evaluateVotes(lobbyId);
+        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+    }
+
+    private void evaluateVotes(Long lobbyId) {
+
+    }
 }

@@ -142,4 +142,12 @@ public class UserService {
         userRepository.save(user);
         userRepository.flush();
     }
+
+    public void registerVote(Long userId, Long vote) {
+        User user = getUserById(userId);
+        user.setVotedForUserId(vote);
+        userRepository.save(user);
+        userRepository.flush();
+        lobbyService.checkIfAllVotesReceived(user.getLobbyId());
+    }
 }

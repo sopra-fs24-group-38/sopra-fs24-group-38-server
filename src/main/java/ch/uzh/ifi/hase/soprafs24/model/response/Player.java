@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs24.model.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Player {
     private String username;
 
@@ -9,14 +7,23 @@ public class Player {
 
     private String definition;
 
-    @JsonProperty("voted_for")
-    private int votedFor = -1;
+    private Long votedForUserId;
 
     private Long avatarId;
+
+    private Long id;
 
     // Getters and setters
     public String getUsername() {
         return username;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setUsername(String username) {
@@ -39,12 +46,12 @@ public class Player {
         this.definition = definition;
     }
 
-    public int getVotedFor() {
-        return votedFor;
+    public Long getVotedForUserId() {
+        return votedForUserId;
     }
 
-    public void setVotedFor(int votedFor) {
-        this.votedFor = votedFor;
+    public void setVotedForUserId(Long votedForUserId) {
+        this.votedForUserId = votedForUserId;
     }
 
     public Long getAvatarId() {
