@@ -60,6 +60,8 @@
 - started with startGame functionality:
     -  [#177](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/177)
     -  [#61](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/61)
+- pair-programming session regarding gameStart, definitions, api call
+    -  [#66](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/66)
 
 ## Elia Aeberhard
 ## Markus Senn

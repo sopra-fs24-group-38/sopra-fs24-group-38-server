@@ -66,7 +66,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
         user.setLobbyId(null);
-        if(Objects.equals(user.getId(), lobby.getGameMaster()) && lobby.getUsers().size() > 1) {
+        if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             lobby.setGameMaster(lobby.getUsers().get(0).getId());
             socketHandler.sendMessageToLobby(lobbyId, "new_gamehost");
         }
@@ -174,6 +174,7 @@ public class LobbyService {
         gameDetails.setSolution(lobby.getCurrentSolution());
         gameDetails.setGameState(lobby.getState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
+        gameDetails.setGameMaster(lobby.getGameMaster());
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {
