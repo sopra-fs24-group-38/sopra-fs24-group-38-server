@@ -70,6 +70,47 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, responseLobbyAdjustments.getStatusCode());
     }
 
+    @DisplayName("LobbyControllerTest: Issue #44")
+    @Test
+    public void issue44() {
+        /**
+         * The backend provides dedicated endpoints for creating and adjusting lobbies
+         * #44
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user4", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+
+        //Prepare Modes:
+        ArrayList<LobbyModes> modes = new ArrayList<>();
+        modes.add(LobbyModes.DUTCH);
+
+        //Perform adjustments modes / rounds
+        ResponseEntity<String> responseLobbyAdjustments = adjustRoundLengthAndModes(lobbyId, 5L, modes, tokenGameMaster1);
+        //and expect 200:
+        assertEquals(HttpStatus.OK, responseLobbyAdjustments.getStatusCode());
+
+        //Add player to lobby :
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user5", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        ResponseEntity<String> responsePlayerJoin = joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+
+        //and expect 200:
+        assertEquals(HttpStatus.OK, responsePlayerJoin.getStatusCode());
+    }
+
+    private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenJoinPlayer);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        return restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+    }
+
     private ResponseEntity<String> adjustRoundLengthAndModes(Long gamePin, Long length, ArrayList<LobbyModes> modes, String token) {
         String uri = "http://localhost:" + port + "/lobbies/" + gamePin.toString();
 
