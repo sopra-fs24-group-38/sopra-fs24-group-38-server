@@ -101,6 +101,8 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, responsePlayerJoin.getStatusCode());
     }
 
+
+
     @DisplayName("LobbyControllerTest: Issue #40")
     @Test
     public void issue40() {
@@ -116,14 +118,55 @@ public class LobbyControllerTest {
         assertNotNull(lobbyId);
     }
 
-    private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
-        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
+    @DisplayName("LobbyControllerTest: Issue #172")
+    @Test
+    public void issue172() {
+        /**
+         * The backend provides information about the player in the lobby in order to render their details in the lobby.
+         * #172
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user7", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user8", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+
+        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1);
+    }
+
+    private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1) {
+        String uri = "http://localhost:" + port + "/lobbies/" + lobbyId.toString();
+        HttpHeaders header = prepareHeader(tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(header);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        
+        System.out.println("**");
+        System.out.println(response);
+
+        assertTrue(response.getBody().contains("user7"));
+        assertTrue(response.getBody().contains("user8"));
+
+    }
+
+    private HttpHeaders prepareHeader(String tokenGameMaster1) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", tokenJoinPlayer);
+        headers.set("Authorization", tokenGameMaster1);
+        return headers;
+    }
+
+    private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
+        HttpHeaders headers = prepareHeader(tokenJoinPlayer);
+
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
-        return restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response;
     }
 
     private ResponseEntity<String> adjustRoundLengthAndModes(Long gamePin, Long length, ArrayList<LobbyModes> modes, String token) {
@@ -137,9 +180,7 @@ public class LobbyControllerTest {
         requestBody.put("game_modes", modeNames);
         requestBody.put("rounds", length.toString());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", token);
+        HttpHeaders headers = prepareHeader(token);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
         return restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
