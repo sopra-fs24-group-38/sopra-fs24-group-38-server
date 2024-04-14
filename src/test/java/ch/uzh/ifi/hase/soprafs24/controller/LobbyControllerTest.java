@@ -135,7 +135,7 @@ public class LobbyControllerTest {
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobby(tokenJoinPlayer, lobbyId);
 
-        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1);
+        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user7", "user8");
     }
 
     @DisplayName("LobbyControllerTest: Issue #54")
@@ -145,20 +145,20 @@ public class LobbyControllerTest {
          The backend adds the user to the lobby entity he wants to join
          #54
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user8", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user9", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user9", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user10", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobby(tokenJoinPlayer, lobbyId);
 
-        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1);
+        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user9", "user10");
     }
 
-    private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1) {
+    private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1, String username1, String username2) {
         String uri = "http://localhost:" + port + "/lobbies/" + lobbyId.toString();
         HttpHeaders header = prepareHeader(tokenGameMaster1);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(header);
@@ -167,8 +167,8 @@ public class LobbyControllerTest {
         System.out.println("**");
         System.out.println(response);
 
-        assertTrue(response.getBody().contains("user7"));
-        assertTrue(response.getBody().contains("user8"));
+        assertTrue(response.getBody().contains(username1));
+        assertTrue(response.getBody().contains(username2));
 
     }
 
