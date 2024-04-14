@@ -88,7 +88,7 @@ public class LobbyService {
         lobby.addPlayer(userService.getUserById(userId));
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
-
+        userService.setLobbyIdForGameMaster(userId, pin);
         log.warn("created lobby with pin " + pin);
 
         return pin;

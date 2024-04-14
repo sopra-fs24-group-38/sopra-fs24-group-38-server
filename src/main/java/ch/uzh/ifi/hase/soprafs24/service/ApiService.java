@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 @Service
 public class ApiService {
@@ -39,12 +41,23 @@ public class ApiService {
                 + "\"temperature\": 1"
                 + "}";
 
+
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        JSONObject jsonResponse = new JSONObject(response);
+        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 
-        System.out.println("Response: " + response.getBody());
+        System.out.println("Extracted Content: " + content);
 
+
+        JSONArray jsonArray = new JSONArray(content);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String value = jsonObject.getString("value");
+            String definition = jsonObject.getString("definition");
+            System.out.println("Word: " + value + ", Definition: " + definition);
+        }
 
         List<Challenge> challenges = new ArrayList<>();
         challenges.add(new Challenge("testchallenge", getSecret()));
