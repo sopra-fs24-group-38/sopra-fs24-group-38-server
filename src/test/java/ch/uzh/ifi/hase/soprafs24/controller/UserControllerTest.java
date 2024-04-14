@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 
 import java.util.*;
@@ -70,7 +68,24 @@ public class UserControllerTest {
         assertNotNull(token);
         assertValidUUID(token);
     }
+    @DisplayName("UserController Test: Issue #28 Create User and backend receives credentials")
+    @Test
+    public void backendReceivesCredentials() {
+        //createUser Method already performs an assert for created response status
+        createUser("User1", "password1");
 
+        // Try Login with good credentials (pwd) to check that credentials are being persisted
+        String uri = "http://localhost:" + port + "/users/login";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", "User1");
+        requestBody.put("password", "password1");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+    }
 
     private void createUser(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
