@@ -97,10 +97,8 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     public void registerDefinition(@RequestHeader(value = "Authorization") String token,
                                    @Valid @RequestBody() DefinitionPost definitionToBeRegistered){
-
-        //TODO real Definition registration Logic within lobbyService:
-        System.out.println("user with token "+ token + " registered definition: " + definitionToBeRegistered.getDefinition());
-
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        userService.registerDefinitions(definitionToBeRegistered, userId);
     }
 
     @PutMapping(value = "/users/votes", consumes = MediaType.APPLICATION_JSON_VALUE)
