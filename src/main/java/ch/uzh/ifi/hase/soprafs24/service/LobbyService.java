@@ -66,6 +66,10 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
         user.setLobbyId(null);
+        if(Objects.equals(user.getId(), lobby.getGameMaster()) && lobby.getUsers().size() > 1) {
+            lobby.setGameMaster(lobby.getUsers().get(0).getId());
+            socketHandler.sendMessageToLobby(lobbyId, "new_gamehost");
+        }
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 

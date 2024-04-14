@@ -138,7 +138,7 @@ public class UserService {
 
     public void setLobbyId(Long userId, Long lobbyId) {
         User user = userRepository.findUserById(userId);
-        user.setAvatarId(lobbyId);
+        user.setLobbyId(lobbyId);
         userRepository.save(user);
         userRepository.flush();
     }
