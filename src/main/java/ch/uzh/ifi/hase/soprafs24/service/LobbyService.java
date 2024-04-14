@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
-import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -53,12 +52,11 @@ public class LobbyService {
     public void addPlayerToLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
-        checkWhetherPlayerInLobby(userId);
+        checkIfPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
         user.setLobbyId(lobbyId);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
-
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
@@ -142,49 +140,33 @@ public class LobbyService {
     public void startGame(Long userId) {
 
         User user = userService.getUserById(userId);
-        Long lobbyId = user.getLobbyId();
-        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
 
         if (!Objects.equals(userId, lobby.getGameMaster())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
+        lobby.setChallenges(apiService.generateChallenges(lobby.getNumberRounds()));
+
         lobby.setState(LobbyState.DEFINITION);
         lobby.setGameOver(false);
-
-        lobby.setChallenges(apiService.generateChallenges(lobby.getLobbyModes(), lobby.getNumberRounds()));
-
         lobby.setRoundNumber(1L);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        socketHandler.sendMessageToLobby(lobbyId, "game_start");
+        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_start");
     }
 
-    public LobbyGet fetchLobbyInfo(Long gamePin) {
-        Lobby lobbyInternal = getLobbyAndExistenceCheck(gamePin);
-        LobbyGet infoLobbyJson = mapLobbyToLobbyGet(lobbyInternal);
-        infoLobbyJson.setGamePin(gamePin);
+    public LobbyGet getLobbyInfo(Long gamePin) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
 
-        return infoLobbyJson;
-    }
-    private LobbyGet mapLobbyToLobbyGet(Lobby lobby) {
-        LobbyGet lobbyGet = objectMapper.convertValue(lobby, LobbyGet.class);
-
-        Set<Challenge> challenges = lobby.getChallenges();
-        Iterator<Challenge> iterator = challenges.iterator();
+        // construct GameDetails object
         GameDetails gameDetails = new GameDetails();
-        while (iterator.hasNext()) {
-            Challenge challenge = iterator.next();
-            gameDetails.setChallenge(challenge.getChallenge());
-            gameDetails.setSolution(challenge.getSolution());
-        }
 
-
+        gameDetails.setChallenge(lobby.getCurrentChallenge());
+        gameDetails.setSolution(lobby.getCurrentSolution());
         gameDetails.setGameState(lobby.getState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
-
-
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getPlayers()) {
@@ -193,11 +175,15 @@ public class LobbyService {
         }
         gameDetails.setPlayers(players);
 
-        lobbyGet.setGameDetails(gameDetails);
-        return lobbyGet;
+        // construct LobbyGet object
+        LobbyGet infoLobbyJson = new LobbyGet();
+
+        infoLobbyJson.setGameDetails(gameDetails);
+        infoLobbyJson.setGamePin(gamePin);
+        return infoLobbyJson;
     }
 
-    private void checkWhetherPlayerInLobby(Long userId) {
+    private void checkIfPlayerInLobby(Long userId) {
         List<Lobby> allLobbies = lobbyRepository.findAll();
 
         for (Lobby lobby : allLobbies) {
@@ -207,7 +193,4 @@ public class LobbyService {
             }
         }
     }
-
-
-
 }

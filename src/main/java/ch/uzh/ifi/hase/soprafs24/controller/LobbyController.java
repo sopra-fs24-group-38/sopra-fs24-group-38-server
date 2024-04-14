@@ -3,10 +3,8 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
-import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGetId;
-import ch.uzh.ifi.hase.soprafs24.model.response.Player;
 import ch.uzh.ifi.hase.soprafs24.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
@@ -19,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.UUID;
 
 @RequestMapping("/lobbies")
 @RestController
@@ -94,7 +90,7 @@ public class LobbyController {
     public ResponseEntity<LobbyGet> getLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
         log.warn("user with token " + token + " requested information of lobby with pin "+ gamePin);
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-        return ResponseEntity.status(HttpStatus.OK).body(lobbyService.fetchLobbyInfo(gamePin));
+        return ResponseEntity.status(HttpStatus.OK).body(lobbyService.getLobbyInfo(gamePin));
     }
 
     @PutMapping(value = "/users/definitions",  consumes = MediaType.APPLICATION_JSON_VALUE)

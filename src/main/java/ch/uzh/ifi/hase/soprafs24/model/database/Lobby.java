@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs24.model.database;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -16,9 +18,6 @@ public class Lobby {
 
     @Column
     private Long lobbyPin;
-
-    @Column
-    private String challenge;
 
     @Column
     private LobbyState lobbyState;
@@ -47,12 +46,10 @@ public class Lobby {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Column
-    private Set<Challenge> challenges = new HashSet<>();
-
+    private List<Challenge> challenges = new ArrayList<>();
 
     @Column
     private Long roundNumber;
-
 
     public Set<LobbyModes> getLobbyModes() {
         return lobbyModes;
@@ -74,14 +71,6 @@ public class Lobby {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getChallenge() {
-        return challenge;
-    }
-
-    public void setChallenge(String challenge) {
-        this.challenge = challenge;
     }
 
     public LobbyState getLobbyState() {
@@ -144,11 +133,26 @@ public class Lobby {
         this.roundNumber = roundNumber;
     }
 
-    public Set<Challenge> getChallenges() {
+    public List<Challenge> getChallenges() {
         return challenges;
     }
 
-    public void setChallenges(Set<Challenge> challenges) {
+    public void setChallenges(List<Challenge> challenges) {
         this.challenges = challenges;
     }
+
+    public String getCurrentChallenge() {
+        if (roundNumber >= 0 && roundNumber < challenges.size()) {
+            return challenges.get((roundNumber.intValue())).getChallenge();
+        }
+        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RoundNumber out of bounds");
+    }
+
+    public String getCurrentSolution() {
+        if (roundNumber >= 0 && roundNumber < challenges.size()) {
+            return challenges.get((roundNumber.intValue())).getSolution();
+        }
+        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RoundNumber out of bounds");
+    }
+
 }
