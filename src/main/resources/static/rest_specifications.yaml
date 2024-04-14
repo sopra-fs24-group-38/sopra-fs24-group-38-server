@@ -379,10 +379,6 @@ components:
         name:
           type: string
           example: "Player_1"
-        token:
-          type: string
-          format: uuid
-          example: "123e4567-e89b-12d3-a456-426614174000"
         score:
           type: integer
           example: 10
