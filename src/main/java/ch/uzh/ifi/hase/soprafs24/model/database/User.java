@@ -38,6 +38,10 @@ public class User implements Serializable {
     @Column
     private Long avatarId;
 
+    @Column
+    private Long votedForUserId;
+
+
     public Long getId() {
         return id;
     }
@@ -102,5 +106,13 @@ public class User implements Serializable {
 
     public void setAvatarId(Long avatarId) {
         this.avatarId = avatarId;
+    }
+
+    public Long getVotedForUserId() {
+        return votedForUserId;
+    }
+
+    public void setVotedForUserId(Long votedForUserId) {
+        this.votedForUserId = votedForUserId;
     }
 }

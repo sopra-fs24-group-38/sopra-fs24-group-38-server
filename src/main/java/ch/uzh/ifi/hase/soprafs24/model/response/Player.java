@@ -10,7 +10,7 @@ public class Player {
     private String definition;
 
     @JsonProperty("voted_for")
-    private int votedFor;
+    private int votedFor = -1;
 
     private Long avatarId;
 
