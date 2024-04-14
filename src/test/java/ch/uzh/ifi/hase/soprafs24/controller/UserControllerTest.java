@@ -29,7 +29,7 @@ public class UserControllerTest {
     @Test
     public void badCredentialsRaisesError() {
         // Register ...
-        createUser("User1", "password");
+        createUser("dummyUserName", "password");
         //Login with bad credential and expect error
         assertThrows(ResourceAccessException.class, () -> login("User1", "passwordFalse"));
     }
