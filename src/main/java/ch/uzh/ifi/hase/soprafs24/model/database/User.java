@@ -29,6 +29,9 @@ public class User implements Serializable {
     @Column
     private String sessionId;
 
+    @Column
+    private Long avatarId;
+
     public Long getId() {
         return id;
     }
@@ -69,5 +72,13 @@ public class User implements Serializable {
 
     public void setLobbyId(Long gamePin) {
         this.lobbyId = gamePin;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
     }
 }

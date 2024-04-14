@@ -35,7 +35,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
         if ("init".equals(messageMap.get("action"))) {
             long userId = Long.parseLong((String) messageMap.get("userId"));
-            userService.addSessionToPlayer(session.getId(), userId);
+            userService.addSessionToUser(session.getId(), userId);
             log.warn("received initial ws message for userId" + userId);
         }
         // Handle other textmessages: add else {}
