@@ -138,12 +138,32 @@ public class LobbyControllerTest {
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1);
     }
 
+    @DisplayName("LobbyControllerTest: Issue #54")
+    @Test
+    public void issue54() {
+        /**
+         The backend adds the user to the lobby entity he wants to join
+         #54
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user8", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user9", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+
+        checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1);
+    }
+
     private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1) {
         String uri = "http://localhost:" + port + "/lobbies/" + lobbyId.toString();
         HttpHeaders header = prepareHeader(tokenGameMaster1);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(header);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
-        
+
         System.out.println("**");
         System.out.println(response);
 
