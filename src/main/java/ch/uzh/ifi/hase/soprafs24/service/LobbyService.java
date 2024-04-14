@@ -54,7 +54,8 @@ public class LobbyService {
         User user = userService.getUserById(userId);
         checkIfPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
-        user.setLobbyId(lobbyId);
+        userService.setLobbyId(userId, lobbyId);
+        userService.setAvatarPin(userId,lobby.getUsers().stream().count() + 1L);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
@@ -86,9 +87,14 @@ public class LobbyService {
         lobby.setLobbyPin(pin);
         lobby.setGameMaster(userId);
         lobby.addPlayer(userService.getUserById(userId));
+        lobby.setState(LobbyState.WAITING);
+        lobby.setGameOver(false);
+        lobby.setRoundNumber(1L);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
+
         userService.setLobbyIdForGameMaster(userId, pin);
+        userService.setAvatarPin(userId, 1L);
         log.warn("created lobby with pin " + pin);
 
         return pin;
@@ -138,19 +144,14 @@ public class LobbyService {
     }
 
     public void startGame(Long userId) {
-
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
-
         if (!Objects.equals(userId, lobby.getGameMaster())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
         lobby.setChallenges(apiService.generateChallenges(lobby.getNumberRounds()));
-
-        lobby.setState(LobbyState.DEFINITION);
-        lobby.setGameOver(false);
-        lobby.setRoundNumber(1L);
+        lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 

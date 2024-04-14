@@ -12,6 +12,8 @@ public class Player {
     @JsonProperty("voted_for")
     private int votedFor;
 
+    private Long avatarId;
+
     // Getters and setters
     public String getUsername() {
         return username;
@@ -43,5 +45,13 @@ public class Player {
 
     public void setVotedFor(int votedFor) {
         this.votedFor = votedFor;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
     }
 }

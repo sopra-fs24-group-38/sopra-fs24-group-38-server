@@ -43,13 +43,16 @@ public class Lobby {
     @Column
     private boolean gameOver;
 
-
     @ElementCollection(fetch = FetchType.LAZY)
     @Column
     private List<Challenge> challenges = new ArrayList<>();
 
     @Column
     private Long roundNumber;
+
+
+
+
 
     public Set<LobbyModes> getLobbyModes() {
         return lobbyModes;

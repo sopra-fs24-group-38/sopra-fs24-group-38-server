@@ -77,7 +77,7 @@ public class UserService {
         return objectMapper.convertValue(user, UserResponse.class);
     }
 
-    public void addSessionToPlayer(String sessionId, Long userId) {
+    public void addSessionToUser(String sessionId, Long userId) {
         User user = getUserById(userId);
         user.setSessionId(sessionId);
         userRepository.save(user);
@@ -127,5 +127,19 @@ public class UserService {
         userRepository.save(user);
         userRepository.flush();
 
+    }
+
+    public void setAvatarPin(Long userId, Long avatarId) {
+        User user = userRepository.findUserById(userId);
+        user.setAvatarId(avatarId);
+        userRepository.save(user);
+        userRepository.flush();
+    }
+
+    public void setLobbyId(Long userId, Long lobbyId) {
+        User user = userRepository.findUserById(userId);
+        user.setAvatarId(lobbyId);
+        userRepository.save(user);
+        userRepository.flush();
     }
 }

@@ -35,6 +35,9 @@ public class User implements Serializable {
     @Column
     private String definition;
 
+    @Column
+    private Long avatarId;
+
     public Long getId() {
         return id;
     }
@@ -91,5 +94,13 @@ public class User implements Serializable {
 
     public void setDefinition(String definition) {
         this.definition = definition;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
     }
 }

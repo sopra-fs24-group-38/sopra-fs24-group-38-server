@@ -15,7 +15,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class SocketHandler extends TextWebSocketHandler {
@@ -37,7 +36,7 @@ public class SocketHandler extends TextWebSocketHandler {
         long userId = Long.parseLong((String) messageMap.get("userId"));
         userService.setIsConnected(userId, true);
         if ("init".equals(messageMap.get("action"))) {
-            userService.addSessionToPlayer(session.getId(), userId);
+            userService.addSessionToUser(session.getId(), userId);
             log.warn("received initial ws message for userId" + userId);
         }
         // Handle other textmessages: add else {}
