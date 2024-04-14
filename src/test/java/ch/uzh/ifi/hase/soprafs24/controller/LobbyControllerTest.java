@@ -101,6 +101,21 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, responsePlayerJoin.getStatusCode());
     }
 
+    @DisplayName("LobbyControllerTest: Issue #40")
+    @Test
+    public void issue40() {
+        /**
+         * The backend generates a game pin when the user creates a lobby
+         * #40
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user6", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+    }
+
     private ResponseEntity<String> joinPlayerToLobby(String tokenJoinPlayer, Long lobbyId) {
         String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId.toString();
 
