@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 
 import java.util.*;
@@ -27,52 +25,70 @@ public class UserControllerTest {
     private TestRestTemplate restTemplate;
 
 
-    @DisplayName("UserController Test: Issue #38 Bad credentials")
+    @DisplayName("UserController Test: Issue #31")
     @Test
-    public void badCredentialsRaises401() {
-        // Register ...
-        createUser("User1", "password");
-
-        // Try Login with bad credentials (pwd) ...
-        String uri = "http://localhost:" + port + "/users/login";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("username", "User1");
-        requestBody.put("password", "passwordFalse");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        assertThrows(ResourceAccessException.class, () -> restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class));
-    }
-
-
-    @DisplayName("UserController Test: Issue #31 Token Generation")
-    @Test
-    public void generatesToken() {
-        String uri = "http://localhost:" + port + "/users";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("username", "testUsername");
-        requestBody.put("password", "testPassword");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-
-        assertEquals(201, response.getStatusCodeValue());
-
-        String responseBody = response.getBody();
-        assertNotNull(responseBody);
-        assertTrue(responseBody.contains("\"token\""));
-        String token = extractTokenFromResponse(responseBody);
+    public void issue31() {
+        /**
+         * The backend generates a token to enable authenatication and re-login.
+         * #31
+         */
+        String response = createUser("username", "password");
+        assertTrue(response.contains("\"token\""));
+        String token = extractTokenFromResponse(response);
         assertNotNull(token);
         assertValidUUID(token);
     }
+    @DisplayName("UserController Test: Issue #28")
+    @Test
+    public void issue28() {
+        /**
+         * The backend is able to receive credentials and create a user entity accordingly
+         * #28
+         */
+        //createUser Method already performs an assert for created response status
+        String responseRegister = createUser("User1", "password1");
+
+        // Try Login with good credentials (pwd) to check that credentials are being persisted
+
+        String responseLogin = loginWithSuccessAssertion("User1", "password1");
+
+        // and tokens match
+        String tokenFromRegister = extractTokenFromResponse(responseRegister);
+        String tokenFromLogin = extractTokenFromResponse(responseLogin);
+        assertEquals(tokenFromRegister, tokenFromLogin);
+    }
+    @DisplayName("UserController Test: Issue #37")
+    @Test
+    public void issue37() {
+        /**
+         * The backend is able to check the user's credentials and return a token upon success
+         * #37
+         **/
+        createUser("testUser22", "pw22");
+        //login :
+        String responseLogin = loginWithSuccessAssertion("testUser22", "pw22");
+
+        String token = extractTokenFromResponse(responseLogin);
+        assertValidUUID(token);
+
+    }
+
+    @DisplayName("UserController Test: Issue #38")
+    @Test
+    public void issue38() {
+        /**
+         * The backend returns a http error if the credentials do not match #38
+         */
+        // Register ...
+        createUser("dummyUserName", "password");
+        //Login with bad credential and expect error
+        ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
 
 
-    private void createUser(String username, String password) {
+    //UTILITY METHODS :
+    private String createUser(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("username", username);
@@ -85,6 +101,35 @@ public class UserControllerTest {
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        return response.getBody();
+    }
+
+    private ResponseEntity<String> login(String username, String password){
+        String uri = "http://localhost:" + port + "/users/login";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", username);
+        requestBody.put("password", password);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        return response;
+    }
+
+    private String loginWithSuccessAssertion(String username, String password){
+        String uri = "http://localhost:" + port + "/users/login";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", username);
+        requestBody.put("password", password);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+
+        assertEquals(HttpStatus.OK,response.getStatusCode());
+        return response.getBody();
     }
 
     private String extractTokenFromResponse(String jsonResponse) {

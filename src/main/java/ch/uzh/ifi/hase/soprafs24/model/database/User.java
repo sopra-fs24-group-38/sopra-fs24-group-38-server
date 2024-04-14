@@ -24,6 +24,9 @@ public class User implements Serializable {
     private String token;
 
     @Column
+    private Long lobbyId;
+
+    @Column
     private String sessionId;
 
     public Long getId() {
@@ -58,5 +61,13 @@ public class User implements Serializable {
     }
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Long getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(Long gamePin) {
+        this.lobbyId = gamePin;
     }
 }

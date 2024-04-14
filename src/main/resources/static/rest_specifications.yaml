@@ -274,6 +274,22 @@ paths:
         '400':
           description: Bad request
 
+  /lobbies/start:
+    post:
+      tags:
+        - lobby
+      summary: Start a game lobby
+      description: 'This endpoint starts a game if the token is from a GameHost user.'
+      operationId: startGame
+      responses:
+        '200':
+          description: OK - The game has been started successfully.
+        '401':
+          description: Unauthorized - The user is not authorized or not the gameMaster.
+        '404':
+          description: Not Found - The user does not exist.
+
+
   /lobbies/users/definitions :
     put:
       tags:
