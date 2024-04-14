@@ -54,14 +54,15 @@ public class LobbyService {
         User user = userService.getUserById(userId);
         checkIfPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
-        user.setLobbyId(lobbyId);
+        userService.setLobbyId(userId, lobbyId);
+        userService.setAvatarPin(userId,lobby.getUsers().stream().count() + 1L);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
-        if (!lobby.getPlayers().contains(user))
+        if (!lobby.getUsers().contains(user))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
         user.setLobbyId(null);
@@ -70,7 +71,7 @@ public class LobbyService {
 
     public Set<User> getPlayerSet(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
-        return lobby.getPlayers();
+        return lobby.getUsers();
     }
 
     public Long createLobby(Long userId) {
@@ -89,6 +90,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
         userService.setLobbyIdForGameMaster(userId, pin);
+        userService.setAvatarPin(userId, 1L);
         log.warn("created lobby with pin " + pin);
 
         return pin;
@@ -169,7 +171,7 @@ public class LobbyService {
         gameDetails.setGameOver(lobby.isGameOver());
 
         List<Player> players = new ArrayList<>();
-        for (User user : lobby.getPlayers()) {
+        for (User user : lobby.getUsers()) {
             Player player = objectMapper.convertValue(user, Player.class);
             players.add(player);
         }
@@ -187,7 +189,7 @@ public class LobbyService {
         List<Lobby> allLobbies = lobbyRepository.findAll();
 
         for (Lobby lobby : allLobbies) {
-            Set<User> players = lobby.getPlayers();
+            Set<User> players = lobby.getUsers();
             if (players.stream().anyMatch(user -> user.getId().equals(userId))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
             }
