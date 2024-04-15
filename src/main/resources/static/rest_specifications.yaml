@@ -358,7 +358,8 @@ components:
             - WAITING
             - ROUND
             - VOTE
-            - DEFINTION
+            - DEFINITION
+            - EVALUATION
             - GAMEOVER
           example: LOBBY
         game_over:

@@ -5,5 +5,6 @@ public enum LobbyState {
     ROUND,
     VOTE,
     DEFINITION,
-    GAMEOVER
+    GAMEOVER,
+    EVALUATION
 }
