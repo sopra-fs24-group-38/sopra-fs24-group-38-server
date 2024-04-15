@@ -11,13 +11,15 @@ public class GameDetails {
     @JsonProperty("game_over")
     private boolean gameOver;
 
-    @JsonProperty
     private String challenge;
-    @JsonProperty
+
     private String solution;
 
-    @JsonProperty
-    private Long gameMaster;
+    @JsonProperty("game_master_id")
+    private Long gameMasterId;
+
+    @JsonProperty("game_master_username")
+    private String gameMasterUsername;
 
     private List<Player> players;
 
@@ -62,11 +64,20 @@ public class GameDetails {
         this.players = players;
     }
 
-    public Long getGameMaster() {
-        return gameMaster;
+    public Long getGameMasterId() {
+        return gameMasterId;
     }
 
-    public void setGameMaster(Long gameMaster) {
-        this.gameMaster = gameMaster;
+    public void setGameMasterId(Long gameMasterId) {
+        this.gameMasterId = gameMasterId;
+    }
+
+
+    public String getGameMasterUsername() {
+        return gameMasterUsername;
+    }
+
+    public void setGameMasterUsername(String gameMasterUsername) {
+        this.gameMasterUsername = gameMasterUsername;
     }
 }
