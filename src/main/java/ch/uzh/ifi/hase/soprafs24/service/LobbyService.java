@@ -94,7 +94,7 @@ public class LobbyService {
         lobby.setLobbyPin(pin);
         lobby.setGameMaster(userId);
         lobby.addPlayer(userService.getUserById(userId));
-        lobby.setState(LobbyState.WAITING);
+        lobby.setLobbyState(LobbyState.WAITING);
         lobby.setGameOver(false);
         lobby.setRoundNumber(1L);
         lobbyRepository.save(lobby);
@@ -162,6 +162,8 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
+        log.warn("lobbystate in startGame:" + lobby.getLobbyState().toString());
+
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_start");
     }
 
@@ -175,7 +177,7 @@ public class LobbyService {
 
         gameDetails.setChallenge(lobby.getCurrentChallenge());
         gameDetails.setSolution(lobby.getCurrentSolution());
-        gameDetails.setGameState(lobby.getState().toString());
+        gameDetails.setGameState(lobby.getLobbyState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
         gameDetails.setGameMasterId(lobby.getGameMaster());
         gameDetails.setGameMasterUsername(userService.getUserById(lobby.getGameMaster()).getUsername());
@@ -215,6 +217,7 @@ public class LobbyService {
                 return;
             }
         }
+        lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
     }
 }

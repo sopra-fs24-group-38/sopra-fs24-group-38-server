@@ -3,8 +3,6 @@ package ch.uzh.ifi.hase.soprafs24.model.database;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -36,9 +34,6 @@ public class Lobby {
 
     @Column
     private Long gameMaster;
-
-    @Column
-    private Enum<LobbyState> state;
 
     @Column
     private boolean gameOver;
@@ -110,14 +105,6 @@ public class Lobby {
 
     public void setGameMaster(Long gameMaster) {
         this.gameMaster = gameMaster;
-    }
-
-    public Enum<LobbyState> getState() {
-        return state;
-    }
-
-    public void setState(Enum<LobbyState> state) {
-        this.state = state;
     }
 
     public boolean isGameOver() {
