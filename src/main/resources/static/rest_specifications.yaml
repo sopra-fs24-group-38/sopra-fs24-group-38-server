@@ -355,10 +355,10 @@ components:
         game_state:
           type: string
           enum:
-            - LOBBY
-            - DEFINITIONS
-            - VOTES
-            - EVALUATION
+            - WAITING
+            - ROUND
+            - VOTE
+            - DEFINTION
             - GAMEOVER
           example: LOBBY
         game_over:
@@ -375,7 +375,7 @@ components:
           example: 2
           description: userId of the current gameMaster
         game_master_username:
-          type: String
+          type: string
           example: "GameMasterUsername2000"
           description: username of the current gameMaster
         players:

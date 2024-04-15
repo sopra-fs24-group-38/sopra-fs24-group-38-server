@@ -4,5 +4,6 @@ public enum LobbyState {
     WAITING,
     ROUND,
     VOTE,
-    DEFINITION
+    DEFINITION,
+    GAMEOVER
 }
