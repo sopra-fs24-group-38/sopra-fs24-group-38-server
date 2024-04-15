@@ -351,6 +351,7 @@ components:
     GameDetails:
       type: object
       properties:
+
         game_state:
           type: string
           enum:
@@ -369,6 +370,14 @@ components:
         solution:
           type: string
           example: Tricking someone with nonsense or lies
+        game_master_id:
+          type: integer
+          example: 2
+          description: userId of the current gameMaster
+        game_master_username:
+          type: String
+          example: "GameMasterUsername2000"
+          description: username of the current gameMaster
         players:
           type: array
           items:
@@ -376,7 +385,7 @@ components:
     Player:
       type: object
       properties:
-        name:
+        username:
           type: string
           example: "Player_1"
         score:

@@ -103,13 +103,6 @@ public class UserService {
         }
     }
 
-    public void setLobbyIdForGameMaster(Long userId, Long gamePin) {
-        User userToBeMappedToLobby = userRepository.findUserById(userId);
-        userToBeMappedToLobby.setLobbyId(gamePin);
-        userRepository.save(userToBeMappedToLobby);
-        userRepository.flush();
-    }
-
     public Long getUserIdBySessionId(String id) {
         List<User> allUsers = userRepository.findAll();
 

@@ -70,6 +70,7 @@ public class LobbyService {
             lobby.setGameMaster(lobby.getUsers().get(0).getId());
             socketHandler.sendMessageToLobby(lobbyId, "new_gamehost");
         }
+        else socketHandler.sendMessageToLobby(lobbyId, "user_left");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
@@ -97,7 +98,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        userService.setLobbyIdForGameMaster(userId, pin);
+        userService.setLobbyId(userId, pin);
         userService.setAvatarPin(userId, 1L);
         log.warn("created lobby with pin " + pin);
 
@@ -111,7 +112,7 @@ public class LobbyService {
         if (gameModes != null) {
             setGameModes(gameModes, lobby);
         }
-        if (gameModes != null) {
+        if (roundUpdate != 0) {
             setRounds(roundUpdate, lobby);
         }
         lobbyRepository.save(lobby);
@@ -174,7 +175,8 @@ public class LobbyService {
         gameDetails.setSolution(lobby.getCurrentSolution());
         gameDetails.setGameState(lobby.getState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
-        gameDetails.setGameMaster(lobby.getGameMaster());
+        gameDetails.setGameMasterId(lobby.getGameMaster());
+        gameDetails.setGameMasterUsername(userService.getUserById(lobby.getGameMaster()).getUsername());
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {
