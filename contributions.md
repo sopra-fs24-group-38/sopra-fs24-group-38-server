@@ -65,6 +65,24 @@
 
 ## Elia Aeberhard
 ## Markus Senn
+Basically finished Lobby component
+- added settings page
+    -  [#21](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/21)
+    -  [#30](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/30)
+- added websocket connection
+    -  [#27](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/27)
+- added functionality to join existing lobby with PIN
+    -  [#26](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/26)
+- added functionality to see players join and leave
+    -  [#24](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/24)
+- added functionality to start a game session and redirect players to next section
+    -  [#29](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/29)
+    -  [#31](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/31)
+- added route protection for existing lobbies
+    -  [#25](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/25)
+
+- minor visual fixes
+
 ## Cédric Styner
 ## Samuel Frank
 
