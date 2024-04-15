@@ -162,8 +162,6 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        log.warn("lobbystate in startGame:" + lobby.getLobbyState().toString());
-
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_start");
     }
 
