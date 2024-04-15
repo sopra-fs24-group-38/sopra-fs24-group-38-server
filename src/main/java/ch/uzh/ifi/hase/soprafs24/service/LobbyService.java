@@ -68,9 +68,11 @@ public class LobbyService {
         user.setLobbyId(null);
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             lobby.setGameMaster(lobby.getUsers().get(0).getId());
-            socketHandler.sendMessageToLobby(lobbyId, "new_gamehost");
+            lobbyRepository.save(lobby);
+            lobbyRepository.flush();
+            socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
         }
-        else socketHandler.sendMessageToLobby(lobbyId, "user_left");
+        else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
@@ -92,7 +94,7 @@ public class LobbyService {
         lobby.setLobbyPin(pin);
         lobby.setGameMaster(userId);
         lobby.addPlayer(userService.getUserById(userId));
-        lobby.setState(LobbyState.WAITING);
+        lobby.setLobbyState(LobbyState.WAITING);
         lobby.setGameOver(false);
         lobby.setRoundNumber(1L);
         lobbyRepository.save(lobby);
@@ -173,7 +175,7 @@ public class LobbyService {
 
         gameDetails.setChallenge(lobby.getCurrentChallenge());
         gameDetails.setSolution(lobby.getCurrentSolution());
-        gameDetails.setGameState(lobby.getState().toString());
+        gameDetails.setGameState(lobby.getLobbyState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
         gameDetails.setGameMasterId(lobby.getGameMaster());
         gameDetails.setGameMasterUsername(userService.getUserById(lobby.getGameMaster()).getUsername());
@@ -213,6 +215,7 @@ public class LobbyService {
                 return;
             }
         }
+        lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
     }
 }
