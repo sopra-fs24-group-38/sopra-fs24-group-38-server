@@ -29,7 +29,7 @@ paths:
       tags:
         - user
       summary: Create user with a provided username and password.
-      description: This will then return a corresponding status code and in the case of success also a token (id) which uniqluey identifies a Userentity.
+      description: This will then return a corresponding status code and in the case of success also a token (id) which uniquely identifies a Userentity.
       operationId: createUser
       security: []
       requestBody:

@@ -68,9 +68,11 @@ public class LobbyService {
         user.setLobbyId(null);
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             lobby.setGameMaster(lobby.getUsers().get(0).getId());
-            socketHandler.sendMessageToLobby(lobbyId, "new_gamehost");
+            lobbyRepository.save(lobby);
+            lobbyRepository.flush();
+            socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
         }
-        else socketHandler.sendMessageToLobby(lobbyId, "user_left");
+        else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
 
