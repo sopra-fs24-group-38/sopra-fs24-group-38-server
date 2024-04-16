@@ -145,7 +145,7 @@ public class LobbyService {
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
         if (lobbyToReturn == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist lobbyPin: " +gamePin);
         }
         return lobbyToReturn;
     }
@@ -228,11 +228,14 @@ public class LobbyService {
                 return;
             }
         }
-        evaluateVotes(lobby);
+        evaluateVotes(users);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+        lobby.setLobbyState(LobbyState.EVALUATION);
     }
 
-    private void evaluateVotes(Lobby lobby) {
-        List<User> users = lobby.getUsers();
+    private void evaluateVotes( List<User> users) {
         for(User user : users) {
             for(User userz : users) {
                 if(!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())){
@@ -243,6 +246,5 @@ public class LobbyService {
                 user.setScore(user.getScore() + 1L);
             }
         }
-        socketHandler.sendMessageToLobby(lobby.getId(), "votes_finished");
     }
 }
