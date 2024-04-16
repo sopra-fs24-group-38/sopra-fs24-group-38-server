@@ -41,7 +41,7 @@ public class User implements Serializable {
     private Long votedForUserId = null;
 
     @Column
-    private Long score;
+    private Long score = 0L;
 
     public Long getScore() {
         return score;
