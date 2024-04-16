@@ -51,6 +51,7 @@ public class LobbyService {
 
     public void addPlayerToLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        performPlayerNumberCheck(lobby);
         User user = userService.getUserById(userId);
         checkIfPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
@@ -58,6 +59,7 @@ public class LobbyService {
         userService.setAvatarPin(userId,lobby.getUsers().stream().count() + 1L);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
+
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
@@ -217,5 +219,10 @@ public class LobbyService {
         }
         lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
+    }
+
+    private void performPlayerNumberCheck(Lobby lobby) {
+        int numPlayers = lobby.getUsers().size();
+        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
 }
