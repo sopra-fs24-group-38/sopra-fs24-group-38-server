@@ -34,13 +34,9 @@ You can use the local Gradle Wrapper to build the application.
 ./gradlew bootRun
 ```
 
-You can verify that the server is running by visiting `localhost:8080` in your browser.
+### Environment variables
 
-### Test
-
-```bash
-./gradlew test
-```
+-   TOKEN_API: The token for the authorization header in the chatGPT api request.  
 
 ### Development Mode
 You can start the backend in development mode, this will automatically trigger a new build and reload the application

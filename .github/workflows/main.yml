@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev-to-gcloud
-      - 52-start-game
+      - eenv-variabel-token
 
 
   # run the workflow manually from the Actions tab

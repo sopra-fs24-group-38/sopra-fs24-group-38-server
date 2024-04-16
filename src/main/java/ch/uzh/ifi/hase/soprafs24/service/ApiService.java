@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,9 @@ import org.json.JSONObject;
 public class ApiService {
 
     private RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${api.token}")
+    private String tokenEnv;
 
     public List<Challenge> generateChallenges(int numberRounds) {
         String url = "https://api.openai.com/v1/chat/completions";
@@ -57,11 +61,16 @@ public class ApiService {
     }
 
     public String getSecret() {
-        try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
-            SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
-            return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
-        } catch (IOException e) {
-            throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
+        if(tokenEnv.equals("NO_ENV_SET")){
+            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
+                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
+                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
+            } catch (IOException e) {
+                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
+            }
+        }
+        else{
+            return tokenEnv;
         }
     }
 }
