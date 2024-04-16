@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - eenv-variabel-token
 
 
   # run the workflow manually from the Actions tab
