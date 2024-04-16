@@ -33,7 +33,7 @@ public class SocketHandler extends TextWebSocketHandler {
         log.warn(message.toString());
         log.warn(message.getPayload());
         Map messageMap = objectMapper.readValue(message.getPayload(), Map.class);
-        long userId = Long.parseLong((String) messageMap.get("userId"));
+        Long userId = Long.parseLong((String) messageMap.get("userId"));
         userService.setIsConnected(userId, true);
         if ("init".equals(messageMap.get("action"))) {
             userService.addSessionToUser(session.getId(), userId);
