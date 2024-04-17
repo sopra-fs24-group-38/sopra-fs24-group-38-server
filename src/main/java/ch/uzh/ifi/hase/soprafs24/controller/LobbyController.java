@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
@@ -97,13 +98,17 @@ public class LobbyController {
     public void registerDefinition(@RequestHeader(value = "Authorization") String token,
                                    @Valid @RequestBody() DefinitionPost definitionToBeRegistered){
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.DEFINITION);
         userService.registerDefinitions(definitionToBeRegistered, userId);
     }
 
     @PutMapping(value = "/users/votes", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void registerVote(@RequestHeader(value = "Authorization") String token,
                              @Valid @RequestBody() VotePost voteToBeRegistered){
-        //TODO real Vote registration Logic within lobbyService:
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.VOTE);
+        userService.registerVote(userId, voteToBeRegistered.getVote());
         System.out.println("user with token "+ token + " registered vote: " + voteToBeRegistered.getVote());
     }
 
@@ -125,8 +130,19 @@ public class LobbyController {
     public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
 
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.WAITING);
 
         lobbyService.startGame(userId);
+
+        return ResponseEntity.ok().build();
+
+    }
+    @PostMapping(value = "/rounds/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> nextRound(@RequestHeader(value = "Authorization") String token) {
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.EVALUATION);
+        lobbyService.registerNextRound(userId);
 
         return ResponseEntity.ok().build();
 

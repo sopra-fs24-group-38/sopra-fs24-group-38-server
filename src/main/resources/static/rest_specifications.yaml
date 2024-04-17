@@ -289,6 +289,20 @@ paths:
         '404':
           description: Not Found - The user does not exist.
 
+  /lobbies/rounds/start:
+    post:
+      tags:
+        - lobby
+      summary: Register next round.
+      description: 'This endpoint starts a requests the next round of the game. Upon receiving the call from all player it sends the socket.'
+      operationId: nextRound
+      responses:
+        '200':
+          description: OK - The next round vote has been received.
+        '401':
+          description: Unauthorized - The user is not authorized or not the gameMaster.
+        '404':
+          description: Not Found - The user does not exist.
 
   /lobbies/users/definitions :
     put:
@@ -315,8 +329,10 @@ paths:
     put:
       tags:
         - lobby
-      summary: Register definition.
-      description: 'This Endpoint allows user to register a vote (the definition which they think is right)'
+      summary: Register votes.
+
+      description: 'This Endpoint allows user to register a vote (the definition which they think is right). The voted_for_userID field states with -1 that the user has not yet submitted their vote. 0 states that the user chose the right answer and values larger than 0 indicate the userID of the person who submitted the definition.'
+
       operationId: receiveVote
 
       requestBody:
@@ -389,15 +405,21 @@ components:
         username:
           type: string
           example: "Player_1"
+        id:
+          type: integer
+          example: 3
         score:
           type: integer
           example: 10
         definition:
           type: string
           example: An oldtimer car part which broke.
-        voted_for:
+        votedForUserId:
           type: integer
-          example: 0
+          example: null
+        avatarId:
+          type: integer
+          example: 1
 
 
 

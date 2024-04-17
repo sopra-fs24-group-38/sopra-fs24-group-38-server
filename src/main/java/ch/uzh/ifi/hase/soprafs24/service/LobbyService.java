@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -147,7 +148,7 @@ public class LobbyService {
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
         if (lobbyToReturn == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist lobbyPin: " +gamePin);
         }
         return lobbyToReturn;
     }
@@ -196,18 +197,34 @@ public class LobbyService {
         infoLobbyJson.setGamePin(gamePin);
         return infoLobbyJson;
     }
+    public void registerNextRound(Long userId) {
+        User user = userService.getUserById(userId);
+        user.setWantsNextRound(true);
+        log.warn("next_round vote received from user" + user.getUsername());
+        Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
 
-    private void checkIfPlayerInLobby(Long userId) {
-        List<Lobby> allLobbies = lobbyRepository.findAll();
-
-        for (Lobby lobby : allLobbies) {
-            List<User> users = lobby.getUsers();
-            for(User user : users) {
-                if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+        //check if already nextRound
+        List<User> users = lobby.getUsers();
+        for(User userReady : users) {
+            if (userReady.getIsConnected() && !userReady.getWantsNextRound()) {
+                log.warn("not all users in the lobby have submitted next round wish");
+                return;
             }
         }
-    }
 
+        log.warn("Lobby with id "+ lobby.getLobbyPin() + " reset..");
+        resetLobbyAndNextRoundBool(lobby, users);
+        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "next_round");
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+    }
+    public void checkState(Long userId, LobbyState requiredLobbyState) {
+        User user = userService.getUserById(userId);
+        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user.getLobbyId());
+        if(lobby.getLobbyState() != requiredLobbyState){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby not in state: " + requiredLobbyState.toString());
+        }
+    }
     public void checkIfAllDefinitionsReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
@@ -225,4 +242,58 @@ public class LobbyService {
         int numPlayers = lobby.getUsers().size();
         if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
+
+    public void checkIfAllVotesReceived(Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            if (user.getIsConnected() && user.getVotedForUserId() == null) {
+                log.warn("not all users in the lobby have submitted their votes");
+                return;
+            }
+        }
+        evaluateVotes(users);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+        lobby.setLobbyState(LobbyState.EVALUATION);
+    }
+
+    private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
+        //next round bool
+        for(User user: users){
+            user.setWantsNextRound(false);
+            user.setVotedForUserId(null);
+            user.setDefinition(null);
+        }
+        lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
+        lobby.setLobbyState(LobbyState.DEFINITION);
+    }
+
+    private void checkIfPlayerInLobby(Long userId) {
+        List<Lobby> allLobbies = lobbyRepository.findAll();
+
+        for (Lobby lobby : allLobbies) {
+            List<User> users = lobby.getUsers();
+            for(User user : users) {
+                if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+            }
+        }
+    }
+
+    private void evaluateVotes( List<User> users) {
+        for(User user : users) {
+            for(User userz : users) {
+                if(!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())){
+                    user.setScore(user.getScore() + 2L);
+                }
+            }
+            if(user.getVotedForUserId().equals(0L)){
+                user.setScore(user.getScore() + 1L);
+            }
+        }
+    }
+
+
+
 }

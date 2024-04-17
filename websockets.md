@@ -9,3 +9,4 @@
 | CLIENT            | Client has to make get request to see new gamehost                        | `{"gamehost_left": "User123"}`        |
 | CLIENT            | all contributions to the current round received                           | `definitions_finished`                |
 | CLIENT            | all users votes received                                                  | `votes_finished`                      |
+| CLIENT            | all nextRound calls received                                              | `next_round`                          |
