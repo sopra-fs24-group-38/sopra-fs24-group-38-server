@@ -43,6 +43,9 @@ public class User implements Serializable {
     @Column
     private Long score = 0L;
 
+    @Column
+    private Boolean wantsNextRound = false;
+
     public Long getScore() {
         return score;
     }
@@ -123,5 +126,21 @@ public class User implements Serializable {
 
     public void setVotedForUserId(Long votedForUserId) {
         this.votedForUserId = votedForUserId;
+    }
+
+    public Boolean getConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(Boolean connected) {
+        isConnected = connected;
+    }
+
+    public Boolean getWantsNextRound() {
+        return wantsNextRound;
+    }
+
+    public void setWantsNextRound(Boolean wantsNextRound) {
+        this.wantsNextRound = wantsNextRound;
     }
 }

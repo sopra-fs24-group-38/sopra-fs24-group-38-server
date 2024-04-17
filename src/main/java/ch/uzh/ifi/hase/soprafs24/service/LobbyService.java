@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -194,6 +195,38 @@ public class LobbyService {
         infoLobbyJson.setGamePin(gamePin);
         return infoLobbyJson;
     }
+    public void registerNextRound(Long userId) {
+        User user = userService.getUserById(userId);
+        user.setWantsNextRound(true);
+        log.warn("next_round vote received from user" + user.getUsername());
+        Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
+
+        //check if already nextRound
+        List<User> users = lobby.getUsers();
+        for(User userReady : users) {
+            if (userReady.getIsConnected() && !userReady.getWantsNextRound()) {
+                log.warn("not all users in the lobby have submitted next round wish");
+                return;
+            }
+        }
+
+        log.warn("Lobby with id "+ lobby.getLobbyPin() + " reset..");
+        resetLobbyAndNextRoundBool(lobby, users);
+        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "next_round");
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+    }
+
+    private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
+        //next round bool
+        for(User user: users){
+            user.setWantsNextRound(false);
+            user.setVotedForUserId(null);
+            user.setDefinition(null);
+        }
+        lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
+        lobby.setLobbyState(LobbyState.DEFINITION);
+    }
 
     private void checkIfPlayerInLobby(Long userId) {
         List<Lobby> allLobbies = lobbyRepository.findAll();
@@ -247,4 +280,6 @@ public class LobbyService {
             }
         }
     }
+
+
 }

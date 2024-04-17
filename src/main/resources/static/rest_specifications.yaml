@@ -289,7 +289,7 @@ paths:
         '404':
           description: Not Found - The user does not exist.
 
-  /lobbies/round/start:
+  /lobbies/rounds/start:
     post:
       tags:
         - lobby
