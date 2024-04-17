@@ -216,29 +216,13 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
     }
-
-    private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
-        //next round bool
-        for(User user: users){
-            user.setWantsNextRound(false);
-            user.setVotedForUserId(null);
-            user.setDefinition(null);
-        }
-        lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
-        lobby.setLobbyState(LobbyState.DEFINITION);
-    }
-
-    private void checkIfPlayerInLobby(Long userId) {
-        List<Lobby> allLobbies = lobbyRepository.findAll();
-
-        for (Lobby lobby : allLobbies) {
-            List<User> users = lobby.getUsers();
-            for(User user : users) {
-                if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
-            }
+    public void checkState(Long userId, LobbyState requiredLobbyState) {
+        User user = userService.getUserById(userId);
+        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user.getLobbyId());
+        if(lobby.getLobbyState() != requiredLobbyState){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby not in state: " + requiredLobbyState.toString());
         }
     }
-
     public void checkIfAllDefinitionsReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
@@ -268,6 +252,28 @@ public class LobbyService {
         lobby.setLobbyState(LobbyState.EVALUATION);
     }
 
+    private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
+        //next round bool
+        for(User user: users){
+            user.setWantsNextRound(false);
+            user.setVotedForUserId(null);
+            user.setDefinition(null);
+        }
+        lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
+        lobby.setLobbyState(LobbyState.DEFINITION);
+    }
+
+    private void checkIfPlayerInLobby(Long userId) {
+        List<Lobby> allLobbies = lobbyRepository.findAll();
+
+        for (Lobby lobby : allLobbies) {
+            List<User> users = lobby.getUsers();
+            for(User user : users) {
+                if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
+            }
+        }
+    }
+
     private void evaluateVotes( List<User> users) {
         for(User user : users) {
             for(User userz : users) {
@@ -280,6 +286,7 @@ public class LobbyService {
             }
         }
     }
+
 
 
 }
