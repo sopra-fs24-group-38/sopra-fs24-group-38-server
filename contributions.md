@@ -64,6 +64,9 @@
     -  [#66](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/66)
 
 ## Elia Aeberhard
+- Added endpoint for removal and api call functionality
+    -  [#58](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/58)
+    -  [#70](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/70)
 ## Markus Senn
 Basically finished Lobby component
 - added settings page
