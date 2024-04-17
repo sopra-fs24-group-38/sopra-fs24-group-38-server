@@ -133,5 +133,15 @@ public class LobbyController {
         return ResponseEntity.ok().build();
 
     }
+    @PostMapping(value = "/rounds/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> nextRound(@RequestHeader(value = "Authorization") String token) {
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+
+        lobbyService.registerNextRound(userId);
+
+        return ResponseEntity.ok().build();
+
+    }
 
 }
