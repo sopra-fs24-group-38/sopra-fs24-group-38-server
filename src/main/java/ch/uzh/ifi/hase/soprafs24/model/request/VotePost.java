@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class VotePost {
     @JsonProperty("vote")
-    int vote;
+    Long vote;
 
-    public int getVote() {
+    public Long getVote() {
         return this.vote;
     }
 
-    public void setVote(int vote) {
+    public void setVote(Long vote) {
         this.vote = vote;
     }
 }

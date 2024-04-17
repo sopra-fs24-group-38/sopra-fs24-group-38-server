@@ -104,7 +104,8 @@ public class LobbyController {
     @PutMapping(value = "/users/votes", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void registerVote(@RequestHeader(value = "Authorization") String token,
                              @Valid @RequestBody() VotePost voteToBeRegistered){
-        //TODO real Vote registration Logic within lobbyService:
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        userService.registerVote(userId, voteToBeRegistered.getVote());
         System.out.println("user with token "+ token + " registered vote: " + voteToBeRegistered.getVote());
     }
 

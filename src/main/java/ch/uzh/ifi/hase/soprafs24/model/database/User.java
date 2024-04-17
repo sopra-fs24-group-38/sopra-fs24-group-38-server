@@ -8,7 +8,6 @@ import java.io.Serializable;
 @Table(name = "USER")
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
@@ -37,6 +36,20 @@ public class User implements Serializable {
 
     @Column
     private Long avatarId;
+
+    @Column
+    private Long votedForUserId = null;
+
+    @Column
+    private Long score = 0L;
+
+    public Long getScore() {
+        return score;
+    }
+
+    public void setScore(Long score) {
+        this.score = score;
+    }
 
     public Long getId() {
         return id;
@@ -102,5 +115,13 @@ public class User implements Serializable {
 
     public void setAvatarId(Long avatarId) {
         this.avatarId = avatarId;
+    }
+
+    public Long getVotedForUserId() {
+        return votedForUserId;
+    }
+
+    public void setVotedForUserId(Long votedForUserId) {
+        this.votedForUserId = votedForUserId;
     }
 }

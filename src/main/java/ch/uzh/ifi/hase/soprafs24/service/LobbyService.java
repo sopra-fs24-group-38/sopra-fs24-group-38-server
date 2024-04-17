@@ -145,7 +145,7 @@ public class LobbyService {
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
         if (lobbyToReturn == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The referenced Lobby does not exist lobbyPin: " +gamePin);
         }
         return lobbyToReturn;
     }
@@ -217,5 +217,34 @@ public class LobbyService {
         }
         lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
+    }
+
+    public void checkIfAllVotesReceived(Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            if (user.getIsConnected() && user.getVotedForUserId() == null) {
+                log.warn("not all users in the lobby have submitted their votes");
+                return;
+            }
+        }
+        evaluateVotes(users);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+        lobby.setLobbyState(LobbyState.EVALUATION);
+    }
+
+    private void evaluateVotes( List<User> users) {
+        for(User user : users) {
+            for(User userz : users) {
+                if(!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())){
+                    user.setScore(user.getScore() + 2L);
+                }
+            }
+            if(user.getVotedForUserId().equals(0L)){
+                user.setScore(user.getScore() + 1L);
+            }
+        }
     }
 }
