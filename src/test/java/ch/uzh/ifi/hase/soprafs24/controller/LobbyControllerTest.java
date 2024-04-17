@@ -193,6 +193,33 @@ public class LobbyControllerTest {
 
     }
 
+    @DisplayName("LobbyControllerTest: Issue #62")
+    @Test
+    public void issue62() {
+        /**
+         The backend recognizes when the lobby is full and prohibits further player from joining the lobby (2-6)
+         #62
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user14", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        for(int i = 15; i< 20; i++) {
+            ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user" + i, "password");
+            String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+            joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+        }
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user" + 20, "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        ResponseEntity<String> responseJoin = joinPlayerToLobby(tokenJoinPlayer, lobbyId);
+        assertEquals(HttpStatus.BAD_REQUEST, responseJoin.getStatusCode());
+        assertTrue(responseJoin.toString().contains("Lobby full"));
+    }
+
     private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1, String username1, String username2) {
         String uri = "http://localhost:" + port + "/lobbies/" + lobbyId.toString();
         HttpHeaders header = prepareHeader(tokenGameMaster1);

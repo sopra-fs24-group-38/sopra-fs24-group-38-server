@@ -86,6 +86,11 @@ Basically finished Lobby component
 ## Cédric Styner
 ## Samuel Frank
 
+- pair-programming session regarding gameStart, definitions, api call
+    -  [#66](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/66)
+- Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} :
+    -  [#62](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/62)
+
 
 
 
