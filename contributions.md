@@ -87,6 +87,14 @@ Basically finished Lobby component
 - minor visual fixes
 
 ## Cédric Styner
+
+- Gameflow programmed. Different issues closed in the field of definition, voting and score
+    -  [#36](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/36)
+    -  [#49](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/49)
+    -  [#51](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/51)
+    -  [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
+ 
+    -  
 ## Samuel Frank
 
 - pair-programming session regarding gameStart, definitions, api call
