@@ -6,10 +6,10 @@
 - Call with Elia to align on fundamental architectural decisions
 - Call with Samuel to pair-program on Websocket config
 - Added CreateLobby and JoinLobby Functionality: 
-    -   ([#39](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
-    -   ([#47](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
-    -   ([#40](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
-    -   ([#54](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/28))
+    -   ([#39](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/39))
+    -   ([#47](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/47))
+    -   ([#40](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/40))
+    -   ([#54](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/54))
 -   Backend provides a functioning websockets connection (also deployed gc) in pair programming together with Elia and Samuel:
     - [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/52)
 ## Elia Aeberhard
