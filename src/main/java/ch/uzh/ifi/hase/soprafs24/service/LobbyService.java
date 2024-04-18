@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,8 @@ public class LobbyService {
     private ApiService apiService;
 
     ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${avatar.number}")
+    private int numAvas;
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
@@ -57,7 +60,7 @@ public class LobbyService {
         checkIfPlayerInLobby(userId);
         lobby.addPlayer(userService.getUserById(userId));
         userService.setLobbyId(userId, lobbyId);
-        userService.setAvatarPin(userId,lobby.getUsers().stream().count() + 1L);
+        userService.setAvatarPin(userId);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
@@ -104,7 +107,7 @@ public class LobbyService {
         lobbyRepository.flush();
 
         userService.setLobbyId(userId, pin);
-        userService.setAvatarPin(userId, 1L);
+        userService.setAvatarPin(userId);
         log.warn("created lobby with pin " + pin);
 
         return pin;
