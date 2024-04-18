@@ -154,8 +154,11 @@ public class LobbyService {
     }
 
     public void startGame(Long userId) {
+
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
+        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
+
         if (!Objects.equals(userId, lobby.getGameMaster())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
