@@ -12,15 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -32,6 +31,8 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${avatar.number}")
+    private int numAvas;
 
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
@@ -122,12 +123,16 @@ public class UserService {
 
     }
 
-    public void setAvatarPin(Long userId, Long avatarId) {
+    public void setAvatarPin(Long userId) {
         User user = userRepository.findUserById(userId);
-        user.setAvatarId(avatarId);
+        Long lobbyId = user.getLobbyId();
+        Long unUsedAvaId = getUnUsedAvaId(lobbyId);
+        user.setAvatarId(unUsedAvaId);
         userRepository.save(user);
         userRepository.flush();
     }
+
+
 
     public void setLobbyId(Long userId, Long lobbyId) {
         User user = userRepository.findUserById(userId);
@@ -142,5 +147,19 @@ public class UserService {
         lobbyService.checkIfAllVotesReceived(user.getLobbyId());
         userRepository.save(user);
         userRepository.flush();
+    }
+
+    private Long getUnUsedAvaId(Long lobbyId) {
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyId);
+        List<User> users = lobby.getUsers();
+        Set<Long> existingIds = users.stream()
+                .map(User::getAvatarId)
+                .collect(Collectors.toSet());
+        Long potentialId;
+        do {
+            Random random = new Random();
+            potentialId = 1L + (long) random.nextInt(numAvas);
+        } while (existingIds.contains(potentialId));
+        return potentialId;
     }
 }
