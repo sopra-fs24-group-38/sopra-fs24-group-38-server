@@ -93,57 +93,6 @@ paths:
           description: User not found
         '400':
           description: Bad request
-  /users/{userID}:
-    put:
-      tags:
-        - user
-      summary: Update user
-      description: This endpoint provides a possibility to adjust a user.
-      operationId: updateUser
-      parameters:
-        - in: path
-          name: userID
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID of the user to get
-      requestBody:
-        description: Update an existent user in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdate'
-
-      responses:
-        '200':
-          description: Successfully updated User
-        '404':
-          description: User not found
-        '401':
-          description: Not Authorized
-        '400':
-          description: Bad request
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      operationId: deleteUser
-      parameters:
-        - in: path
-          name: userID
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID of the user to get
-      responses:
-        '200':
-          description: Successfully deleted User.
-        '401':
-          description: Not Authorized
-        '404':
-          description: User not found
-        '400':
-          description: Bad request
 
   /lobbies:
     post:
