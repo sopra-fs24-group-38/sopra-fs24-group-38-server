@@ -75,6 +75,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
+        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
         return objectMapper.convertValue(user, UserResponse.class);
     }
 
@@ -161,5 +162,10 @@ public class UserService {
             potentialId = 1L + (long) random.nextInt(numAvas);
         } while (existingIds.contains(potentialId));
         return potentialId;
+    }
+
+    public void logout(String token) {
+        User user = getUserById(getUserIdByTokenAndAuthenticate(token));
+        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
     }
 }

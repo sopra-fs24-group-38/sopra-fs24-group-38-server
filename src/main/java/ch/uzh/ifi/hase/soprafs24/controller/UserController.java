@@ -41,31 +41,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void logout(@RequestHeader(value = "Authorization") String token) {
 
-        //TODO real logout logic in userService class
-        System.out.println("logged out user" + token);
-
-    }
-
-    @PutMapping(value = "/{userID}")
-    @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestHeader(value = "Authorization") String token,
-                       @PathVariable int userID) {
-
-        //TODO real PUT operation logic in userService class
-        System.out.println("updated user " + userID + token);
-
-
-    }
-
-    @DeleteMapping(value = "/{userID}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestHeader(value = "Authorization") String token,
-                       @PathVariable int userID) {
-
-        //TODO real PUT operation logic in userService class
-        System.out.println("deleted user " + userID + token);
-
-
+        userService.logout(token);
     }
 
 }
