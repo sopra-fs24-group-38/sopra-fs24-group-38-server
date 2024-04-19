@@ -21,14 +21,13 @@ public class Lobby {
     private LobbyState lobbyState;
 
     @Column
-    private int numberRounds = 10;
+    private int maxRoundNumbers = 10;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     //Definition is the default mode :
     private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.DEFINITIONS));
 
-    //FIXME map properly to the lobby? set a lobby in the user db model?
     @OneToMany
     private List<User> users = new ArrayList<>();
 
@@ -46,9 +45,6 @@ public class Lobby {
     private Long roundNumber;
 
 
-
-
-
     public Set<LobbyModes> getLobbyModes() {
         return lobbyModes;
     }
@@ -61,15 +57,9 @@ public class Lobby {
         this.users = users;
     }
 
-    public int getNumberRounds() {return numberRounds;}
-    public void setNumberRounds(int numberRounds) {this.numberRounds = numberRounds;}
-    public Long getId() {
-        return id;
-    }
+    public int getMaxRoundNumbers() {return maxRoundNumbers;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setMaxRoundNumbers(int numberRounds) {this.maxRoundNumbers = numberRounds;}
 
     public LobbyState getLobbyState() {
         return lobbyState;

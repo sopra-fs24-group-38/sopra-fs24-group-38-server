@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
-import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,7 +131,7 @@ public class LobbyService {
         if (roundUpdate < 5 || roundUpdate > 15) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
         }
-        lobby.setNumberRounds(roundUpdate);
+        lobby.setMaxRoundNumbers(roundUpdate);
     }
 
     private void setGameModes(List<String> gameModes, Lobby lobby) {
@@ -168,7 +166,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
-        lobby.setChallenges(apiService.generateChallenges(lobby.getNumberRounds()));
+        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -263,8 +261,15 @@ public class LobbyService {
         evaluateVotes(users);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
-        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
-        lobby.setLobbyState(LobbyState.EVALUATION);
+
+        if(lobby.getRoundNumber() == lobby.getMaxRoundNumbers()) {
+            lobby.setLobbyState(LobbyState.GAMEOVER);
+            socketHandler.sendMessageToLobby(lobbyId, "game_over");
+        }
+        else {
+            lobby.setLobbyState(LobbyState.EVALUATION);
+            socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
+        }
     }
 
     private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {

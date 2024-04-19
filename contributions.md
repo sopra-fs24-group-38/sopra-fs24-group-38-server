@@ -106,11 +106,22 @@ Basically finished Lobby component
 
 # 19.04 - 25.04
 ## Harris A
-
-
+- Pair-programming session extending api call
+    - [#70](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/70)
+    - [#69](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/69)
+- Store player scores
+    - [#92](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/92)
+- Notify frontend to advance to voting
+    - [#72](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/72)
 ## Elia Aeberhard
-
-
+- Pair-programming extended API call functionality
+    - [#70](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/70)
+- Receive votes functionality
+    - [#80](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/80)
+- Added game over notification to the frontend
+    - [#91](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/91)
+- Closed issue 100 since not implemented (unnecessary)
+    - [#100](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/100)
 ## Markus Senn
 
 
@@ -125,6 +136,13 @@ Basically finished Lobby component
     -  [#46](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/46)
  
 ## Samuel Frank
+- Pair-programming session extending api call
+    - [#71](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/71)
+- Count player votes and notify frontend
+    - [#82](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/82)
+- Provide player score via API
+    - [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/87)
+    - [#101](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/101)
 
 
 
