@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${avatar.number}")
+    private int numAvas;
 
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
@@ -155,7 +158,7 @@ public class UserService {
         Long potentialId;
         do {
             Random random = new Random();
-            potentialId = 1L + (long) random.nextInt(10);
+            potentialId = 1L + (long) random.nextInt(numAvas);
         } while (existingIds.contains(potentialId));
         return potentialId;
     }

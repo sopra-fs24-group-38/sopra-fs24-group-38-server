@@ -45,8 +45,7 @@ public class LobbyService {
     private ApiService apiService;
 
     ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${avatar.number}")
-    private int numAvas;
+
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
