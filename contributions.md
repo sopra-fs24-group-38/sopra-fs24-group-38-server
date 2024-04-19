@@ -94,7 +94,7 @@ Basically finished Lobby component
     -  [#51](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/51)
     -  [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/52)
  
-    -  
+      
 ## Samuel Frank
 
 - pair-programming session regarding gameStart, definitions, api call
@@ -103,6 +103,31 @@ Basically finished Lobby component
     -  [#62](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/62)
 - Gamelogic evaluation with points after votes: 
     - [#81](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/81)
+
+# 19.04 - 25.04
+## Harris A
+
+
+## Elia Aeberhard
+
+
+## Markus Senn
+
+
+## Cédric Styner
+
+- Gameflow finished.
+    -  [#41](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/41)
+    -  [#42](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/42)
+    -  [#43](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/43)
+    -  [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/44)
+    -  [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/45)
+    -  [#46](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/46)
+ 
+## Samuel Frank
+
+
+
 
 
 
