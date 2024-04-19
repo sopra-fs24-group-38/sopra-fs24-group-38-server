@@ -65,6 +65,9 @@ public class LobbyService {
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
+        user.setDefinition(null);
+        user.setVotedForUserId(null);
+        user.setScore(0L);
         if (!lobby.getUsers().contains(user))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         lobby.removePlayer(user);
