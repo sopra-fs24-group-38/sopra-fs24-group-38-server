@@ -236,6 +236,7 @@ public class LobbyService {
                 log.warn("not all users in the lobby have submitted their definition");
                 return;
             }
+
         }
         lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");

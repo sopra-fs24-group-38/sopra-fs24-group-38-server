@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
+import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -220,18 +221,61 @@ public class LobbyControllerTest {
         assertTrue(responseJoin.toString().contains("Lobby full"));
     }
 
+    @DisplayName("LobbyControllerTest: Issue #81")
+    @Test
+    public void issue81() {
+        /**
+         * The backend evaluates how many points each player scored with their vote
+         * #81
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user21", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user22", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "placeboDefintion1");
+        registerDefinition(tokenJoinPlayer, "placeboDefinition2");
+
+
+    }
+
+    private void registerDefinition(String token, String defintion) {
+        String uri = "http://localhost:" + port + "/lobbies/users/definitions";
+        HttpHeaders header = prepareHeader(token);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("definition", defintion);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, header);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    private ResponseEntity<String> startLobby(String tokenGameMaster1) {
+        String uri = "http://localhost:" + port + "/lobbies/start";
+        HttpHeaders header = prepareHeader(tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(header);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response;
+    }
+
+
     private void checkIfLobbyJoinWorked(Long lobbyId, String tokenGameMaster1, String username1, String username2) {
         String uri = "http://localhost:" + port + "/lobbies/" + lobbyId.toString();
         HttpHeaders header = prepareHeader(tokenGameMaster1);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(header);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
-
-        System.out.println("**");
-        System.out.println(response);
-
         assertTrue(response.getBody().contains(username1));
         assertTrue(response.getBody().contains(username2));
-
     }
 
     private HttpHeaders prepareHeader(String tokenGameMaster1) {
