@@ -369,8 +369,6 @@ public class LobbyControllerTest {
         registerDefinition(tokenGameMaster1, "placeboDefintion1");
         registerDefinition(tokenJoinPlayer, "placeboDefintion2");
 
-
-        System.out.println("***" + responseToJsonNode(getLobby(tokenJoinPlayer, lobbyId)).toString());
         JsonNode responseBodyCreationPlayer1 = responseToJsonNode(response);
         Long userId = responseBodyCreationPlayer1.get("id").asLong();
 
@@ -379,6 +377,59 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, castedVoteResponse.getStatusCode());
 
     }
+
+    @DisplayName("LobbyControllerTest: Issue #92")
+    @Test
+    public void issue92() {
+        /**
+         The backend stores the number of points each player scored
+         #92
+         */
+
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user32", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        Long gameMasterUserId = responseToJsonNode(response).get("id").asLong();
+
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user33", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "dummyDefinitionGM");
+        registerDefinition(tokenJoinPlayer, "dummyDefinitionPlayer2");
+
+        //Game master casts the real definition
+        //the second player (associated with token 'tokenjoinPlayer') gets fooled by GM
+        castVote(0L, tokenGameMaster1);
+        castVote(gameMasterUserId, tokenJoinPlayer);
+
+        //which should result in the game master receiving 3 points and the second player zero:
+        JsonNode results = responseToJsonNode(getLobby(tokenGameMaster1, lobbyId));
+
+        JsonNode players = results.path("game_details").path("players");
+        assertTrue(players.isArray(), "Players should be an array");
+
+        for (JsonNode player : players) {
+            String username = player.path("username").asText();
+            int score = player.path("score").asInt();
+
+            if (username.equals("user32")) {
+                assertEquals(3, score, "User32 should have a score of 3");
+            } else if (username.equals("user33")) {
+                assertEquals(0, score, "User33 should have a score of 0");
+            }
+        }
+
+    }
+
+
 
     private ResponseEntity<String> castVote(Long userId, String tokenGameMaster1) {
         String uri = "http://localhost:" + port + "/lobbies/users/votes";
