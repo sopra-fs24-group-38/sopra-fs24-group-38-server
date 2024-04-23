@@ -232,11 +232,15 @@ public class LobbyService {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
         for(User user : users) {
-            if(user.getIsConnected() && user.getDefinition() == null) {
-                log.warn("not all users in the lobby have submitted their definition");
+            if(user.getIsConnected() == null && user.getDefinition() == null){
                 return;
             }
-
+            if(user.getIsConnected() != null) {
+                if (user.getIsConnected() && user.getDefinition() == null) {
+                    log.warn("not all users in the lobby have submitted their definition");
+                    return;
+                }
+            }
         }
         lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
@@ -251,9 +255,14 @@ public class LobbyService {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
         for(User user : users) {
-            if (user.getIsConnected() && user.getVotedForUserId() == null) {
-                log.warn("not all users in the lobby have submitted their votes");
+            if(user.getIsConnected() == null && user.getVotedForUserId() == null){
                 return;
+            }
+            if(user.getIsConnected() != null) {
+                if (user.getIsConnected() && user.getVotedForUserId() == null) {
+                    log.warn("not all users in the lobby have submitted their votes");
+                    return;
+                }
             }
         }
         evaluateVotes(users);
@@ -288,12 +297,16 @@ public class LobbyService {
     private void evaluateVotes( List<User> users) {
         for(User user : users) {
             for(User userz : users) {
-                if(!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())){
-                    user.setScore(user.getScore() + 2L);
+                if(userz.getVotedForUserId() != null) {
+                    if (!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())) {
+                        user.setScore(user.getScore() + 2L);
+                    }
                 }
             }
-            if(user.getVotedForUserId().equals(0L)){
-                user.setScore(user.getScore() + 1L);
+            if(user.getVotedForUserId() != null) {
+                if (user.getVotedForUserId().equals(0L)) {
+                    user.setScore(user.getScore() + 1L);
+                }
             }
         }
     }

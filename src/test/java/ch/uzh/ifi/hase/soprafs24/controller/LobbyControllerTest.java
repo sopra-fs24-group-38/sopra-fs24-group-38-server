@@ -347,6 +347,51 @@ public class LobbyControllerTest {
         assertNotNull(responseBody.get("game_details").get("challenge").toString());
     }
 
+    @DisplayName("LobbyControllerTest: Issue #80")
+    @Test
+    public void issue80() {
+        /**
+         The backend is able to receive the votes which the players submitted #80
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user30", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user31", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "placeboDefintion1");
+        registerDefinition(tokenJoinPlayer, "placeboDefintion2");
+
+
+        System.out.println("***" + responseToJsonNode(getLobby(tokenJoinPlayer, lobbyId)).toString());
+        JsonNode responseBodyCreationPlayer1 = responseToJsonNode(response);
+        Long userId = responseBodyCreationPlayer1.get("id").asLong();
+
+        ResponseEntity<String> castedVoteResponse = castVote(userId, tokenGameMaster1);
+
+        assertEquals(HttpStatus.OK, castedVoteResponse.getStatusCode());
+
+    }
+
+    private ResponseEntity<String> castVote(Long userId, String tokenGameMaster1) {
+        String uri = "http://localhost:" + port + "/lobbies/users/votes";
+        HttpHeaders headers = prepareHeader(tokenGameMaster1);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("vote", userId);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        return restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+    }
+
+
     public JsonNode responseToJsonNode(ResponseEntity<String> response) {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = null;
