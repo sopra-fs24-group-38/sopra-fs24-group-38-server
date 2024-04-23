@@ -281,14 +281,14 @@ public class LobbyControllerTest {
          The backend provides a way to start the game.
          #177
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user24", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user25", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user25", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user26", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -303,14 +303,14 @@ public class LobbyControllerTest {
          The backend provides a way to start the game.
          #71 The backend receives the answers to the current challange via an api endpoint and stores them in the lobby entity
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user26", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user27", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user27", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user28", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -327,14 +327,14 @@ public class LobbyControllerTest {
         /**
          The backend provides the current challange to the frontend via an api endpoint #70
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user28", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user29", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user29", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user30", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -353,14 +353,14 @@ public class LobbyControllerTest {
         /**
          The backend is able to receive the votes which the players submitted #80
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user30", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user31", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user31", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user32", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -386,7 +386,7 @@ public class LobbyControllerTest {
          #92
          */
 
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user32", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user33", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
@@ -395,7 +395,7 @@ public class LobbyControllerTest {
 
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user33", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user34", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
 
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
@@ -420,9 +420,9 @@ public class LobbyControllerTest {
             String username = player.path("username").asText();
             int score = player.path("score").asInt();
 
-            if (username.equals("user32")) {
+            if (username.equals("user33")) {
                 assertEquals(3, score, "User32 should have a score of 3");
-            } else if (username.equals("user33")) {
+            } else if (username.equals("user34")) {
                 assertEquals(0, score, "User33 should have a score of 0");
             }
         }
