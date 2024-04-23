@@ -247,6 +247,36 @@ public class LobbyControllerTest {
 
     }
 
+    @DisplayName("LobbyControllerTest: Issue #58")
+    @Test
+    public void issue58() {
+        /**
+         The backend provides an endpoint which removes the user from lobby and removes the current token from the user entity
+         #58
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user23", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user24", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        ResponseEntity<String> responseLobbyLeave = removePlayer(tokenJoinPlayer, lobbyId);
+        assertEquals(HttpStatus.OK, responseLobbyLeave.getStatusCode());
+
+    }
+
+
+    private ResponseEntity<String> removePlayer(String token, Long lobbyId){
+        String uri = "http://localhost:" + port + "/lobbies/users/"+lobbyId;
+        HttpHeaders headers = prepareHeader(token);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        return restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
+    }
     private void registerDefinition(String token, String defintion) {
         String uri = "http://localhost:" + port + "/lobbies/users/definitions";
         HttpHeaders header = prepareHeader(token);
