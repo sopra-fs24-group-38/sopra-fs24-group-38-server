@@ -314,7 +314,7 @@ public class LobbyControllerTest {
         startLobby(tokenGameMaster1);
 
         ResponseEntity<String> response1 = registerDefinition(tokenGameMaster1, "DummyAnswer");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
 
     }
 
