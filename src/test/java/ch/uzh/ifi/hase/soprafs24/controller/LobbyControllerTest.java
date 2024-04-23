@@ -1,6 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -300,14 +303,14 @@ public class LobbyControllerTest {
          The backend provides a way to start the game.
          #71 The backend receives the answers to the current challange via an api endpoint and stores them in the lobby entity
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user21", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user26", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user22", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user27", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -318,7 +321,50 @@ public class LobbyControllerTest {
 
     }
 
+    @DisplayName("LobbyControllerTest: Issue #70")
+    @Test
+    public void issue70() {
+        /**
+         The backend provides the current challange to the frontend via an api endpoint #70
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user28", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user29", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        ResponseEntity<String> response1 = getLobby(tokenGameMaster1, lobbyId);
+        JsonNode responseBody = responseToJsonNode(response1);
+
+        //assert that the challenge field is not null and also that the API request worked
+        assertNotNull(responseBody.get("game_details").get("challenge").toString());
+    }
+
+    public JsonNode responseToJsonNode(ResponseEntity<String> response) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+
+        String jsonBody = response.getBody();
+        try {
+            rootNode = mapper.readTree(jsonBody);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return rootNode;
+    }
+    private ResponseEntity<String> getLobby(String token, Long lobbyId) {
+        String uri = "http://localhost:" + port + "/lobbies/"+lobbyId;
+        HttpHeaders headers = prepareHeader(token);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+    }
     private ResponseEntity<String> removePlayer(String token, Long lobbyId){
         String uri = "http://localhost:" + port + "/lobbies/users/"+lobbyId;
         HttpHeaders headers = prepareHeader(token);
