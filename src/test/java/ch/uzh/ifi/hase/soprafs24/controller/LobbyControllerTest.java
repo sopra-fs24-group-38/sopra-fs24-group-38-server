@@ -271,6 +271,29 @@ public class LobbyControllerTest {
     }
 
 
+    @DisplayName("LobbyControllerTest: Issue #177")
+    @Test
+    public void issue177() {
+        /**
+         The backend provides a way to start the game.
+         #177
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user24", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user25", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+
+        ResponseEntity<String> responseLobbyStart = startLobby(tokenGameMaster1);
+        assertEquals(HttpStatus.OK, responseLobbyStart.getStatusCode());
+    }
+
     private ResponseEntity<String> removePlayer(String token, Long lobbyId){
         String uri = "http://localhost:" + port + "/lobbies/users/"+lobbyId;
         HttpHeaders headers = prepareHeader(token);
