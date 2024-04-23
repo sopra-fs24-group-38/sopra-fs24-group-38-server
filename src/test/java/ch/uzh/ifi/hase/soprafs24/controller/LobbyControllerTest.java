@@ -293,6 +293,31 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseLobbyStart = startLobby(tokenGameMaster1);
         assertEquals(HttpStatus.OK, responseLobbyStart.getStatusCode());
     }
+    @DisplayName("LobbyControllerTest: Issue #71")
+    @Test
+    public void issue71() {
+        /**
+         The backend provides a way to start the game.
+         #71 The backend receives the answers to the current challange via an api endpoint and stores them in the lobby entity
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user21", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user22", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        ResponseEntity<String> response1 = registerDefinition(tokenGameMaster1, "DummyAnswer");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
+
 
     private ResponseEntity<String> removePlayer(String token, Long lobbyId){
         String uri = "http://localhost:" + port + "/lobbies/users/"+lobbyId;
@@ -300,7 +325,7 @@ public class LobbyControllerTest {
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
         return restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
     }
-    private void registerDefinition(String token, String defintion) {
+    private ResponseEntity<String> registerDefinition(String token, String defintion) {
         String uri = "http://localhost:" + port + "/lobbies/users/definitions";
         HttpHeaders header = prepareHeader(token);
 
@@ -310,6 +335,7 @@ public class LobbyControllerTest {
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, header);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response;
     }
 
     private ResponseEntity<String> startLobby(String tokenGameMaster1) {
