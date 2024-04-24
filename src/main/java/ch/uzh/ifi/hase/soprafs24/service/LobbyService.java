@@ -156,7 +156,7 @@ public class LobbyService {
         return lobbyToReturn;
     }
 
-    public void startGame(Long userId) {
+    public Long startGame(Long userId) {
 
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
@@ -170,8 +170,7 @@ public class LobbyService {
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
-
-        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_start");
+        return lobby.getLobbyPin();
     }
 
 

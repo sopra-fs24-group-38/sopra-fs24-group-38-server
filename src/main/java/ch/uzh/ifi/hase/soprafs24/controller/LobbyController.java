@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
@@ -132,8 +134,8 @@ public class LobbyController {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
         lobbyService.checkState(userId, LobbyState.WAITING);
 
-        lobbyService.startGame(userId);
-
+        Long lobbyId = lobbyService.startGame(userId);
+        socketHandler.sendMessageToLobby(lobbyId, "game_start");
         return ResponseEntity.ok().build();
 
     }
@@ -145,7 +147,6 @@ public class LobbyController {
         lobbyService.registerNextRound(userId);
 
         return ResponseEntity.ok().build();
-
     }
 
 }

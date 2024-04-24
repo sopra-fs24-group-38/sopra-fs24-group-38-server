@@ -1,7 +1,11 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.controller.LobbyController;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.*;
 
@@ -27,17 +32,18 @@ import java.util.List;
 
 @WebMvcTest(LobbyController.class)
 public class SocketServiceTest {
+
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private UserService userService;
-
     @MockBean
     private LobbyService lobbyService;
-
     @MockBean
     private SocketHandler socketHandler;
+    @MockBean
+    private ApiService apiService;
+
 
     @BeforeEach
     public void setup() {
@@ -72,5 +78,50 @@ public class SocketServiceTest {
         verify(userService).getUserIdByTokenAndAuthenticate(token);
         verify(lobbyService).addPlayerToLobby(userId, gamePin);
         verify(socketHandler).sendMessageToLobby(gamePin, "user_joined");
+    }
+
+    @Test
+    public void testStartGameLogic() throws Exception {
+        Long gamePin = 1234L;
+        String token = "Bearer your_auth_token";
+
+        User user1 = new User();
+        Long userId1 = 1L;
+        user1.setId(userId1);
+
+        User user2 = new User();
+        Long userId2 = 2L;
+        user2.setId(userId2);
+
+        List<User> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+
+        Lobby lobby = new Lobby();
+        lobby.setUsers(users);
+        lobby.setGameMaster(userId1);
+        lobby.setLobbyPin(gamePin);
+
+        ArrayList<Challenge> challenges = new ArrayList<>();
+        Challenge challenge = new Challenge();
+        challenges.add(challenge);
+        challenge.setChallenge("dummyChallenge");
+        challenge.setSolution("dummySolution");
+
+        given(userService.getUserIdByTokenAndAuthenticate(token)).willReturn(userId1);
+        given(userService.getUserById(userId1)).willReturn(user1);
+        given(lobbyService.getLobbyAndExistenceCheck(anyLong())).willReturn(lobby);
+        given(apiService.generateChallenges(anyInt())).willReturn(challenges);
+        doNothing().when(lobbyService).checkState(gamePin, LobbyState.WAITING);
+
+        mockMvc.perform(post("/lobbies/start")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(userService).getUserIdByTokenAndAuthenticate(token);
+        verify(lobbyService).checkState(userId1, LobbyState.WAITING);
+        verify(userService).getUserIdByTokenAndAuthenticate(token);
+        verify(socketHandler).sendMessageToLobby(anyLong(), eq("game_start"));
     }
 }
