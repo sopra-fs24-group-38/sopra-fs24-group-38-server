@@ -46,11 +46,11 @@ public class UserControllerTest {
          * #28
          */
         //createUser Method already performs an assert for created response status
-        String responseRegister = createUser("User1", "password1");
+        String responseRegister = createUser("User99", "password1");
 
         // Try Login with good credentials (pwd) to check that credentials are being persisted
 
-        String responseLogin = loginWithSuccessAssertion("User1", "password1");
+        String responseLogin = loginWithSuccessAssertion("User99", "password1");
 
         // and tokens match
         String tokenFromRegister = extractTokenFromResponse(responseRegister);
