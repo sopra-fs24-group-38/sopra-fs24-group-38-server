@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,11 +24,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.*;
+
 
 import org.mockito.MockitoAnnotations;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @WebMvcTest(LobbyController.class)
@@ -45,11 +49,6 @@ public class SocketServiceTest {
     private ApiService apiService;
 
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-
-    }
 
     @Test
     public void testJoinLobby() throws Exception {
@@ -82,6 +81,7 @@ public class SocketServiceTest {
 
     @Test
     public void testStartGameLogic() throws Exception {
+        //Issue 61 test
         Long gamePin = 1234L;
         String token = "Bearer your_auth_token";
 
@@ -124,4 +124,26 @@ public class SocketServiceTest {
         verify(userService).getUserIdByTokenAndAuthenticate(token);
         verify(socketHandler).sendMessageToLobby(anyLong(), eq("game_start"));
     }
-}
+    /**
+    @Test
+    public void sendDefinitionFinished() throws Exception {
+        Long lobbyId = 1234L;
+        User user1 = new User();
+        user1.setDefinition("definition1");
+        User user2 = new User();
+        user1.setDefinition("definition2");
+        List<User> users = Arrays.asList(user1, user2);
+        Lobby lobby = new Lobby();
+        lobby.setUsers(users);
+
+        when(lobbyService.getLobbyAndExistenceCheck(lobbyId)).thenReturn(lobby);
+
+        // Execute
+        lobbyService.checkIfAllDefinitionsReceived(lobbyId);
+
+        // Verify
+        verify(socketHandler).sendMessageToLobby(eq(lobbyId), eq("definitions_finished"));
+    }
+    **/
+
+    }
