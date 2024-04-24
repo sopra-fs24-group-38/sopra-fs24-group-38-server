@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.web.client.ResourceAccessException;
 
 
 import java.util.*;
@@ -84,6 +84,44 @@ public class UserControllerTest {
         //Login with bad credential and expect error
         ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+    @DisplayName("Complex Unit Test")
+    @Test
+    public void complexUnitTest() {
+        /**
+         * Creates a user first, then creates a lobby and then performs a GET request on the lobby to check
+         * that the user is registered in the lobby
+         */
+        //createUser Method already performs an assert for created response status
+        String responseRegister = createUser("User1", "password1");
+        String tokenFromRegister = extractTokenFromResponse(responseRegister);
+
+        //Create a lobby
+        String uri = "http://localhost:" + port + "/lobbies";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenFromRegister);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+
+        //assert that lobby was created
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        JSONObject jsonObject = new JSONObject(response.getBody());
+        long gamePin = jsonObject.getLong("game_pin");
+        assertTrue(gamePin >= 1000 && gamePin <= 9999, "Lobby ID should be a four-digit number");
+
+        //extract the user from the lobby and assert that he is in the lobby
+        uri = "http://localhost:" + port + "/lobbies/" + gamePin;
+        ResponseEntity<String> lobbyResponse = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, lobbyResponse.getStatusCode());
+        JSONObject lobbyObject = new JSONObject(lobbyResponse.getBody());
+        JSONObject gameDetails = lobbyObject.getJSONObject("game_details");
+        JSONArray players = gameDetails.getJSONArray("players");
+        JSONObject firstPlayer = players.getJSONObject(0);
+        String username = firstPlayer.getString("username");
+        assertEquals("User1", username, "The username does not match the expected value");
     }
 
 
