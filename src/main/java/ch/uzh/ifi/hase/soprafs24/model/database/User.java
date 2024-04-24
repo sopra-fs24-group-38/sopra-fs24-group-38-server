@@ -29,7 +29,7 @@ public class User implements Serializable {
     private String sessionId;
 
     @Column
-    private Boolean isConnected = false;
+    private Boolean isConnected;
 
     @Column
     private String definition;
