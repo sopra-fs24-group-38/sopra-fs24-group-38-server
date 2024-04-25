@@ -26,6 +26,7 @@ public class ApiService {
     private String tokenEnv;
 
     public List<Challenge> generateChallenges(int numberRounds) {
+        numberRounds += 1;
         String url = "https://api.openai.com/v1/chat/completions";
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getSecret());

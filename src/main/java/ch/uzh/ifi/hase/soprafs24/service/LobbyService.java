@@ -272,7 +272,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        if(lobby.getRoundNumber() + 1  == lobby.getMaxRoundNumbers()) {
+        if(lobby.getRoundNumber()  == lobby.getMaxRoundNumbers()) {
             lobby.setLobbyState(LobbyState.GAMEOVER);
             socketHandler.sendMessageToLobby(lobbyId, "game_over");
         }
