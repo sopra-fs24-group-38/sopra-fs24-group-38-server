@@ -123,14 +123,14 @@ public class Lobby {
 
     public String getCurrentChallenge() {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
-            return challenges.get((roundNumber.intValue())).getChallenge();
+            return challenges.get(roundNumber.intValue()-1).getChallenge();
         }
         else return null;
     }
 
     public String getCurrentSolution() {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
-            return challenges.get((roundNumber.intValue())).getSolution();
+            return challenges.get(roundNumber.intValue()-1).getSolution();
         }
         else return null;
     }

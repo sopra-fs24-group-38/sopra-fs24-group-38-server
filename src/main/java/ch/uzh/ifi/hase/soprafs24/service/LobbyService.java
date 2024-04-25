@@ -128,7 +128,7 @@ public class LobbyService {
     }
 
     private void setRounds(int roundUpdate, Lobby lobby) {
-        if (roundUpdate < 5 || roundUpdate > 15) {
+        if (roundUpdate < 3 || roundUpdate > 15) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
         }
         lobby.setMaxRoundNumbers(roundUpdate);
@@ -271,7 +271,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        if(lobby.getRoundNumber() == lobby.getMaxRoundNumbers()) {
+        if(lobby.getRoundNumber()  == lobby.getMaxRoundNumbers()) {
             lobby.setLobbyState(LobbyState.GAMEOVER);
             socketHandler.sendMessageToLobby(lobbyId, "game_over");
         }
