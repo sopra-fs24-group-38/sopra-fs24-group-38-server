@@ -123,7 +123,13 @@ Basically finished Lobby component
 - Closed issue 100 since not implemented (unnecessary)
     - [#100](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/100)
 ## Markus Senn
-
+- Created a game end view with a scoreboard
+    - [#48](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/48)
+- Added rules button content + functionality
+    - [#54](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/54)
+- Fixes for design and minor bugs
+    - [#55](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/55)
+    - [#64](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/64)
 
 ## Cédric Styner
 
