@@ -395,7 +395,7 @@ public class LobbyControllerTest {
 
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user34", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user64", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
 
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
@@ -422,14 +422,59 @@ public class LobbyControllerTest {
 
             if (username.equals("user33")) {
                 assertEquals(3, score, "User32 should have a score of 3");
-            } else if (username.equals("user34")) {
+            } else if (username.equals("user64")) {
                 assertEquals(0, score, "User33 should have a score of 0");
             }
         }
 
     }
 
+    @DisplayName("LobbyControllerTest: Issue #72 #82 & #91")
+    @Test
+    public void issue72_82_91() {
+        /**
+         The backend tells frontend when its voting time / all votings cast / and whether or not game over
+         Issues #72, #82 & #91
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user34", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+        Long gameMasterUserId = responseToJsonNode(response).get("id").asLong();
 
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user35", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "dummyDefinitionGM");
+        registerDefinition(tokenJoinPlayer, "dummyDefinitionPlayer2");
+
+
+        //Test that vote indication works issue #72
+        ResponseEntity<String> responseLobbyGet = getLobby(tokenGameMaster1, lobbyId);
+        JsonNode lobbyInfo = responseToJsonNode(responseLobbyGet);
+        String gameState = lobbyInfo.get("game_details").get("game_state").asText();
+        assertEquals("VOTE", gameState);
+
+        //perform all votes
+        castVote(0L, tokenGameMaster1);
+        castVote(gameMasterUserId, tokenJoinPlayer);
+
+        //Test that all votes cast indication works issue #82
+        responseLobbyGet = getLobby(tokenGameMaster1, lobbyId);
+        JsonNode lobbyInfoEval = responseToJsonNode(responseLobbyGet);
+        String gameStateEval = lobbyInfoEval.get("game_details").get("game_state").asText();
+        assertEquals("EVALUATION", gameStateEval);
+
+        //Test that game not over yet issue #91
+        String gameOver = lobbyInfoEval.get("game_details").get("game_over").asText();
+        assertEquals("false", gameOver);
+    }
 
     private ResponseEntity<String> castVote(Long userId, String tokenGameMaster1) {
         String uri = "http://localhost:" + port + "/lobbies/users/votes";
