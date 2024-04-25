@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import ch.uzh.ifi.hase.soprafs24.websockets.WebSocketSessionManager;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.*;
 
 
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.socket.WebSocketSession;
 
 
 import java.util.ArrayList;
@@ -124,26 +126,6 @@ public class SocketServiceTest {
         verify(userService).getUserIdByTokenAndAuthenticate(token);
         verify(socketHandler).sendMessageToLobby(anyLong(), eq("game_start"));
     }
-    /**
-    @Test
-    public void sendDefinitionFinished() throws Exception {
-        Long lobbyId = 1234L;
-        User user1 = new User();
-        user1.setDefinition("definition1");
-        User user2 = new User();
-        user1.setDefinition("definition2");
-        List<User> users = Arrays.asList(user1, user2);
-        Lobby lobby = new Lobby();
-        lobby.setUsers(users);
 
-        when(lobbyService.getLobbyAndExistenceCheck(lobbyId)).thenReturn(lobby);
-
-        // Execute
-        lobbyService.checkIfAllDefinitionsReceived(lobbyId);
-
-        // Verify
-        verify(socketHandler).sendMessageToLobby(eq(lobbyId), eq("definitions_finished"));
-    }
-    **/
 
     }
