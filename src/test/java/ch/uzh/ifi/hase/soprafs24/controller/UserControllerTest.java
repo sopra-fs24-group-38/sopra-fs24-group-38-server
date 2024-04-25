@@ -24,6 +24,19 @@ public class UserControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @DisplayName("UserController Test: createUser")
+    @Test
+    public void createUserAndAssertSuccessStatus() {
+        ResponseEntity<String> response = createUserAndAssertSuccessStatus("username77", "password");
+        JSONObject jsonObject = new JSONObject(response.getBody());
+
+        String token = jsonObject.getString("token");
+        Long id = jsonObject.getLong("id");
+
+        assertValidUUID(token);
+        assertNotNull(id);
+    }
+
 
     @DisplayName("UserController Test: Issue #31")
     @Test
@@ -32,7 +45,7 @@ public class UserControllerTest {
          * The backend generates a token to enable authenatication and re-login.
          * #31
          */
-        String response = createUser("username", "password");
+        String response = createUserAndAssertSuccessStatus("username", "password").getBody();
         assertTrue(response.contains("\"token\""));
         String token = extractTokenFromResponse(response);
         assertNotNull(token);
@@ -46,11 +59,11 @@ public class UserControllerTest {
          * #28
          */
         //createUser Method already performs an assert for created response status
-        String responseRegister = createUser("User99", "password1");
+        String responseRegister = createUserAndAssertSuccessStatus("User99d", "password1").getBody();
 
         // Try Login with good credentials (pwd) to check that credentials are being persisted
 
-        String responseLogin = loginWithSuccessAssertion("User99", "password1");
+        String responseLogin = loginWithSuccessAssertion("User99d", "password1");
 
         // and tokens match
         String tokenFromRegister = extractTokenFromResponse(responseRegister);
@@ -64,7 +77,7 @@ public class UserControllerTest {
          * The backend is able to check the user's credentials and return a token upon success
          * #37
          **/
-        createUser("testUser22", "pw22");
+        createUserAndAssertSuccessStatus("testUser22", "pw22");
         //login :
         String responseLogin = loginWithSuccessAssertion("testUser22", "pw22");
 
@@ -80,7 +93,7 @@ public class UserControllerTest {
          * The backend returns a http error if the credentials do not match #38
          */
         // Register ...
-        createUser("dummyUserName", "password");
+        createUserAndAssertSuccessStatus("dummyUserName", "password");
         //Login with bad credential and expect error
         ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -93,7 +106,7 @@ public class UserControllerTest {
          * that the user is registered in the lobby
          */
         //createUser Method already performs an assert for created response status
-        String responseRegister = createUser("User1", "password1");
+        String responseRegister = createUserAndAssertSuccessStatus("User1", "password1").getBody();
         String tokenFromRegister = extractTokenFromResponse(responseRegister);
 
         //Create a lobby
@@ -126,7 +139,7 @@ public class UserControllerTest {
 
 
     //UTILITY METHODS :
-    private String createUser(String username, String password) {
+    private ResponseEntity<String> createUserAndAssertSuccessStatus(String username, String password) {
         String uri = "http://localhost:" + port + "/users";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("username", username);
@@ -139,7 +152,7 @@ public class UserControllerTest {
 
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        return response.getBody();
+        return response;
     }
 
     private ResponseEntity<String> login(String username, String password){
@@ -188,4 +201,5 @@ public class UserControllerTest {
             fail("Token is not a valid UUID");
         }
     }
+
 }
