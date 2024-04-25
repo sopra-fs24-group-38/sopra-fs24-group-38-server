@@ -395,7 +395,7 @@ public class LobbyControllerTest {
 
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user34", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user64", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
 
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
@@ -422,7 +422,7 @@ public class LobbyControllerTest {
 
             if (username.equals("user33")) {
                 assertEquals(3, score, "User32 should have a score of 3");
-            } else if (username.equals("user34")) {
+            } else if (username.equals("user64")) {
                 assertEquals(0, score, "User33 should have a score of 0");
             }
         }
