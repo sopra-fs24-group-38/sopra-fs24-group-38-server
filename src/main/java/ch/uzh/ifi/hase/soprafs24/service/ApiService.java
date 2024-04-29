@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
@@ -25,7 +26,7 @@ public class ApiService {
     @Value("${api.token}")
     private String tokenEnv;
 
-    public List<Challenge> generateChallenges(int numberRounds) {
+    public List<Challenge> generateChallenges(int numberRounds, LobbyModes lobbyMode) {
         numberRounds += 1;
         String url = "https://api.openai.com/v1/chat/completions";
         HttpHeaders headers = new HttpHeaders();
@@ -36,7 +37,8 @@ public class ApiService {
                 + "\"model\": \"gpt-4\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
-                + "The value should return a bizzare and unknown word. The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. "
+                + "The value should return a word of the category " + lobbyMode + " . The word should be rather unknown but possible to think of a plausible, but wrong answer. "
+                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. "
                 + "Now give us "
                 + numberRounds
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"

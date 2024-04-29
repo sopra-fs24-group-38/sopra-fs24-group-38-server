@@ -23,10 +23,10 @@ public class Lobby {
     @Column
     private int maxRoundNumbers = 10;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @Column
     @Enumerated(EnumType.STRING)
     //Definition is the default mode :
-    private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.DEFINITIONS));
+    private LobbyModes lobbyMode = LobbyModes.BIZARRE;
 
     @OneToMany
     private List<User> users = new ArrayList<>();
@@ -45,12 +45,12 @@ public class Lobby {
     private Long roundNumber;
 
 
-    public Set<LobbyModes> getLobbyModes() {
-        return lobbyModes;
+    public LobbyModes getLobbyMode() {
+        return lobbyMode;
     }
 
-    public void setLobbyModes(Set<LobbyModes> lobbyModes) {
-        this.lobbyModes = lobbyModes;
+    public void setLobbyMode(LobbyModes lobbyMode) {
+        this.lobbyMode = lobbyMode;
     }
 
     public void setUsers(List<User> users) {

@@ -135,17 +135,14 @@ public class LobbyService {
     }
 
     private void setGameModes(List<String> gameModes, Lobby lobby) {
-        Set<LobbyModes> lobbyModes = new HashSet<>();
         for (String gameModeNotValidated : gameModes) {
             try {
-                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
-                lobbyModes.add(lobbyMode);
+                lobby.setLobbyMode(LobbyModes.valueOf(gameModes.get(0)));
             }
             catch (IllegalArgumentException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
             }
         }
-        lobby.setLobbyModes(lobbyModes);
     }
 
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
@@ -166,7 +163,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
-        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers()));
+        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyMode()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
