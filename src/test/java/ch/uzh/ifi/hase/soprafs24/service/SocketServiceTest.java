@@ -105,7 +105,7 @@ public class SocketServiceTest {
         given(userService.getUserIdByTokenAndAuthenticate(token)).willReturn(userId1);
         given(userService.getUserById(userId1)).willReturn(user1);
         given(lobbyService.getLobbyAndExistenceCheck(anyLong())).willReturn(lobby);
-        given(apiService.generateChallenges(anyInt(), lobby.getLobbyModes())).willReturn(challenges);
+        given(apiService.generateChallenges(anyInt(), anySet())).willReturn(challenges);
         doNothing().when(lobbyService).checkState(gamePin, LobbyState.WAITING);
 
         mockMvc.perform(post("/lobbies/start")

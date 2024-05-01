@@ -451,13 +451,11 @@ components:
           type: array
           items:
             type: string
-            enum: [DEFINITIONS, DUTCH, URBAN]
-          example: [DEFINITIONS, DUTCH, URBAN]
+            enum: [BIZARRE, DUTCH, PROGRAMMING, RAREFOODS]
+          example: [BIZARRE, DUTCH, PROGRAMMING, RAREFOODS]
         rounds:
           type: integer
           example: 15
-
-
 
 
 

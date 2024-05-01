@@ -183,7 +183,7 @@ public class LobbyService {
 
         gameDetails.setChallenge(lobby.getCurrentChallenge());
         gameDetails.setSolution(lobby.getCurrentSolution());
-        gameDetails.setGameMode(lobby.getCurrentMode().toString());
+        gameDetails.setGameMode(lobby.getCurrentMode());
 
         gameDetails.setGameState(lobby.getLobbyState().toString());
         gameDetails.setGameOver(lobby.isGameOver());

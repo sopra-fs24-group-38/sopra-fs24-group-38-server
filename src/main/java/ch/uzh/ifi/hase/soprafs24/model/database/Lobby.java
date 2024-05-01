@@ -135,9 +135,9 @@ public class Lobby {
         else return null;
     }
 
-    public LobbyModes getCurrentMode() {
+    public String getCurrentMode() {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
-            return challenges.get(roundNumber.intValue()-1).getLobbyMode();
+            return challenges.get(roundNumber.intValue()-1).getLobbyMode().toString();
         }
         else return null;
     }
