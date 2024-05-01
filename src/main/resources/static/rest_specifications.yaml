@@ -140,6 +140,7 @@ paths:
           description: Lobby full
         '400':
           description: Bad request
+
     delete:
       tags:
         - lobby
@@ -165,7 +166,33 @@ paths:
         '400':
           description: Bad request
 
-
+  /lobbies/users/{gamePin}/ai:
+    put:
+      tags:
+        - lobby
+      summary: Add an AI bot
+      description: 'Adds an AI player to the Lobby'
+      operationId: joinUserAi
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
+      responses:
+        '201':
+          description: Successfully joined a user to the lobby.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyGamePin'
+        '401':
+          description: Not authenticated
+        '403':
+          description: Lobby full
+        '400':
+          description: Bad request
   /lobbies/{gamePin}:
     put:
       tags:
