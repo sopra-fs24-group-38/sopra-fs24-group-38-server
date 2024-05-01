@@ -14,6 +14,8 @@ public class GameDetails {
     private String challenge;
 
     private String solution;
+    @JsonProperty("game_mode")
+    private String gameMode;
 
     @JsonProperty("game_master_id")
     private Long gameMasterId;
@@ -80,4 +82,8 @@ public class GameDetails {
     public void setGameMasterUsername(String gameMasterUsername) {
         this.gameMasterUsername = gameMasterUsername;
     }
+
+    public String getGameMode() {return gameMode;}
+
+    public void setGameMode(String gameMode) {this.gameMode = gameMode;}
 }

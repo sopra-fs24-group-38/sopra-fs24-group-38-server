@@ -166,7 +166,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
-        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers()));
+        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -183,6 +183,8 @@ public class LobbyService {
 
         gameDetails.setChallenge(lobby.getCurrentChallenge());
         gameDetails.setSolution(lobby.getCurrentSolution());
+        gameDetails.setGameMode(lobby.getCurrentMode().toString());
+
         gameDetails.setGameState(lobby.getLobbyState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
         gameDetails.setGameMasterId(lobby.getGameMaster());

@@ -26,7 +26,7 @@ public class Lobby {
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     //Definition is the default mode :
-    private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.DEFINITIONS));
+    private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.BIZARRE));
 
     @OneToMany
     private List<User> users = new ArrayList<>();
@@ -131,6 +131,13 @@ public class Lobby {
     public String getCurrentSolution() {
         if (roundNumber >= 0 && roundNumber < challenges.size()) {
             return challenges.get(roundNumber.intValue()-1).getSolution();
+        }
+        else return null;
+    }
+
+    public LobbyModes getCurrentMode() {
+        if (roundNumber >= 0 && roundNumber < challenges.size()) {
+            return challenges.get(roundNumber.intValue()-1).getLobbyMode();
         }
         else return null;
     }
