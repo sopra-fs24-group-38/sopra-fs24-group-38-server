@@ -340,6 +340,10 @@ components:
           type: integer
           example: 2
           description: userId of the current gameMaster
+        game_mode:
+          type: string
+          example: "PROGRAMMING"
+          description: username of the current gameMaster
         game_master_username:
           type: string
           example: "GameMasterUsername2000"
@@ -456,6 +460,8 @@ components:
         rounds:
           type: integer
           example: 15
+
+
 
 
 
