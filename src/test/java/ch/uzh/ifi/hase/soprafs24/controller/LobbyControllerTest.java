@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +63,7 @@ public class LobbyControllerTest {
 
         //Prepare Modes:
         ArrayList<LobbyModes> modes = new ArrayList<>();
-        modes.add(LobbyModes.DEFINITIONS);
+        modes.add(LobbyModes.BIZARRE);
         modes.add(LobbyModes.DUTCH);
 
         //Perform adjustments
