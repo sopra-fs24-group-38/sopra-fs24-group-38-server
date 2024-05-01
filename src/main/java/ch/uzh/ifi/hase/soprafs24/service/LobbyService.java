@@ -220,7 +220,7 @@ public class LobbyService {
         log.warn("Lobby with id "+ lobby.getLobbyPin() + " reset..");
         resetLobbyAndNextRoundBool(lobby, users);
 
-        if(lobby.getRoundNumber()  >= lobby.getMaxRoundNumbers()) {
+        if(lobby.getRoundNumber() - 1 >= lobby.getMaxRoundNumbers()) {
             lobby.setLobbyState(LobbyState.GAMEOVER);
             socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_over");
         }
