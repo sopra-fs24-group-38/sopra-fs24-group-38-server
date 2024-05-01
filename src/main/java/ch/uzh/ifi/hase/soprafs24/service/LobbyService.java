@@ -42,6 +42,9 @@ public class LobbyService {
     @Autowired
     private ApiService apiService;
 
+    @Autowired
+    private AIPlayerService aiPlayerService;
+
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -59,6 +62,15 @@ public class LobbyService {
         userService.setLobbyId(userId, lobbyId);
         userService.setAvatarPin(userId);
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
+    }
+
+    public void addAiPlayerToLobby(Long gamePin) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+        performPlayerNumberCheck(lobby);
+        User aiUser = aiPlayerService.createAiUser(gamePin);
+        lobby.addPlayer(aiUser);
+        aiPlayerService.setAvatarPin(gamePin, aiUser);
+        aiUser.setLobbyId(gamePin);
     }
 
 
@@ -230,6 +242,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby not in state: " + requiredLobbyState.toString());
         }
     }
+
     public void checkIfAllDefinitionsReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
@@ -246,11 +259,6 @@ public class LobbyService {
         }
         lobby.setLobbyState(LobbyState.VOTE);
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
-    }
-
-    private void performPlayerNumberCheck(Lobby lobby) {
-        int numPlayers = lobby.getUsers().size();
-        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
 
     public void checkIfAllVotesReceived(Long lobbyId) {
@@ -301,6 +309,11 @@ public class LobbyService {
                 if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
             }
         }
+    }
+
+    private void performPlayerNumberCheck(Lobby lobby) {
+        int numPlayers = lobby.getUsers().size();
+        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
 
     private void evaluateVotes( List<User> users) {

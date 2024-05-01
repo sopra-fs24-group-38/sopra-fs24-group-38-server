@@ -77,6 +77,17 @@ public class LobbyController {
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
     }
 
+    @PutMapping(value = "/users/{gamePin}/ai",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LobbyGetId> joinLAiLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.WAITING);
+        lobbyService.addAiPlayerToLobby(gamePin);
+        socketHandler.sendMessageToLobby(gamePin, "user_joined");
+        LobbyGetId lobbyGetId = new LobbyGetId();
+        lobbyGetId.setGamePin(gamePin);
+        return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
+    }
+
     @PutMapping(value = "/{gamePin}")
     @ResponseStatus(HttpStatus.OK)
     public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,

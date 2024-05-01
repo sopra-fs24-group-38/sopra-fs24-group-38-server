@@ -46,6 +46,10 @@ public class User implements Serializable {
     @Column
     private Boolean wantsNextRound = false;
 
+    @Column
+    private Boolean isAiPlayer = false;
+
+
     public Long getScore() {
         return score;
     }
@@ -143,4 +147,8 @@ public class User implements Serializable {
     public void setWantsNextRound(Boolean wantsNextRound) {
         this.wantsNextRound = wantsNextRound;
     }
+
+    public Boolean getAiPlayer() {return isAiPlayer;}
+
+    public void setAiPlayer(Boolean aiPlayer) {isAiPlayer = aiPlayer;}
 }

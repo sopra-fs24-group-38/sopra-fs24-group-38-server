@@ -31,6 +31,7 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     ObjectMapper objectMapper = new ObjectMapper();
+
     @Value("${avatar.number}")
     private int numAvas;
 
@@ -168,4 +169,6 @@ public class UserService {
         User user = getUserById(getUserIdByTokenAndAuthenticate(token));
         if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
     }
+
+
 }
