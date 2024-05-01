@@ -53,13 +53,26 @@ public class ApiService {
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
         JSONArray jsonArray = new JSONArray(content);
 
+        List<String> values = new ArrayList<>();
+        List<String> definitions = new ArrayList<>();
+
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             String word = jsonObject.getString("value");
             String definition = jsonObject.getString("definition");
-            challenges.add(new Challenge(word, definition, lobbyMode));
+
+            if(values.contains(word)) {
+                fetchChallenges(challenges, lobbyMode, numberOfRoundsOfMode);
+                return;
+            }
+
+            values.add(word);
+            definitions.add(definition);
         }
 
+        for(int i = 0; i < values.size(); i++) {
+            challenges.add(new Challenge(values.get(i), definitions.get(i), lobbyMode));
+        }
     }
     private String getPromptBody(LobbyModes lobbyModes, int numberRounds){
         return "{"

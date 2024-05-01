@@ -192,8 +192,10 @@ public class LobbyService {
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {
-            Player player = objectMapper.convertValue(user, Player.class);
-            players.add(player);
+            if(user.getIsConnected()) {
+                Player player = objectMapper.convertValue(user, Player.class);
+                players.add(player);
+            }
         }
         gameDetails.setPlayers(players);
 

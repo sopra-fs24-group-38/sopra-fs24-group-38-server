@@ -150,8 +150,12 @@ Basically finished Lobby component
     - [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/87)
     - [#101](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/101)
 
-
-
+# 26.04 - 02.05
+## Elia Aeberhard
+- Adjusted getLobby endpoint to exclude not-connected players
+    - [#217](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/217)
+- Added check for repeated words by chatGPT api
+    - [#210](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/210)
 
 
 
