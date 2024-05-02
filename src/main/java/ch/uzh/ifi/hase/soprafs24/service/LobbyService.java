@@ -75,15 +75,26 @@ public class LobbyService {
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
-        user.setDefinition(null);
-        user.setVotedForUserId(null);
-        user.setScore(0L);
+
+        //check if user in lobby or user AI player
         if (!lobby.getUsers().contains(user))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
+        if (user.getAiPlayer())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong endpoint for removing AI player");
+
+        resetUser(userId);
         lobby.removePlayer(user);
-        user.setLobbyId(null);
+
+        //check if all users in lobby are AI players if yes delete
+        if(isLobbyFullWithBots(lobby)){
+            lobbyRepository.delete(lobby);
+            lobbyRepository.flush();
+            log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
+            return;
+        }
+
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
-            lobby.setGameMaster(lobby.getUsers().get(0).getId());
+            lobby.setGameMasterId(lobby.getUsers().get(0).getId());
             lobbyRepository.save(lobby);
             lobbyRepository.flush();
             socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
@@ -91,6 +102,9 @@ public class LobbyService {
         else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
+
+
+
 
     public List<User> getUsers(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
@@ -108,7 +122,7 @@ public class LobbyService {
         } while (lobbyRepository.findLobbyByLobbyPin(pin) != null);
 
         lobby.setLobbyPin(pin);
-        lobby.setGameMaster(userId);
+        lobby.setGameMasterId(userId);
         lobby.addPlayer(userService.getUserById(userId));
         lobby.setLobbyState(LobbyState.WAITING);
         lobby.setGameOver(false);
@@ -333,6 +347,23 @@ public class LobbyService {
                 }
             }
         }
+    }
+    private void resetUser(Long userId) {
+        User user = userService.getUserById(userId);
+        user.setDefinition(null);
+        user.setVotedForUserId(null);
+        user.setScore(0L);
+        user.setLobbyId(null);
+    }
+
+    private boolean isLobbyFullWithBots(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        for(User user : users){
+            if(!user.getAiPlayer()){
+                return false;
+            }
+        }
+        return true;
     }
 
 

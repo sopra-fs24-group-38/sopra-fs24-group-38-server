@@ -92,7 +92,7 @@ public class SocketServiceTest {
 
         Lobby lobby = new Lobby();
         lobby.setUsers(users);
-        lobby.setGameMaster(userId1);
+        lobby.setGameMasterId(userId1);
         lobby.setLobbyPin(gamePin);
         lobby.getLobbyModes().add(LobbyModes.BIZARRE);
 

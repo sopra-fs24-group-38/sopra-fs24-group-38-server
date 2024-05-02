@@ -93,8 +93,8 @@ public class Lobby {
         return gameMaster;
     }
 
-    public void setGameMaster(Long gameMaster) {
-        this.gameMaster = gameMaster;
+    public void setGameMasterId(Long gameMasterId) {
+        this.gameMaster = gameMasterId;
     }
 
     public boolean isGameOver() {
