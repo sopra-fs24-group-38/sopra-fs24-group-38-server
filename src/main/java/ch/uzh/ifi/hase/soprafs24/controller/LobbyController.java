@@ -149,4 +149,11 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/connect", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> connectTestPlayer(@RequestHeader(value = "Authorization") String token) {
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.connecTestHomies(userId);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -127,26 +127,18 @@ public class LobbyService {
         lobbyRepository.flush();
     }
 
-    private void setRounds(int roundUpdate, Lobby lobby) {
-        if (roundUpdate < 3 || roundUpdate > 15) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
+    public void connecTestHomies(Long userId) {
+        User user = userService.getUserById(userId);
+        Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
+        List<User> users = lobby.getUsers();
+        for(User u : users){
+            log.warn("Homie "+ u.getUsername() + "connected");
+            u.setIsConnected(true);
         }
-        lobby.setMaxRoundNumbers(roundUpdate);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
     }
 
-    private void setGameModes(List<String> gameModes, Lobby lobby) {
-        Set<LobbyModes> lobbyModes = new HashSet<>();
-        for (String gameModeNotValidated : gameModes) {
-            try {
-                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
-                lobbyModes.add(lobbyMode);
-            }
-            catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
-            }
-        }
-        lobby.setLobbyModes(lobbyModes);
-    }
 
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
@@ -260,11 +252,6 @@ public class LobbyService {
         socketHandler.sendMessageToLobby(lobbyId, "definitions_finished");
     }
 
-    private void performPlayerNumberCheck(Lobby lobby) {
-        int numPlayers = lobby.getUsers().size();
-        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
-    }
-
     public void checkIfAllVotesReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
@@ -298,6 +285,27 @@ public class LobbyService {
         lobby.setLobbyState(LobbyState.DEFINITION);
     }
 
+    private void setRounds(int roundUpdate, Lobby lobby) {
+        if (roundUpdate < 3 || roundUpdate > 15) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
+        }
+        lobby.setMaxRoundNumbers(roundUpdate);
+    }
+
+    private void setGameModes(List<String> gameModes, Lobby lobby) {
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        for (String gameModeNotValidated : gameModes) {
+            try {
+                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
+                lobbyModes.add(lobbyMode);
+            }
+            catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
+            }
+        }
+        lobby.setLobbyModes(lobbyModes);
+    }
+
     private void checkIfPlayerInLobby(Long userId) {
         List<Lobby> allLobbies = lobbyRepository.findAll();
 
@@ -325,7 +333,9 @@ public class LobbyService {
             }
         }
     }
-
-
+    private void performPlayerNumberCheck(Lobby lobby) {
+        int numPlayers = lobby.getUsers().size();
+        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
+    }
 
 }

@@ -108,7 +108,6 @@ public class UserControllerTest {
         //createUser Method already performs an assert for created response status
         String responseRegister = createUserAndAssertSuccessStatus("User1", "password1").getBody();
         String tokenFromRegister = extractTokenFromResponse(responseRegister);
-
         //Create a lobby
         String uri = "http://localhost:" + port + "/lobbies";
 
@@ -118,6 +117,7 @@ public class UserControllerTest {
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        connectAllPlayer(tokenFromRegister);
 
         //assert that lobby was created
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -200,6 +200,18 @@ public class UserControllerTest {
         } catch (IllegalArgumentException e) {
             fail("Token is not a valid UUID");
         }
+    }
+
+    private void connectAllPlayer(String token) {
+        String uri = "http://localhost:" + port + "/lobbies/connect";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", token);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 }

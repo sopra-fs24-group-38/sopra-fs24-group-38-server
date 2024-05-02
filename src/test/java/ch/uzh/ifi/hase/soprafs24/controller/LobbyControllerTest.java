@@ -138,6 +138,8 @@ public class LobbyControllerTest {
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
+        connectAllPlayer(tokenGameMaster1);
+
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user7", "user8");
     }
 
@@ -157,6 +159,7 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user10", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+        connectAllPlayer(tokenGameMaster1);
 
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user9", "user10");
     }
@@ -336,7 +339,7 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user30", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
-
+        connectAllPlayer(tokenGameMaster1);
         startLobby(tokenGameMaster1);
 
         ResponseEntity<String> response1 = getLobby(tokenGameMaster1, lobbyId);
@@ -398,6 +401,7 @@ public class LobbyControllerTest {
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
 
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+        connectAllPlayer(tokenGameMaster1);
 
         startLobby(tokenGameMaster1);
 
@@ -447,6 +451,7 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user35", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+        connectAllPlayer(tokenGameMaster1);
 
         startLobby(tokenGameMaster1);
 
@@ -632,5 +637,17 @@ public class LobbyControllerTest {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         return response;
+    }
+
+    private void connectAllPlayer(String token) {
+        String uri = "http://localhost:" + port + "/lobbies/connect";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", token);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }
