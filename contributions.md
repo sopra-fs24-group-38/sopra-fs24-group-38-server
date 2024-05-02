@@ -174,6 +174,12 @@ Basically finished Lobby component
 - Started with AI player and finished lobby join logic for AI player 
     - [#207](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/129)
 
+## Harris A
+- started with additional Gamemode (exclusive) - discussion / different implementation ongoing:
+    -  [#103](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/103)
+    -  [#105](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/105)
+    -  [#108](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/108)
+
 
     
  
