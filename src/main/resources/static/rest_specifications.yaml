@@ -367,6 +367,10 @@ components:
           type: integer
           example: 2
           description: userId of the current gameMaster
+        game_mode:
+          type: string
+          example: "PROGRAMMING"
+          description: username of the current gameMaster
         game_master_username:
           type: string
           example: "GameMasterUsername2000"
@@ -478,8 +482,8 @@ components:
           type: array
           items:
             type: string
-            enum: [DEFINITIONS, DUTCH, URBAN]
-          example: [DEFINITIONS, DUTCH, URBAN]
+            enum: [BIZARRE, DUTCH, PROGRAMMING, RAREFOODS]
+          example: [BIZARRE, DUTCH, PROGRAMMING, RAREFOODS]
         rounds:
           type: integer
           example: 15

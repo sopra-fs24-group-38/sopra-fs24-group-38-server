@@ -5,7 +5,7 @@
     -   ([#31](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/31))
 - Call with Elia to align on fundamental architectural decisions
 - Call with Samuel to pair-program on Websocket config
-- Added CreateLobby and JoinLobby Functionality: 
+- Added CreateLobby and JoinLobby Functionality:
     -   ([#39](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/39))
     -   ([#47](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/47))
     -   ([#40](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/40))
@@ -35,11 +35,11 @@
 -   Added dynamic game PIN in Lobby:
     -   ([#23](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/23))
 ## Cédric Styner
--   Login & Registration: 
+-   Login & Registration:
     -   ([#16](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/16))
     -   ([#15](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/15))
     -   ([#20](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/20))
--   Challange and forwarding to Voting: 
+-   Challange and forwarding to Voting:
     -   ([#32](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/32))
     -   ([#34](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/34))
     -   ([#35](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/35))
@@ -93,15 +93,15 @@ Basically finished Lobby component
     -  [#49](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/49)
     -  [#51](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/51)
     -  [#52](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/52)
- 
-      
+
+
 ## Samuel Frank
 
 - pair-programming session regarding gameStart, definitions, api call
     -  [#66](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/66)
 - Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} :
     -  [#62](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/62)
-- Gamelogic evaluation with points after votes: 
+- Gamelogic evaluation with points after votes:
     - [#81](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/81)
 
 # 19.04 - 25.04
@@ -140,7 +140,7 @@ Basically finished Lobby component
     -  [#44](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/44)
     -  [#45](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/45)
     -  [#46](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/46)
- 
+
 ## Samuel Frank
 - Pair-programming session extending api call
     - [#71](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/71)
@@ -150,9 +150,42 @@ Basically finished Lobby component
     - [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/87)
     - [#101](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/101)
 
+# 26.04 - 02.05
+## Elia Aeberhard
+- Adjusted getLobby endpoint to exclude not-connected players
+    - [#217](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/217)
+- Added check for repeated words by chatGPT api
+    - [#210](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/210)
 
+## Markus Senn
+- Added support for multiple modes selection
+    - [#89](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/89)
+- Updated Rules and Settings content + design
+    - [#59](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/59)
+    - [#91](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/91)
+- Bugfix for feedback system
+    - [#98](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/98)
 
+## Samuel Frank
+- Additional Gamemodes 
+    - [#207](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/207)
+    - [#108](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/108)
+    - [#208](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/208)
+- Started with AI player and finished lobby join logic for AI player 
+    - [#207](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/129)
 
+## Harris A
+- started with additional Gamemode (exclusive) - discussion / different implementation ongoing:
+    -  [#103](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/103)
+    -  [#105](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/105)
+    -  [#108](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/108)
+
+## Cédric Styner
+
+- worked on reliability.
+    -  [#96](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/96)
+    -  [#97](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/97)
+ 
 
 
 

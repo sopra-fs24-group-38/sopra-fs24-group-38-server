@@ -1,15 +1,12 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.controller.LobbyController;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
-import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
-import ch.uzh.ifi.hase.soprafs24.websockets.WebSocketSessionManager;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -25,15 +22,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.*;
-
-
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.socket.WebSocketSession;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @WebMvcTest(LobbyController.class)
@@ -103,6 +94,7 @@ public class SocketServiceTest {
         lobby.setUsers(users);
         lobby.setGameMaster(userId1);
         lobby.setLobbyPin(gamePin);
+        lobby.getLobbyModes().add(LobbyModes.BIZARRE);
 
         ArrayList<Challenge> challenges = new ArrayList<>();
         Challenge challenge = new Challenge();
@@ -113,7 +105,7 @@ public class SocketServiceTest {
         given(userService.getUserIdByTokenAndAuthenticate(token)).willReturn(userId1);
         given(userService.getUserById(userId1)).willReturn(user1);
         given(lobbyService.getLobbyAndExistenceCheck(anyLong())).willReturn(lobby);
-        given(apiService.generateChallenges(anyInt())).willReturn(challenges);
+        given(apiService.generateChallenges(anyInt(), anySet())).willReturn(challenges);
         doNothing().when(lobbyService).checkState(gamePin, LobbyState.WAITING);
 
         mockMvc.perform(post("/lobbies/start")

@@ -178,7 +178,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
-        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers()));
+        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -195,6 +195,8 @@ public class LobbyService {
 
         gameDetails.setChallenge(lobby.getCurrentChallenge());
         gameDetails.setSolution(lobby.getCurrentSolution());
+        gameDetails.setGameMode(lobby.getCurrentMode());
+
         gameDetails.setGameState(lobby.getLobbyState().toString());
         gameDetails.setGameOver(lobby.isGameOver());
         gameDetails.setGameMasterId(lobby.getGameMaster());
@@ -231,7 +233,15 @@ public class LobbyService {
 
         log.warn("Lobby with id "+ lobby.getLobbyPin() + " reset..");
         resetLobbyAndNextRoundBool(lobby, users);
-        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "next_round");
+
+        if(lobby.getRoundNumber() - 1 >= lobby.getMaxRoundNumbers()) {
+            lobby.setLobbyState(LobbyState.GAMEOVER);
+            socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_over");
+        }
+        else{
+            socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "next_round");
+        }
+
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
     }
@@ -279,14 +289,8 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-        if(lobby.getRoundNumber()  == lobby.getMaxRoundNumbers()) {
-            lobby.setLobbyState(LobbyState.GAMEOVER);
-            socketHandler.sendMessageToLobby(lobbyId, "game_over");
-        }
-        else {
-            lobby.setLobbyState(LobbyState.EVALUATION);
-            socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
-        }
+        lobby.setLobbyState(LobbyState.EVALUATION);
+        socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
     }
 
     private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
