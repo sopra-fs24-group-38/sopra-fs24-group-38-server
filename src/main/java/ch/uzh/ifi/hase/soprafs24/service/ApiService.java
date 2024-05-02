@@ -92,17 +92,14 @@ public class ApiService {
         List<Challenge> challenges = lobby.getChallenges();
         for(User user : users){
             if(user.getAiPlayer()){
-                user.setAiDefinitions(fetchAiDefinitions(challenges));
+                List<String> definitions = fetchAiDefinitions(challenges);
+                user.setAiDefinitions(definitions);
+                user.setDefinition(user.dequeueAiDefinition());
                 for(int i = 0; i < lobby.getChallenges().size() ; i++){
                     //log.warn("ITERATION CHECK {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(), user.getUsername(), user.getAiDefinitions().get(i), challenges.get(i).getChallenge());
                 }
             }
-
         }
-
-
-
-
     }
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
         String url = "https://api.openai.com/v1/chat/completions";
@@ -121,7 +118,7 @@ public class ApiService {
 
         //log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
 
-        List<String> definitions = new ArrayList<>();
+        List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             String aiPlayersDefinition = jsonObject.getString("definition");

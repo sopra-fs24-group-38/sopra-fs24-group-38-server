@@ -65,7 +65,8 @@ public class AIPlayerService {
         aiUser.setUsername(name);
         aiUser.setLobbyId(gamePin);
         aiUser.setAvatarId(getUnUsedAvaIdForAIPlayer(gamePin));
-
+        aiUser.setIsConnected(true);
+        aiUser.setWantsNextRound(true);
         //Needed because attributes not nullable in DB :
         aiUser.setToken(UUID.randomUUID().toString());
         aiUser.setPassword("AI");

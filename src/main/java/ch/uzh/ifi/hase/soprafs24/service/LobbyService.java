@@ -282,6 +282,22 @@ public class LobbyService {
     public void checkIfAllVotesReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
+
+
+        for(User aiUser : users) {
+            if (aiUser.getAiPlayer() && aiUser.getVotedForUserId() == null) {
+                List<Long> userIds = new ArrayList<>();
+                for (User userx : users)
+                    if (!userx.getId().equals(aiUser.getId()))
+                        userIds.add(userx.getId());
+
+                if (!userIds.isEmpty()) {
+                    int randomIndex = random.nextInt(userIds.size());
+                    aiUser.setVotedForUserId(userIds.get(randomIndex));
+                }
+            }
+        }
+
         for(User user : users) {
             if(user.getIsConnected() == null && user.getVotedForUserId() == null){
                 return;
@@ -304,9 +320,15 @@ public class LobbyService {
     private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
         //next round bool
         for(User user: users){
-            user.setWantsNextRound(false);
-            user.setVotedForUserId(null);
-            user.setDefinition(null);
+            if(!user.getAiPlayer()) {
+                user.setWantsNextRound(false);
+                user.setVotedForUserId(null);
+                user.setDefinition(null);
+            }
+            else{
+                user.setDefinition(user.dequeueAiDefinition());
+                user.setVotedForUserId(null);
+            }
         }
         lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
         lobby.setLobbyState(LobbyState.DEFINITION);

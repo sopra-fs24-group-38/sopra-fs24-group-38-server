@@ -141,10 +141,8 @@ public class LobbyController {
 
     @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
-
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
         lobbyService.checkState(userId, LobbyState.WAITING);
-
         Long lobbyId = lobbyService.startGame(userId);
         socketHandler.sendMessageToLobby(lobbyId, "game_start");
         return ResponseEntity.ok().build();

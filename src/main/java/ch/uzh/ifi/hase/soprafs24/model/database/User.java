@@ -5,7 +5,9 @@ import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 
 @Entity
@@ -159,7 +161,11 @@ public class User implements Serializable {
 
     public void setAiPlayer(Boolean aiPlayer) {isAiPlayer = aiPlayer;}
 
-    public List<String> getAiDefinitions() {return aiDefinitions;}
-
+    public String dequeueAiDefinition() {
+        if (!aiDefinitions.isEmpty()) {
+            return aiDefinitions.remove(0);
+        }
+        return null;
+    }
     public void setAiDefinitions(List<String> aiDefinitions) {this.aiDefinitions = aiDefinitions;}
 }
