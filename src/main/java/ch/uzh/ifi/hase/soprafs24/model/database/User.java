@@ -1,7 +1,11 @@
 package ch.uzh.ifi.hase.soprafs24.model.database;
 
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -49,6 +53,9 @@ public class User implements Serializable {
     @Column
     private Boolean isAiPlayer = false;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column
+    private List<String> aiDefinitions = new ArrayList<>();
 
     public Long getScore() {
         return score;
@@ -151,4 +158,8 @@ public class User implements Serializable {
     public Boolean getAiPlayer() {return isAiPlayer;}
 
     public void setAiPlayer(Boolean aiPlayer) {isAiPlayer = aiPlayer;}
+
+    public List<String> getAiDefinitions() {return aiDefinitions;}
+
+    public void setAiDefinitions(List<String> aiDefinitions) {this.aiDefinitions = aiDefinitions;}
 }

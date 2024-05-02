@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
@@ -39,13 +41,14 @@ public class ApiService {
     }
 
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode) {
+
         String url = "https://api.openai.com/v1/chat/completions";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getSecret());
         headers.set("Content-Type", "application/json");
 
-        String jsonBody = getPromptBody(lobbyMode, numberOfRoundsOfMode);
+        String jsonBody = getPromptBodyChallenges(lobbyMode, numberOfRoundsOfMode);
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
         String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
 
@@ -61,7 +64,8 @@ public class ApiService {
         }
 
     }
-    private String getPromptBody(LobbyModes lobbyModes, int numberRounds){
+
+    private String getPromptBodyChallenges(LobbyModes lobbyModes, int numberRounds){
         return "{"
                 + "\"model\": \"gpt-4\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
@@ -74,7 +78,6 @@ public class ApiService {
                 + "\"temperature\": 0.7"
                 + "}";
     }
-
     private String getModeDescription(LobbyModes lobbyModes) {
         return switch (lobbyModes) {
             case BIZARRE -> "The value should return a bizarre and unknown word.";
@@ -83,6 +86,83 @@ public class ApiService {
             case RAREFOODS -> "The value should return the name of an unknown food.";
         };
     }
+
+    public void generateAiPlayersDefinitions(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        List<Challenge> challenges = lobby.getChallenges();
+        for(User user : users){
+            if(user.getAiPlayer()){
+                user.setAiDefinitions(fetchAiDefinitions(challenges));
+                for(int i = 0; i < lobby.getChallenges().size() ; i++){
+                    //log.warn("ITERATION CHECK {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(), user.getUsername(), user.getAiDefinitions().get(i), challenges.get(i).getChallenge());
+                }
+            }
+
+        }
+
+
+
+
+    }
+    private List<String> fetchAiDefinitions(List<Challenge> challenges) {
+        String url = "https://api.openai.com/v1/chat/completions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getSecret());
+        headers.set("Content-Type", "application/json");
+
+        String jsonBody = getPromptBodyAIDefinitions(challenges);
+        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+        String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+
+        JSONObject jsonResponse = new JSONObject(response);
+        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+        JSONArray jsonArray = new JSONArray(content);
+
+        //log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
+
+        List<String> definitions = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String aiPlayersDefinition = jsonObject.getString("definition");
+            definitions.add(aiPlayersDefinition);
+        }
+
+        //might become usefull for prompt improvements:
+
+        //log.warn("FETCH CHECK1: length challange array : {} ", challenges.size());
+        //log.warn("FETCH CHECK2: length ai definition array : {} ", definitions.size());
+
+        return definitions;
+    }
+
+    private String getPromptBodyAIDefinitions(List<Challenge> challenges){
+        StringBuilder promptBuilder = new StringBuilder();
+        promptBuilder.append("[");
+        for (int i = 0; i < challenges.size(); i++) {
+            Challenge challenge = challenges.get(i);
+            promptBuilder.append(challenge.getChallenge() + "(Category: "+challenge.getLobbyMode() + ")");
+            if (i < challenges.size() - 1) {
+                promptBuilder.append(", ");
+            }
+        }
+
+        String requestBody= "{"
+                + "\"model\": \"gpt-4\","
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
+                + "[{\\\"definition\\\": \\\"definition1\\\",\\\"definition\\\": \\\"definition2\\\"}],{\\\"definition\\\": \\\"definition3\\\",\\\"definition\\\": \\\"definition4\\\"}] "
+                + "Those are the words for which i need a wrong definition: "
+                +  promptBuilder
+                + "Give a plausible but false definition which tricks human into thinking it is correct"
+                + "The wrong definition should be plausible and be related to the same category"
+                + "The wrong definition should be less than 4 words\"}],"
+                + "\"temperature\": 0.7"
+                + "}";
+
+        return requestBody;
+    }
+
+
 
     private Map<LobbyModes, Integer> distributeNumModes(int numberRounds, Set<LobbyModes> lobbyModes) {
         Map<LobbyModes, Integer> distribution = new HashMap<>();;
@@ -114,4 +194,6 @@ public class ApiService {
             return tokenEnv;
         }
     }
+
+
 }

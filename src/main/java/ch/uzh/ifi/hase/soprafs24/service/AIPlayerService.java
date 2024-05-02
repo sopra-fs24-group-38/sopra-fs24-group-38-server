@@ -72,23 +72,9 @@ public class AIPlayerService {
 
         userRepository.save(aiUser);
         userRepository.flush();
-        System.out.println("AI player with name "+name+ " created");
+        log.warn("AI player with name "+name+ " created");
         return aiUser;
     }
-
-    public void setAvatarPin(Long gamePin, User aiUser) {
-        aiUser.setAvatarId(8L);
-        userRepository.save(aiUser);
-        userRepository.flush();
-    }
-
-    public void setLobbyId(Long userId, Long lobbyId) {
-        User user = userRepository.findUserById(userId);
-        user.setLobbyId(lobbyId);
-        userRepository.save(user);
-        userRepository.flush();
-    }
-
     private Long getUnUsedAvaIdForAIPlayer(Long lobbyId) {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();

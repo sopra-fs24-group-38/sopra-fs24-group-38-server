@@ -90,7 +90,7 @@ public class LobbyService {
             deleteBotLobby(lobby);
             return;
         }
-        
+
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             lobby.setGameMasterId(lobby.getUsers().get(0).getId());
             lobbyRepository.save(lobby);
@@ -186,6 +186,7 @@ public class LobbyService {
         }
 
         lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes()));
+        apiService.generateAiPlayersDefinitions(lobby);
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
