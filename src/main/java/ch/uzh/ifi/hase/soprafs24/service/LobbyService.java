@@ -87,12 +87,10 @@ public class LobbyService {
 
         //check if all users in lobby are AI players if yes delete
         if(isLobbyFullWithBots(lobby)){
-            lobbyRepository.delete(lobby);
-            lobbyRepository.flush();
-            log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
+            deleteBotLobby(lobby);
             return;
         }
-
+        
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             lobby.setGameMasterId(lobby.getUsers().get(0).getId());
             lobbyRepository.save(lobby);
@@ -102,9 +100,6 @@ public class LobbyService {
         else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
-
-
-
 
     public List<User> getUsers(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
@@ -366,6 +361,15 @@ public class LobbyService {
         return true;
     }
 
+    private void deleteBotLobby(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        for(User user : users){
+            userService.deleteUser(user.getId());
+        }
+        lobbyRepository.delete(lobby);
+        lobbyRepository.flush();
+        log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
+    }
 
 
 }

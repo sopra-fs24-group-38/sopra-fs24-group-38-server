@@ -150,6 +150,20 @@ public class UserService {
         userRepository.save(user);
         userRepository.flush();
     }
+    public void logout(String token) {
+        User user = getUserById(getUserIdByTokenAndAuthenticate(token));
+        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
+    }
+
+    public void deleteUser(Long userId){
+        User user = getUserById(userId);
+        if(user == null){
+            log.warn("tried to delete inexisting user with id {} ", userId);
+            return;
+        }
+        userRepository.delete(user);
+        userRepository.flush();
+    }
 
     private Long getUnUsedAvaId(Long lobbyId) {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyId);
@@ -165,10 +179,9 @@ public class UserService {
         return potentialId;
     }
 
-    public void logout(String token) {
-        User user = getUserById(getUserIdByTokenAndAuthenticate(token));
-        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
-    }
+
+
+
 
 
 }
