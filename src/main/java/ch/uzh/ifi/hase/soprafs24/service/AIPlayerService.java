@@ -35,9 +35,8 @@ public class AIPlayerService {
     private final List<String> names = new ArrayList<>();
     private final ResourceLoader resourceLoader;
 
-
-    @Value("${avatar.number}")
-    private int numAvas;
+    @Value("${avatar.ai.number}")
+    private int numAvasAi;
 
     @Autowired
     public AIPlayerService(@Qualifier("userRepository") UserRepository userRepository, ResourceLoader resourceLoader) {
@@ -64,11 +63,16 @@ public class AIPlayerService {
         aiUser.setAiPlayer(true);
         String name = getRandomUniqueName(gamePin);
         aiUser.setUsername(name);
-        aiUser.setPassword("AI");
+        aiUser.setLobbyId(gamePin);
+        aiUser.setAvatarId(getUnUsedAvaIdForAIPlayer(gamePin));
+
+        //Needed because attributes not nullable in DB :
         aiUser.setToken(UUID.randomUUID().toString());
+        aiUser.setPassword("AI");
+
         userRepository.save(aiUser);
         userRepository.flush();
-        System.out.println("player with name "+name+ " created");
+        System.out.println("AI player with name "+name+ " created");
         return aiUser;
     }
 
@@ -85,7 +89,7 @@ public class AIPlayerService {
         userRepository.flush();
     }
 
-    private Long getUnUsedAvaId(Long lobbyId) {
+    private Long getUnUsedAvaIdForAIPlayer(Long lobbyId) {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
         Set<Long> existingIds = users.stream()
@@ -94,7 +98,7 @@ public class AIPlayerService {
         Long potentialId;
         do {
             Random random = new Random();
-            potentialId = 1L + (long) random.nextInt(numAvas);
+            potentialId = 100L + (long) random.nextInt(numAvasAi);
         } while (existingIds.contains(potentialId));
         return potentialId;
     }
@@ -115,4 +119,5 @@ public class AIPlayerService {
         }
         return name;
     }
+
 }

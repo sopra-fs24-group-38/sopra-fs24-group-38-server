@@ -69,8 +69,6 @@ public class LobbyService {
         performPlayerNumberCheck(lobby);
         User aiUser = aiPlayerService.createAiUser(gamePin);
         lobby.addPlayer(aiUser);
-        aiPlayerService.setAvatarPin(gamePin, aiUser);
-        aiUser.setLobbyId(gamePin);
     }
 
 
@@ -317,7 +315,7 @@ public class LobbyService {
 
     private void performPlayerNumberCheck(Lobby lobby) {
         int numPlayers = lobby.getUsers().size();
-        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
+        if(numPlayers >= 5) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
 
     private void evaluateVotes( List<User> users) {
