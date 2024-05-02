@@ -156,7 +156,16 @@ Basically finished Lobby component
     - [#217](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/217)
 - Added check for repeated words by chatGPT api
     - [#210](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/210)
-
+ 
+## Markus Senn
+- Added support for multiple modes selection
+    - [#89](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/89)
+- Updated Rules and Settings content + design
+    - [#59](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/59)
+    - [#91](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/91)
+- Bugfix for feedback system
+    - [#98](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/98)
+ 
 
 
 
