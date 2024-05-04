@@ -82,7 +82,7 @@ public class ApiService {
     }
     private String getPromptBody(LobbyModes lobbyModes, int numberRounds){
         return "{"
-                + "\"model\": \"gpt-4\","
+                + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
