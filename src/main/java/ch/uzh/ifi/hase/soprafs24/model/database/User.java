@@ -46,6 +46,12 @@ public class User implements Serializable {
     @Column
     private Boolean wantsNextRound = false;
 
+    @Column
+    private Long permanentScore = 0L;
+
+    @Column
+    private Long permanentFools = 0L;
+
     public Long getScore() {
         return score;
     }
@@ -142,5 +148,21 @@ public class User implements Serializable {
 
     public void setWantsNextRound(Boolean wantsNextRound) {
         this.wantsNextRound = wantsNextRound;
+    }
+
+    public Long getPermanentFools() {
+        return permanentFools;
+    }
+
+    public void addPermanentFools(Long fools) {
+        this.permanentFools += fools;
+    }
+
+    public Long getPermanentScore() {
+        return permanentScore;
+    }
+
+    public void addPermanentScore(Long score) {
+        this.permanentScore += score;
     }
 }

@@ -339,12 +339,15 @@ public class LobbyService {
                 if(userz.getVotedForUserId() != null) {
                     if (!Objects.equals(user.getToken(), userz.getToken()) && Objects.equals(userz.getVotedForUserId(), user.getId())) {
                         user.setScore(user.getScore() + 2L);
+                        user.addPermanentScore(2L);
+                        user.addPermanentFools(1L);
                     }
                 }
             }
             if(user.getVotedForUserId() != null) {
                 if (user.getVotedForUserId().equals(0L)) {
                     user.setScore(user.getScore() + 1L);
+                    user.addPermanentScore(1L);
                 }
             }
         }

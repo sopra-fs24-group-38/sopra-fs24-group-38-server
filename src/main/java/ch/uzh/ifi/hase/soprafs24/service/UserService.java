@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
+import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -167,5 +168,15 @@ public class UserService {
     public void logout(String token) {
         User user = getUserById(getUserIdByTokenAndAuthenticate(token));
         if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
+    }
+
+    public List<allUsersScores> getAllUsers(String token) {
+        getUserIdByTokenAndAuthenticate(token);
+        List<allUsersScores> userResponses = new ArrayList<>();
+        List <User> users = this.userRepository.findAll();
+        for(User user : users) {
+            userResponses.add(objectMapper.convertValue(user, allUsersScores.class));
+        }
+        return userResponses;
     }
 }

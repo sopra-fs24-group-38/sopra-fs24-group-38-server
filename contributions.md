@@ -190,11 +190,18 @@ Basically finished Lobby component
 ## Elia Aeberhard
 - Pair Programming on reliability regarding starting a new game
     - [#233](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/233)
+- Pair Programming on overall stats and leaderboard
+    - [#124](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/124)
+    - [#123](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/123)
 
 ## Harris A
 - Pair Programming on reliability regarding starting a new game
     - [#233](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/233)
-
+- Pair Programming on overall stats and leaderboard
+    - [#124](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/124)
+    - [#123](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/123)
+- The backend always returns lowerCase definitions
+    - [#231](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/231)
 
 
 
