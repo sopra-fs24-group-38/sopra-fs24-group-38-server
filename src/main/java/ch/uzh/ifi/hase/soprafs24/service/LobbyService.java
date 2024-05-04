@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -158,7 +159,7 @@ public class LobbyService {
         }
 
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
-        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes()));
+        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes(), lobby.getLobbyPin()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
