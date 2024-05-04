@@ -72,7 +72,7 @@ public class ApiService {
                 }
 
                 values.add(word);
-                definitions.add(definition);
+                definitions.add(definition.toLowerCase());
             }
         }
 
