@@ -130,9 +130,8 @@ public class LobbyController {
 
     @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
-
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-        lobbyService.checkState(userId, LobbyState.WAITING);
+        lobbyService.checkState(userId,LobbyState.WAITING);
 
         Long lobbyId = lobbyService.startGame(userId);
         socketHandler.sendMessageToLobby(lobbyId, "game_start");
@@ -152,7 +151,7 @@ public class LobbyController {
     @PutMapping(value = "/connect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> connectTestPlayer(@RequestHeader(value = "Authorization") String token) {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-        lobbyService.connecTestHomies(userId);
+        lobbyService.connectTestHomies(userId);
         return ResponseEntity.ok().build();
     }
 

@@ -68,6 +68,8 @@ public class ApiService {
 
                 if (values.contains(word)) {
                     shouldContinue = true;
+                    values.clear();
+                    definitions.clear();
                     break;
                 }
 

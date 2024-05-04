@@ -186,7 +186,15 @@ Basically finished Lobby component
     -  [#96](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/96)
     -  [#97](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/97)
 
- 
+# 03.05 - 09.05
+## Elia Aeberhard
+- Pair Programming on reliability regarding starting a new game
+    - [#233](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/233)
+
+## Harris A
+- Pair Programming on reliability regarding starting a new game
+    - [#233](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/233)
+
 
 
 

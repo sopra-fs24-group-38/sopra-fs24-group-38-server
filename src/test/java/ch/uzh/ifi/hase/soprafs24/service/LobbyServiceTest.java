@@ -39,7 +39,7 @@ public class LobbyServiceTest {
         // create a Lobby and retrieve it
         Long lobbyPin = lobbyService.createLobby(userResponse.getId());
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
-        lobbyService.connecTestHomies(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
         // assert that the lobby was created
         assertTrue(lobby.getLobbyPin() >= 1000 && lobby.getLobbyPin() <= 9999, "Lobby ID should be a four-digit number");
         assertEquals(10, lobby.getMaxRoundNumbers(), "Lobby should have 10 rounds by default");

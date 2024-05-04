@@ -127,7 +127,7 @@ public class LobbyService {
         lobbyRepository.flush();
     }
 
-    public void connecTestHomies(Long userId) {
+    public void connectTestHomies(Long userId) {
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
         List<User> users = lobby.getUsers();
@@ -152,12 +152,12 @@ public class LobbyService {
 
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
-        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
 
         if (!Objects.equals(userId, lobby.getGameMaster())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "user is not gameMaster");
         }
 
+        socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
         lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes()));
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
@@ -165,6 +165,20 @@ public class LobbyService {
         return lobby.getLobbyPin();
     }
 
+    private void resetLobby(Long lobbyId) {
+        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
+        lobby.setLobbyState(LobbyState.WAITING);
+        lobby.setGameOver(false);
+        lobby.setChallenges(new ArrayList<>());
+        lobby.setRoundNumber(null);
+
+        for (User user : lobby.getUsers()) {
+            user.setDefinition(null);
+            user.setVotedForUserId(null);
+            user.setScore(0L);
+            user.setWantsNextRound(false);
+        }
+    }
 
 
     public LobbyGet getLobbyInfo(Long gamePin) {
@@ -230,10 +244,14 @@ public class LobbyService {
     public void checkState(Long userId, LobbyState requiredLobbyState) {
         User user = userService.getUserById(userId);
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user.getLobbyId());
-        if(lobby.getLobbyState() != requiredLobbyState){
+        if(lobby.getLobbyState() == LobbyState.GAMEOVER && requiredLobbyState == LobbyState.WAITING) {
+            resetLobby(user.getLobbyId());
+        }
+        else if(lobby.getLobbyState() != requiredLobbyState){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby not in state: " + requiredLobbyState.toString());
         }
     }
+
     public void checkIfAllDefinitionsReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
