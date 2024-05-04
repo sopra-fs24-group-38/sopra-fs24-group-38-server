@@ -39,35 +39,41 @@ public class ApiService {
     }
 
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode) {
-        String url = "https://api.openai.com/v1/chat/completions";
+        List<String> values = new ArrayList<>();
+        List<String> definitions = new ArrayList<>();
+        boolean shouldContinue = true;
 
+        String url = "https://api.openai.com/v1/chat/completions";
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getSecret());
         headers.set("Content-Type", "application/json");
 
         String jsonBody = getPromptBody(lobbyMode, numberOfRoundsOfMode);
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-        String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
 
-        JSONObject jsonResponse = new JSONObject(response);
-        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-        JSONArray jsonArray = new JSONArray(content);
+        while (shouldContinue) {
 
-        List<String> values = new ArrayList<>();
-        List<String> definitions = new ArrayList<>();
+            String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String word = jsonObject.getString("value");
-            String definition = jsonObject.getString("definition");
+            JSONObject jsonResponse = new JSONObject(response);
+            String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+            JSONArray jsonArray = new JSONArray(content);
 
-            if(values.contains(word)) {
-                fetchChallenges(challenges, lobbyMode, numberOfRoundsOfMode);
-                return;
+            shouldContinue = false;
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String word = jsonObject.getString("value");
+                String definition = jsonObject.getString("definition");
+
+                if (values.contains(word)) {
+                    shouldContinue = true;
+                    break;
+                }
+
+                values.add(word);
+                definitions.add(definition);
             }
-
-            values.add(word);
-            definitions.add(definition);
         }
 
         for(int i = 0; i < values.size(); i++) {
@@ -76,7 +82,7 @@ public class ApiService {
     }
     private String getPromptBody(LobbyModes lobbyModes, int numberRounds){
         return "{"
-                + "\"model\": \"gpt-4\","
+                + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
@@ -98,7 +104,7 @@ public class ApiService {
     }
 
     private Map<LobbyModes, Integer> distributeNumModes(int numberRounds, Set<LobbyModes> lobbyModes) {
-        Map<LobbyModes, Integer> distribution = new HashMap<>();;
+        Map<LobbyModes, Integer> distribution = new HashMap<>();
         Random random = new Random();
         for (LobbyModes mode : lobbyModes) {
             distribution.put(mode, 0);
