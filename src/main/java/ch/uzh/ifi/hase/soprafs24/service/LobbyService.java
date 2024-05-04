@@ -165,12 +165,13 @@ public class LobbyService {
         return lobby.getLobbyPin();
     }
 
-    private void resetLobby(Long lobbyId) {
-        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
+    public void resetLobby(Long userId) {
+        User user1 = userService.getUserById(userId);
+        Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user1.getLobbyId());
         lobby.setLobbyState(LobbyState.WAITING);
         lobby.setGameOver(false);
         lobby.setChallenges(new ArrayList<>());
-        lobby.setRoundNumber(null);
+        lobby.setRoundNumber(1L);
 
         for (User user : lobby.getUsers()) {
             user.setDefinition(null);
@@ -244,10 +245,7 @@ public class LobbyService {
     public void checkState(Long userId, LobbyState requiredLobbyState) {
         User user = userService.getUserById(userId);
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user.getLobbyId());
-        if(lobby.getLobbyState() == LobbyState.GAMEOVER && requiredLobbyState == LobbyState.WAITING) {
-            resetLobby(user.getLobbyId());
-        }
-        else if(lobby.getLobbyState() != requiredLobbyState){
+        if(lobby.getLobbyState() != requiredLobbyState){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby not in state: " + requiredLobbyState.toString());
         }
     }
