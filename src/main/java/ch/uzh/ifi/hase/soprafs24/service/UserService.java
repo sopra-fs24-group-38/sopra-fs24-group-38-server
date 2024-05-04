@@ -89,7 +89,7 @@ public class UserService {
 
     public void registerDefinitions(DefinitionPost definitionPost, Long userId) {
         User user = getUserById(userId);
-        user.setDefinition(definitionPost.getDefinition());
+        user.setDefinition(definitionPost.getDefinition().toLowerCase());
         userRepository.save(user);
         userRepository.flush();
         lobbyService.checkIfAllDefinitionsReceived(user.getLobbyId());
