@@ -158,26 +158,7 @@ public class LobbyService {
         lobbyRepository.flush();
     }
 
-    private void setRounds(int roundUpdate, Lobby lobby) {
-        if (roundUpdate < 3 || roundUpdate > 15) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
-        }
-        lobby.setMaxRoundNumbers(roundUpdate);
-    }
 
-    private void setGameModes(List<String> gameModes, Lobby lobby) {
-        Set<LobbyModes> lobbyModes = new HashSet<>();
-        for (String gameModeNotValidated : gameModes) {
-            try {
-                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
-                lobbyModes.add(lobbyMode);
-            }
-            catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
-            }
-        }
-        lobby.setLobbyModes(lobbyModes);
-    }
 
     public Lobby getLobbyAndExistenceCheck(Long gamePin) {
         Lobby lobbyToReturn = lobbyRepository.findLobbyByLobbyPin(gamePin);
@@ -332,13 +313,14 @@ public class LobbyService {
     public void removeAiPlayer(Long gamePin, Long avatarId) {
         Lobby lobby = getLobbyAndExistenceCheck(gamePin);
         checkIfAvatarIdValidAIPlayer(avatarId, lobby);
-        for(User user : lobby.getUsers()){
-            if(user.getId().equals(avatarId)){
-                userService.deleteUser(avatarId);
-                socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + user.getId() + "\"}");
+        List<User> users = lobby.getUsers();
+        for(User user : users) {
+            if (user.getAvatarId().equals(avatarId)) {
+                users.remove(user);
+                userService.deleteUser(user.getId());
+                socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + user.getAvatarId() + "\"}");
             }
         }
-
     }
 
     private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
@@ -347,7 +329,7 @@ public class LobbyService {
         }
 
         for(User user : lobby.getUsers()){
-            if(Objects.equals(user.getId(), avatarId))return;
+            if(Objects.equals(user.getAvatarId(), avatarId)) return;
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no AI player with that AvaID in the lobby");
 
@@ -430,6 +412,26 @@ public class LobbyService {
         log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
     }
 
+    private void setRounds(int roundUpdate, Lobby lobby) {
+        if (roundUpdate < 3 || roundUpdate > 15) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
+        }
+        lobby.setMaxRoundNumbers(roundUpdate);
+    }
+
+    private void setGameModes(List<String> gameModes, Lobby lobby) {
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        for (String gameModeNotValidated : gameModes) {
+            try {
+                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
+                lobbyModes.add(lobbyMode);
+            }
+            catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
+            }
+        }
+        lobby.setLobbyModes(lobbyModes);
+    }
 
 
 }
