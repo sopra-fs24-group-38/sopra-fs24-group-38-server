@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
 import com.google.cloud.secretmanager.v1.SecretVersionName;
 import org.json.JSONArray;
@@ -11,59 +12,113 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
-
-
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
 public class ApiService {
+    private final SocketHandler socketHandler;
+    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
 
-    private RestTemplate restTemplate = new RestTemplate();
     private final Logger log = LoggerFactory.getLogger(ApiService.class);
 
     @Value("${api.token}")
     private String tokenEnv;
 
-    public List<Challenge> generateChallenges(int numberRounds, Set<LobbyModes> lobbyModes) {
+    public ApiService(SocketHandler socketHandler) {
+        this.socketHandler = socketHandler;
+    }
+
+    public List<Challenge> generateChallenges(int numberRounds, Set<LobbyModes> lobbyModes, Long lobbyId) {
         Map<LobbyModes, Integer> numberQuestionPerMode = distributeNumModes(numberRounds + 1, lobbyModes);
         List<Challenge> challenges = new ArrayList<>();
 
         for (Map.Entry<LobbyModes, Integer> entry : numberQuestionPerMode.entrySet()) {
-            fetchChallenges(challenges, entry.getKey(), entry.getValue());
+            fetchChallenges(challenges, entry.getKey(), entry.getValue(), lobbyId);
         }
         return challenges;
     }
 
-    private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode) {
-        String url = "https://api.openai.com/v1/chat/completions";
+    private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode, Long lobbyId) {
+        List<String> values = new ArrayList<>();
+        List<String> definitions = new ArrayList<>();
+        factory.setConnectTimeout(20000);
+        factory.setReadTimeout(20000);
+        RestTemplate restTemplate = new RestTemplate(factory);
+        boolean shouldContinue = true;
 
+        String url = "https://api.openai.com/v1/chat/completions";
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getSecret());
         headers.set("Content-Type", "application/json");
 
         String jsonBody = getPromptBody(lobbyMode, numberOfRoundsOfMode);
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-        String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
 
-        JSONObject jsonResponse = new JSONObject(response);
-        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-        JSONArray jsonArray = new JSONArray(content);
+        try {
+            while (shouldContinue) {
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String word = jsonObject.getString("value");
-            String definition = jsonObject.getString("definition");
-            challenges.add(new Challenge(word, definition, lobbyMode));
+                String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+
+                JSONObject jsonResponse = new JSONObject(response);
+                String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+                JSONArray jsonArray = new JSONArray(content);
+
+                shouldContinue = false;
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String word = jsonObject.getString("value");
+                    String definition = jsonObject.getString("definition");
+
+                    if (values.contains(word)) {
+                        shouldContinue = true;
+                        values.clear();
+                        definitions.clear();
+                        break;
+                    }
+
+                    values.add(word);
+                    definitions.add(definition.toLowerCase());
+                }
+            }
+        } catch(Exception e) {
+            log.warn("api unavailable");
+            socketHandler.sendMessageToLobby(lobbyId, "api_unavailable");
+            values.clear();
+            definitions.clear();
+            String jsonStr = "";
+
+            try {
+                jsonStr = new String(Files.readAllBytes(Paths.get("src/main/resources/static/fallback-words.json")));
+            } catch(Exception e2) {
+                log.warn("Backend has lost");
+            }
+
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            JSONArray dataArray = jsonObject.getJSONArray("data");
+            Random random = new Random();
+            for(int i = 0; i < numberOfRoundsOfMode; i++) {
+                int randomIndex = random.nextInt(dataArray.length());
+                JSONObject wordObject = dataArray.getJSONObject(randomIndex).getJSONObject("word");
+                values.add(wordObject.getString("value"));
+                definitions.add(wordObject.getString("definition"));
+            }
         }
 
+        for(int i = 0; i < values.size(); i++) {
+            challenges.add(new Challenge(values.get(i), definitions.get(i), lobbyMode));
+        }
     }
     private String getPromptBody(LobbyModes lobbyModes, int numberRounds){
         return "{"
-                + "\"model\": \"gpt-4\","
+                + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
@@ -85,7 +140,7 @@ public class ApiService {
     }
 
     private Map<LobbyModes, Integer> distributeNumModes(int numberRounds, Set<LobbyModes> lobbyModes) {
-        Map<LobbyModes, Integer> distribution = new HashMap<>();;
+        Map<LobbyModes, Integer> distribution = new HashMap<>();
         Random random = new Random();
         for (LobbyModes mode : lobbyModes) {
             distribution.put(mode, 0);
