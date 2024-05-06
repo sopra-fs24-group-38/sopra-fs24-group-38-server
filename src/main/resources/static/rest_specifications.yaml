@@ -193,6 +193,40 @@ paths:
           description: Lobby full
         '400':
           description: Bad request
+    delete:
+      tags:
+        - lobby
+      summary: Delete an AI bot
+      description: 'Removes a specific AI player from the lobby'
+      operationId: deleteAiUser
+      parameters:
+        - in: path
+          name: gamePin
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the lobby
+      requestBody:
+        description: AiAvatarId
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiId'
+      responses:
+        '201':
+          description: Successfully removed a user from the lobby.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LobbyGamePin'
+        '401':
+          description: Not authenticated
+        '403':
+          description: Lobby full
+        '400':
+          description: Bad request
+
+
   /lobbies/{gamePin}:
     put:
       tags:
@@ -412,6 +446,12 @@ components:
         password:
           type: string
           example: SuperSecretPW
+    AiId:
+      type: object
+      properties:
+        avatarId:
+          type: string
+          example: 7
     UserToken:
       type: object
       properties:
@@ -455,6 +495,7 @@ components:
         definition:
           type: string
           example: "A decent way to pay for a coffee."
+
     Definition:
       type: object
       properties:
