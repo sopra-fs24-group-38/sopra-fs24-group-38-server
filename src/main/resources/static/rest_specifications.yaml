@@ -451,7 +451,7 @@ components:
       properties:
         avatarId:
           type: string
-          example: 7
+          example: 103
     UserToken:
       type: object
       properties:

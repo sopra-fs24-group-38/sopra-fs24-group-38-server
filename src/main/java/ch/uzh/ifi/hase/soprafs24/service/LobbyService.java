@@ -92,7 +92,15 @@ public class LobbyService {
         }
 
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
-            lobby.setGameMasterId(lobby.getUsers().get(0).getId());
+            boolean newGameMasterIsBot = true;
+            while(newGameMasterIsBot){
+                for(User user1 : lobby.getUsers()){
+                    if(!user1.getAiPlayer()){
+                        lobby.setGameMasterId(user1.getId());
+                        newGameMasterIsBot = false;
+                    }
+                }
+            }
             lobbyRepository.save(lobby);
             lobbyRepository.flush();
             socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
