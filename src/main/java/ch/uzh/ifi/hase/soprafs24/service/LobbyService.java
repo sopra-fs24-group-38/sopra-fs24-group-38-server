@@ -314,12 +314,16 @@ public class LobbyService {
         Lobby lobby = getLobbyAndExistenceCheck(gamePin);
         checkIfAvatarIdValidAIPlayer(avatarId, lobby);
         List<User> users = lobby.getUsers();
+        User userToBeRemoved = null;
         for(User user : users) {
             if (user.getAvatarId().equals(avatarId)) {
-                users.remove(user);
-                userService.deleteUser(user.getId());
-                socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + user.getAvatarId() + "\"}");
+                userToBeRemoved = user;
             }
+        }
+        if(userToBeRemoved != null){
+            users.remove(userToBeRemoved);
+            userService.deleteUser(userToBeRemoved.getId());
+            socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + userToBeRemoved.getAvatarId() + "\"}");
         }
     }
 
