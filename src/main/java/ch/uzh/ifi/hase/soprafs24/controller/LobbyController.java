@@ -95,7 +95,6 @@ public class LobbyController {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
         lobbyService.checkState(userId, LobbyState.WAITING);
         lobbyService.removeAiPlayer(gamePin, aiPlayerDelete.getAvatarId());
-        socketHandler.sendMessageToLobby(gamePin, "user_joined");
         return ResponseEntity.ok().build();
     }
 

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,8 @@ public class LobbyService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("${avatar.ai.number}")
+    private int numAvasAi;
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
@@ -98,6 +101,7 @@ public class LobbyService {
                     if(!user1.getAiPlayer()){
                         lobby.setGameMasterId(user1.getId());
                         newGameMasterIsBot = false;
+                        log.warn(user1.getUsername() + " is new gamemaster");
                     }
                 }
             }
@@ -325,6 +329,30 @@ public class LobbyService {
         socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
     }
 
+    public void removeAiPlayer(Long gamePin, Long avatarId) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+        checkIfAvatarIdValidAIPlayer(avatarId, lobby);
+        for(User user : lobby.getUsers()){
+            if(user.getId().equals(avatarId)){
+                userService.deleteUser(avatarId);
+                socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + user.getId() + "\"}");
+            }
+        }
+
+    }
+
+    private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
+        if(avatarId < 100 || avatarId > 100 + numAvasAi - 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid Avatar ID");
+        }
+
+        for(User user : lobby.getUsers()){
+            if(Objects.equals(user.getId(), avatarId))return;
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no AI player with that AvaID in the lobby");
+
+    }
+
     private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
         //next round bool
         for(User user: users){
@@ -401,6 +429,7 @@ public class LobbyService {
         lobbyRepository.flush();
         log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
     }
+
 
 
 }
