@@ -191,8 +191,8 @@ public class LobbyService {
         }
 
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
-        apiService.generateAiPlayersDefinitions(lobby);
         lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes(), lobby.getLobbyPin()));
+        apiService.generateAiPlayersDefinitions(lobby);
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
