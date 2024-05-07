@@ -30,11 +30,16 @@ public class ApiService {
 
     private final Logger log = LoggerFactory.getLogger(ApiService.class);
 
+    private final RestTemplate restTemplate;
+
     @Value("${api.token}")
     private String tokenEnv;
 
     public ApiService(SocketHandler socketHandler) {
         this.socketHandler = socketHandler;
+        factory.setConnectTimeout(20000);
+        factory.setReadTimeout(20000);
+        restTemplate = new RestTemplate(factory);
     }
 
     public List<Challenge> generateChallenges(int numberRounds, Set<LobbyModes> lobbyModes, Long lobbyId) {
@@ -51,9 +56,7 @@ public class ApiService {
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode, Long lobbyId) {
         List<String> values = new ArrayList<>();
         List<String> definitions = new ArrayList<>();
-        factory.setConnectTimeout(20000);
-        factory.setReadTimeout(20000);
-        RestTemplate restTemplate = new RestTemplate(factory);
+
         boolean shouldContinue = true;
 
         String url = "https://api.openai.com/v1/chat/completions";
@@ -171,7 +174,7 @@ public class ApiService {
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
         JSONArray jsonArray = new JSONArray(content);
 
-        //log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
+        log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
 
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -182,8 +185,8 @@ public class ApiService {
 
         //might become usefull for prompt improvements:
 
-        //log.warn("FETCH CHECK1: length challange array : {} ", challenges.size());
-        //log.warn("FETCH CHECK2: length ai definition array : {} ", definitions.size());
+        log.warn("FETCH CHECK1: length challange array : {} ", challenges.size());
+        log.warn("FETCH CHECK2: length ai definition array : {} ", definitions.size());
 
         return definitions;
     }

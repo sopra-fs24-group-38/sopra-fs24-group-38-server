@@ -208,10 +208,12 @@ public class LobbyService {
         lobby.setRoundNumber(1L);
 
         for (User user : lobby.getUsers()) {
-            user.setDefinition(null);
-            user.setVotedForUserId(null);
-            user.setScore(0L);
-            user.setWantsNextRound(false);
+            if(!user.getAiPlayer()) {
+                user.setDefinition(null);
+                user.setVotedForUserId(null);
+                user.setScore(0L);
+                user.setWantsNextRound(false);
+            }
         }
     }
 
