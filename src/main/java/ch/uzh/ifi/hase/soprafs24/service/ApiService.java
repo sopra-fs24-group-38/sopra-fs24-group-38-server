@@ -221,14 +221,19 @@ public class ApiService {
 
     private Map<LobbyModes, Integer> distributeNumModes(int numberRounds, Set<LobbyModes> lobbyModes) {
         Map<LobbyModes, Integer> distribution = new HashMap<>();
-        Random random = new Random();
+
+        int modesCount = lobbyModes.size();
+        int baseRoundsPerMode = numberRounds / modesCount;
+        int remainderRounds = numberRounds % modesCount;
+
         for (LobbyModes mode : lobbyModes) {
-            distribution.put(mode, 0);
+            distribution.put(mode, baseRoundsPerMode);
         }
-        for (int i = 0; i < numberRounds; i++) {
-            int randomIndex = random.nextInt(lobbyModes.size());
-            LobbyModes selectedMode = (LobbyModes) lobbyModes.toArray()[randomIndex];
-            distribution.put(selectedMode, distribution.get(selectedMode) + 1);
+        for (LobbyModes mode : lobbyModes) {
+            if (remainderRounds > 0) {
+                distribution.put(mode, distribution.get(mode) + 1);
+                remainderRounds--;
+            }
         }
         for (Map.Entry<LobbyModes, Integer> entry : distribution.entrySet()) {
             log.warn(entry.getKey() + " shall be played " + entry.getValue() + " times");
