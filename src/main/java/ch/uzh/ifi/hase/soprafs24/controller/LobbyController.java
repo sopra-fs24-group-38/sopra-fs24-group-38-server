@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RequestMapping("/lobbies")
 @RestController
@@ -152,7 +153,10 @@ public class LobbyController {
     @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-        lobbyService.checkState(userId, LobbyState.WAITING);
+
+        lobbyService.resetLobby(userId);
+        lobbyService.checkState(userId,LobbyState.WAITING);
+
         Long lobbyId = lobbyService.startGame(userId);
         socketHandler.sendMessageToLobby(lobbyId, "game_start");
         return ResponseEntity.ok().build();
@@ -165,6 +169,13 @@ public class LobbyController {
         lobbyService.checkState(userId, LobbyState.EVALUATION);
         lobbyService.registerNextRound(userId);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/connect", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> connectTestPlayer(@RequestHeader(value = "Authorization") String token) {
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.connectTestHomies(userId);
         return ResponseEntity.ok().build();
     }
 

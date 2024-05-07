@@ -58,6 +58,11 @@ public class User implements Serializable {
     @ElementCollection(fetch = FetchType.LAZY)
     @Column
     private List<String> aiDefinitions = new ArrayList<>();
+    @Column
+    private Long permanentScore = 0L;
+    @Column
+    private Long permanentFools = 0L;
+
 
     public Long getScore() {
         return score;
@@ -157,6 +162,7 @@ public class User implements Serializable {
         this.wantsNextRound = wantsNextRound;
     }
 
+
     public Boolean getAiPlayer() {return isAiPlayer;}
 
     public void setAiPlayer(Boolean aiPlayer) {isAiPlayer = aiPlayer;}
@@ -168,4 +174,21 @@ public class User implements Serializable {
         return null;
     }
     public void setAiDefinitions(List<String> aiDefinitions) {this.aiDefinitions = aiDefinitions;}
+
+    public Long getPermanentFools() {
+        return permanentFools;
+    }
+
+    public void addPermanentFools(Long fools) {
+        this.permanentFools += fools;
+    }
+
+    public Long getPermanentScore() {
+        return permanentScore;
+    }
+
+    public void addPermanentScore(Long score) {
+        this.permanentScore += score;
+    }
+
 }

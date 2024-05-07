@@ -13,3 +13,4 @@
 | CLIENT            | all nextRound calls received                                                          | next_round                          |
 | CLIENT            | game is over go to end screen                                                         | game_over                           |     
 | CLIENT            | AI player removed                                                                     | {"ai_removed": "103"}               |
+| CLIENT            | chatGPT API unavailable                                                               | api_unavailable                     |     

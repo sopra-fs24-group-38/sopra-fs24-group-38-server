@@ -49,6 +49,23 @@ paths:
           description: username already taken
         '400':
           description: Bad request
+    get:
+      tags:
+        - user
+      summary: Receives all users with scores and fools
+      description: ''
+      operationId: getAllUsers
+      parameters: [ ]
+      responses:
+        '200':
+          description: Successfully received all users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/allUsers'
+        '401':
+          description: Not Authorized
+
 
   /users/login:
     post:
@@ -496,6 +513,20 @@ components:
           type: string
           example: "A decent way to pay for a coffee."
 
+    allUsers:
+      type: array
+      items:
+        type: object
+        properties:
+            username:
+              type: string
+              example: "name"
+            permanentScore:
+              type: integer
+              example: "1"
+            permanentFools:
+              type: integer
+              example: "1"
     Definition:
       type: object
       properties:

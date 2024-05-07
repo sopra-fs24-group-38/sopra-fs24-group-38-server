@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
+import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +91,7 @@ public class UserService {
 
     public void registerDefinitions(DefinitionPost definitionPost, Long userId) {
         User user = getUserById(userId);
-        user.setDefinition(definitionPost.getDefinition());
+        user.setDefinition(definitionPost.getDefinition().toLowerCase());
         userRepository.save(user);
         userRepository.flush();
         lobbyService.checkIfAllDefinitionsReceived(user.getLobbyId());
@@ -180,8 +181,13 @@ public class UserService {
     }
 
 
-
-
-
-
+    public List<allUsersScores> getAllUsers(String token) {
+        getUserIdByTokenAndAuthenticate(token);
+        List<allUsersScores> userResponses = new ArrayList<>();
+        List <User> users = this.userRepository.findAll();
+        for(User user : users) {
+            userResponses.add(objectMapper.convertValue(user, allUsersScores.class));
+        }
+        return userResponses;
+    }
 }

@@ -35,7 +35,7 @@ public class Lobby {
     private Long gameMaster;
 
     @Column
-    private boolean gameOver;
+    private boolean gameOver = false;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Column
