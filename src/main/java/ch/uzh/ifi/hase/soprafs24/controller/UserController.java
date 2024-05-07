@@ -51,7 +51,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<allUsersScores>> getAllUsers(@RequestHeader(value = "Authorization") String token) {
         List<allUsersScores> users =  userService.getAllUsers(token);
-
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
