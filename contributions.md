@@ -211,5 +211,9 @@ Basically finished Lobby component
     - [#111](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/111)
     - [#110](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/110)
 
+## Samuel Frank
+- Implemented AI Player logic (definition and vote) including new requests to chatGPT API
+    - [#130](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/130)
+    - [#131](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/131)
 
 

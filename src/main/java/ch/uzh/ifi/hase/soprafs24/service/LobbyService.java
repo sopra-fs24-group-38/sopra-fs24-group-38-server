@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +44,13 @@ public class LobbyService {
     @Autowired
     private ApiService apiService;
 
+    @Autowired
+    private AIPlayerService aiPlayerService;
+
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("${avatar.ai.number}")
+    private int numAvasAi;
     @Autowired
     public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
         this.lobbyRepository = lobbyRepository;
@@ -62,19 +68,44 @@ public class LobbyService {
         log.warn("user with id " + userId + " joined lobby " + lobbyId);
     }
 
+    public void addAiPlayerToLobby(Long gamePin) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+        performPlayerNumberCheck(lobby);
+        User aiUser = aiPlayerService.createAiUser(gamePin);
+        lobby.addPlayer(aiUser);
+    }
+
 
     public void removePlayerFromLobby(Long userId, Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         User user = userService.getUserById(userId);
-        user.setDefinition(null);
-        user.setVotedForUserId(null);
-        user.setScore(0L);
+
+        //check if user in lobby or user AI player
         if (!lobby.getUsers().contains(user))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
+        if (user.getAiPlayer())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong endpoint for removing AI player");
+
+        resetUser(userId);
         lobby.removePlayer(user);
-        user.setLobbyId(null);
+
+        //check if all users in lobby are AI players if yes delete
+        if(isLobbyFullWithBots(lobby)){
+            deleteBotLobby(lobby);
+            return;
+        }
+
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
-            lobby.setGameMaster(lobby.getUsers().get(0).getId());
+            boolean newGameMasterIsBot = true;
+            while(newGameMasterIsBot){
+                for(User user1 : lobby.getUsers()){
+                    if(!user1.getAiPlayer()){
+                        lobby.setGameMasterId(user1.getId());
+                        newGameMasterIsBot = false;
+                        log.warn(user1.getUsername() + " is new gamemaster");
+                    }
+                }
+            }
             lobbyRepository.save(lobby);
             lobbyRepository.flush();
             socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
@@ -99,7 +130,7 @@ public class LobbyService {
         } while (lobbyRepository.findLobbyByLobbyPin(pin) != null);
 
         lobby.setLobbyPin(pin);
-        lobby.setGameMaster(userId);
+        lobby.setGameMasterId(userId);
         lobby.addPlayer(userService.getUserById(userId));
         lobby.setLobbyState(LobbyState.WAITING);
         lobby.setGameOver(false);
@@ -127,6 +158,7 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
     }
+
 
     public void connectTestHomies(Long userId) {
         User user = userService.getUserById(userId);
@@ -160,6 +192,7 @@ public class LobbyService {
 
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
         lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes(), lobby.getLobbyPin()));
+        apiService.generateAiPlayersDefinitions(lobby);
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -175,10 +208,12 @@ public class LobbyService {
         lobby.setRoundNumber(1L);
 
         for (User user : lobby.getUsers()) {
-            user.setDefinition(null);
-            user.setVotedForUserId(null);
-            user.setScore(0L);
-            user.setWantsNextRound(false);
+            if(!user.getAiPlayer()) {
+                user.setDefinition(null);
+                user.setVotedForUserId(null);
+                user.setScore(0L);
+                user.setWantsNextRound(false);
+            }
         }
     }
 
@@ -272,6 +307,22 @@ public class LobbyService {
     public void checkIfAllVotesReceived(Long lobbyId) {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
+
+
+        for(User aiUser : users) {
+            if (aiUser.getAiPlayer() && aiUser.getVotedForUserId() == null) {
+                List<Long> userIds = new ArrayList<>();
+                for (User userx : users)
+                    if (!userx.getId().equals(aiUser.getId()))
+                        userIds.add(userx.getId());
+
+                if (!userIds.isEmpty()) {
+                    int randomIndex = random.nextInt(userIds.size());
+                    aiUser.setVotedForUserId(userIds.get(randomIndex));
+                }
+            }
+        }
+
         for(User user : users) {
             if(user.getIsConnected() == null && user.getVotedForUserId() == null){
                 return;
@@ -291,37 +342,52 @@ public class LobbyService {
         socketHandler.sendMessageToLobby(lobbyId, "votes_finished");
     }
 
+    public void removeAiPlayer(Long gamePin, Long avatarId) {
+        Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+        checkIfAvatarIdValidAIPlayer(avatarId, lobby);
+        List<User> users = lobby.getUsers();
+        User userToBeRemoved = null;
+        for(User user : users) {
+            if (user.getAvatarId().equals(avatarId)) {
+                userToBeRemoved = user;
+            }
+        }
+        if(userToBeRemoved != null){
+            users.remove(userToBeRemoved);
+            userService.deleteUser(userToBeRemoved.getId());
+            socketHandler.sendMessageToLobby(gamePin, "{\"ai_removed\": \"" + userToBeRemoved.getAvatarId() + "\"}");
+        }
+    }
+
+    private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
+        if(avatarId < 100 || avatarId > 100 + numAvasAi - 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid Avatar ID");
+        }
+
+        for(User user : lobby.getUsers()){
+            if(Objects.equals(user.getAvatarId(), avatarId)) return;
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no AI player with that AvaID in the lobby");
+
+    }
+
     private void resetLobbyAndNextRoundBool(Lobby lobby, List<User> users) {
         //next round bool
         for(User user: users){
-            user.setWantsNextRound(false);
-            user.setVotedForUserId(null);
-            user.setDefinition(null);
+            if(!user.getAiPlayer()) {
+                user.setWantsNextRound(false);
+                user.setVotedForUserId(null);
+                user.setDefinition(null);
+            }
+            else{
+                user.setDefinition(user.dequeueAiDefinition());
+                user.setVotedForUserId(null);
+            }
         }
         lobby.setRoundNumber(lobby.getRoundNumber()+ 1L);
         lobby.setLobbyState(LobbyState.DEFINITION);
     }
 
-    private void setRounds(int roundUpdate, Lobby lobby) {
-        if (roundUpdate < 3 || roundUpdate > 15) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
-        }
-        lobby.setMaxRoundNumbers(roundUpdate);
-    }
-
-    private void setGameModes(List<String> gameModes, Lobby lobby) {
-        Set<LobbyModes> lobbyModes = new HashSet<>();
-        for (String gameModeNotValidated : gameModes) {
-            try {
-                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
-                lobbyModes.add(lobbyMode);
-            }
-            catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
-            }
-        }
-        lobby.setLobbyModes(lobbyModes);
-    }
 
     private void checkIfPlayerInLobby(Long userId) {
         List<Lobby> allLobbies = lobbyRepository.findAll();
@@ -332,6 +398,11 @@ public class LobbyService {
                 if(Objects.equals(user.getId(), userId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already in a lobby");
             }
         }
+    }
+
+    private void performPlayerNumberCheck(Lobby lobby) {
+        int numPlayers = lobby.getUsers().size();
+        if(numPlayers >= 5) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
     }
 
     private void evaluateVotes( List<User> users) {
@@ -353,9 +424,53 @@ public class LobbyService {
             }
         }
     }
-    private void performPlayerNumberCheck(Lobby lobby) {
-        int numPlayers = lobby.getUsers().size();
-        if(numPlayers >= 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby full");
+    private void resetUser(Long userId) {
+        User user = userService.getUserById(userId);
+        user.setDefinition(null);
+        user.setVotedForUserId(null);
+        user.setScore(0L);
+        user.setLobbyId(null);
+    }
+
+    private boolean isLobbyFullWithBots(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        for(User user : users){
+            if(!user.getAiPlayer()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void deleteBotLobby(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        for(User user : users){
+            userService.deleteUser(user.getId());
+        }
+        lobbyRepository.delete(lobby);
+        lobbyRepository.flush();
+        log.warn("Deleted lobby with ID {} because it was full with bots", lobby.getLobbyPin());
+    }
+
+    private void setRounds(int roundUpdate, Lobby lobby) {
+        if (roundUpdate < 3 || roundUpdate > 15) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allowed Number of Rounds are 5 - 15");
+        }
+        lobby.setMaxRoundNumbers(roundUpdate);
+    }
+
+    private void setGameModes(List<String> gameModes, Lobby lobby) {
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        for (String gameModeNotValidated : gameModes) {
+            try {
+                LobbyModes lobbyMode = LobbyModes.valueOf(gameModeNotValidated);
+                lobbyModes.add(lobbyMode);
+            }
+            catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gamemode " + gameModeNotValidated + " is not valid");
+            }
+        }
+        lobby.setLobbyModes(lobbyModes);
     }
 
 }

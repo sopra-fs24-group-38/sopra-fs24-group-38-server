@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
+import ch.uzh.ifi.hase.soprafs24.model.request.AiPlayerDelete;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.VotePost;
@@ -78,6 +79,26 @@ public class LobbyController {
         return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
     }
 
+    @PutMapping(value = "/users/{gamePin}/ai",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LobbyGetId> joinLAiLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.WAITING);
+        lobbyService.addAiPlayerToLobby(gamePin);
+        socketHandler.sendMessageToLobby(gamePin, "user_joined");
+        LobbyGetId lobbyGetId = new LobbyGetId();
+        lobbyGetId.setGamePin(gamePin);
+        return ResponseEntity.status(HttpStatus.OK).body(lobbyGetId);
+    }
+
+    @DeleteMapping(value = "/users/{gamePin}/ai",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LobbyGetId> deleteLAiLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,
+    @Valid @RequestBody() AiPlayerDelete aiPlayerDelete){
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.checkState(userId, LobbyState.WAITING);
+        lobbyService.removeAiPlayer(gamePin, aiPlayerDelete.getAvatarId());
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/{gamePin}")
     @ResponseStatus(HttpStatus.OK)
     public void adjustLobbySettings(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin,
@@ -132,6 +153,7 @@ public class LobbyController {
     @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> startGame(@RequestHeader(value = "Authorization") String token) {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+
         lobbyService.resetLobby(userId);
         lobbyService.checkState(userId,LobbyState.WAITING);
 

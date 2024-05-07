@@ -67,8 +67,14 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.warn(session.getId());
-        userService.setIsConnected(userService.getUserIdBySessionId(session.getId()), false);
-        super.afterConnectionClosed(session, status);
+        Long uId = userService.getUserIdBySessionId(session.getId());
+        User userWhichDisconnected = userService.getUserById(uId);
+        //Only disconnect in case not a bot
+        if(!userWhichDisconnected.getAiPlayer()){
+            log.warn(session.getId());
+            userService.setIsConnected(uId, false);
+            super.afterConnectionClosed(session, status);
+        }
+
     }
 }

@@ -1,7 +1,13 @@
 package ch.uzh.ifi.hase.soprafs24.model.database;
 
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 
 @Entity
@@ -47,10 +53,16 @@ public class User implements Serializable {
     private Boolean wantsNextRound = false;
 
     @Column
-    private Long permanentScore = 0L;
+    private Boolean isAiPlayer = false;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column
+    private List<String> aiDefinitions = new ArrayList<>();
+    @Column
+    private Long permanentScore = 0L;
     @Column
     private Long permanentFools = 0L;
+
 
     public Long getScore() {
         return score;
@@ -150,6 +162,19 @@ public class User implements Serializable {
         this.wantsNextRound = wantsNextRound;
     }
 
+
+    public Boolean getAiPlayer() {return isAiPlayer;}
+
+    public void setAiPlayer(Boolean aiPlayer) {isAiPlayer = aiPlayer;}
+
+    public String dequeueAiDefinition() {
+        if (!aiDefinitions.isEmpty()) {
+            return aiDefinitions.remove(0);
+        }
+        return null;
+    }
+    public void setAiDefinitions(List<String> aiDefinitions) {this.aiDefinitions = aiDefinitions;}
+
     public Long getPermanentFools() {
         return permanentFools;
     }
@@ -165,4 +190,5 @@ public class User implements Serializable {
     public void addPermanentScore(Long score) {
         this.permanentScore += score;
     }
+
 }

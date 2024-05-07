@@ -32,6 +32,7 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     ObjectMapper objectMapper = new ObjectMapper();
+
     @Value("${avatar.number}")
     private int numAvas;
 
@@ -150,6 +151,20 @@ public class UserService {
         userRepository.save(user);
         userRepository.flush();
     }
+    public void logout(String token) {
+        User user = getUserById(getUserIdByTokenAndAuthenticate(token));
+        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
+    }
+
+    public void deleteUser(Long userId){
+        User user = getUserById(userId);
+        if(user == null){
+            log.warn("tried to delete inexisting user with id {} ", userId);
+            return;
+        }
+        userRepository.delete(user);
+        userRepository.flush();
+    }
 
     private Long getUnUsedAvaId(Long lobbyId) {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyId);
@@ -165,17 +180,15 @@ public class UserService {
         return potentialId;
     }
 
-    public void logout(String token) {
-        User user = getUserById(getUserIdByTokenAndAuthenticate(token));
-        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
-    }
 
     public List<allUsersScores> getAllUsers(String token) {
         getUserIdByTokenAndAuthenticate(token);
         List<allUsersScores> userResponses = new ArrayList<>();
         List <User> users = this.userRepository.findAll();
         for(User user : users) {
-            userResponses.add(objectMapper.convertValue(user, allUsersScores.class));
+            if(!user.getAiPlayer()){
+                userResponses.add(objectMapper.convertValue(user, allUsersScores.class));
+            }
         }
         return userResponses;
     }
