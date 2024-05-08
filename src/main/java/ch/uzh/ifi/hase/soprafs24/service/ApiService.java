@@ -205,7 +205,7 @@ public class ApiService {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             String aiPlayersDefinition = jsonObject.getString("definition");
-            definitions.add(aiPlayersDefinition);
+            definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
         //might become usefull for prompt improvements:
