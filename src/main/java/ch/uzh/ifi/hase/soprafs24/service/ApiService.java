@@ -154,7 +154,7 @@ public class ApiService {
                 user.setAiDefinitions(definitions);
                 user.setDefinition(user.dequeueAiDefinition());
                 for(int i = 0; i < lobby.getChallenges().size() ; i++){
-                    //log.warn("ITERATION CHECK {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(), user.getUsername(), user.getAiDefinitions().get(i), challenges.get(i).getChallenge());
+                    //log.warn("ITERATION CHECK (Mode: {}, Round: {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(),i, user.getUsername(), user.dequeueAiDefinition(), challenges.get(i).getChallenge());
                 }
             }
         }
@@ -172,9 +172,11 @@ public class ApiService {
 
         JSONObject jsonResponse = new JSONObject(response);
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+
+        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", jsonResponse);
+
         JSONArray jsonArray = new JSONArray(content);
 
-        log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
 
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -204,13 +206,13 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (use proper  JSONArray text syntax) : "
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the actual definition as value) : "
                 + "[{\\\"definition\\\": \\\"definition1\\\",\\\"definition\\\": \\\"definition2\\\"}],{\\\"definition\\\": \\\"definition3\\\",\\\"definition\\\": \\\"definition4\\\"}] "
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
                 + "Give a plausible but false definition which tricks human into thinking it is correct"
                 + "The wrong definition should be plausible and be related to the same category"
-                + "The wrong definition should be less than 4 words\"}],"
+                + "The wrong definition should be less than 4 words. Remember to answer  to \"}],"
                 + "\"temperature\": 0.7"
                 + "}";
 

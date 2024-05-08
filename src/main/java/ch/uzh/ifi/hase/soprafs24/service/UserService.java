@@ -100,7 +100,7 @@ public class UserService {
     public Long getUserIdByTokenAndAuthenticate(String token) {
         User user = userRepository.findByToken(token);
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated (bad token)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated (please logout and login again)");
         }
         else {
             return user.getId();

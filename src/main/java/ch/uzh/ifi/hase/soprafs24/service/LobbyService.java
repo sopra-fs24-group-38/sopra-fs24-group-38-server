@@ -297,7 +297,7 @@ public class LobbyService {
                 return;
             }
             if(user.getIsConnected() != null) {
-                if (user.getIsConnected() && user.getDefinition() == null) {
+                if (user.getIsConnected() && user.getDefinition() == null && !user.getAiPlayer()) {
                     log.warn("not all users in the lobby have submitted their definition");
                     return;
                 }
