@@ -1,6 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.BroadSubCategories;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.SubCategoriesFood;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.SubCategoriesProgramming;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ApiService {
@@ -124,27 +128,48 @@ public class ApiService {
     }
 
     private String getPromptBodyChallenges(LobbyModes lobbyModes, int numberRounds){
-        return "{"
+        String prompt = "{"
                 + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
-                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. "
+                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. Dont include special characters"
+                + "The word should also either be related to " + randomSubcategories(lobbyModes)
                 + "Now give us "
                 + numberRounds
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
+        log.warn("PROMPT FOR AI DEFINITION: {} ", prompt);
+        return prompt;
     }
     private String getModeDescription(LobbyModes lobbyModes) {
         return switch (lobbyModes) {
             case BIZARRE -> "The value should return a bizarre and unknown word.";
             case PROGRAMMING -> "The value should return a rather unknown word related to Programming";
             case DUTCH -> "The value should return a funny dutch word.";
-            case RAREFOODS -> "The value should return the name of an unknown food.";
+            case RAREFOODS -> "The value should return a unknown word related to food and cooking.";
         };
     }
 
+    private String randomSubcategories(LobbyModes lobbyMode) {
+        List<String> categories = switch (lobbyMode) {
+            case BIZARRE -> Arrays.stream(BroadSubCategories.values()).map(Enum::name).collect(Collectors.toList());
+            case DUTCH -> Arrays.stream(BroadSubCategories.values()).map(Enum::name).collect(Collectors.toList());
+            case PROGRAMMING -> Arrays.stream(SubCategoriesProgramming.values()).map(Enum::name).collect(Collectors.toList());
+            case RAREFOODS -> Arrays.stream(SubCategoriesFood.values()).map(Enum::name).collect(Collectors.toList());
+        };
+
+        Collections.shuffle(categories);
+        String result = categories.stream().limit(3).collect(Collectors.joining(", "));
+        int lastComma = result.lastIndexOf(",");
+        if (lastComma != -1) {
+            result = result.substring(0, lastComma) + " or" + result.substring(lastComma + 1);
+        }
+        String concatenatedResult = "The words should also either be related to " + result;
+        log.warn("Subcategory prompt sentences: {}", concatenatedResult);
+        return concatenatedResult;
+    }
     public void generateAiPlayersDefinitions(Lobby lobby) {
         List<User> users = lobby.getUsers();
         List<Challenge> challenges = lobby.getChallenges();
@@ -213,7 +238,7 @@ public class ApiService {
                 + "The wrong definition should be less than 4 words\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-
+        log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
         return requestBody;
     }
 
