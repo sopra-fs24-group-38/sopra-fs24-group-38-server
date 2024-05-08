@@ -33,7 +33,7 @@ public class UserServiceTest {
 
         // create a User
         UserPost userPost = new UserPost();
-        userPost.setUsername("test");
+        userPost.setUsername("testAddSession");
         userPost.setPassword("pw");
         UserResponse userResponse = userService.createUser(userPost);
         String session = "sessionId";
