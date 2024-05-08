@@ -166,7 +166,7 @@ public class ApiService {
         if (lastComma != -1) {
             result = result.substring(0, lastComma) + " or" + result.substring(lastComma + 1);
         }
-        String concatenatedResult = "The words should also either be related to " + result;
+        String concatenatedResult = "The words should also either be related to " + result + " ";
         log.warn("Subcategory prompt sentences: {}", concatenatedResult);
         return concatenatedResult;
     }
