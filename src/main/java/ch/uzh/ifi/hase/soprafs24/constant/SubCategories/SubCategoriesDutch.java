@@ -1,0 +1,4 @@
+package ch.uzh.ifi.hase.soprafs24.constant.SubCategories;
+
+public class SubCategoriesDutch {
+}
