@@ -154,10 +154,10 @@ public class ApiService {
 
     private String randomSubcategories(LobbyModes lobbyMode) {
         List<String> categories = switch (lobbyMode) {
-            case BIZARRE -> Arrays.stream(BroadSubCategories.values()).map(Enum::name).collect(Collectors.toList());
-            case DUTCH -> Arrays.stream(BroadSubCategories.values()).map(Enum::name).collect(Collectors.toList());
-            case PROGRAMMING -> Arrays.stream(SubCategoriesProgramming.values()).map(Enum::name).collect(Collectors.toList());
-            case RAREFOODS -> Arrays.stream(SubCategoriesFood.values()).map(Enum::name).collect(Collectors.toList());
+            case BIZARRE -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case DUTCH -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case PROGRAMMING -> Arrays.stream(SubCategoriesProgramming.values()).map(Enum::toString).collect(Collectors.toList());
+            case RAREFOODS -> Arrays.stream(SubCategoriesFood.values()).map(Enum::toString).collect(Collectors.toList());
         };
 
         Collections.shuffle(categories);
