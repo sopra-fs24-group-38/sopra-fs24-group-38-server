@@ -145,10 +145,10 @@ public class ApiService {
     }
     private String getModeDescription(LobbyModes lobbyModes) {
         return switch (lobbyModes) {
-            case BIZARRE -> "The value should return a bizarre and unknown word.";
-            case PROGRAMMING -> "The value should return a rather unknown word related to Programming";
-            case DUTCH -> "The value should return a funny dutch word.";
-            case RAREFOODS -> "The value should return a unknown word related to food and cooking.";
+            case BIZARRE -> "The value should return a bizarre and unknown word. It is important the the words are not common. ";
+            case PROGRAMMING -> "The value should return a rather unknown word related to Programming. It is important the the words are not common. ";
+            case DUTCH -> "The value should return a funny dutch word. It is important the the words are not common.";
+            case RAREFOODS -> "The value should return a unknown word related to food and cooking. It is important the the words are not common.";
         };
     }
 
