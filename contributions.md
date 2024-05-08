@@ -197,6 +197,7 @@ Basically finished Lobby component
     - [#112](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/112)
     - [#111](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/111)
     - [#110](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/110)
+- Added userService unit tests
 
 ## Harris A
 - Pair Programming on reliability regarding starting a new game
