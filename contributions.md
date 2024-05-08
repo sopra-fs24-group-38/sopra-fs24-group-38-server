@@ -215,5 +215,8 @@ Basically finished Lobby component
 - Implemented AI Player logic (definition and vote) including new requests to chatGPT API
     - [#130](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/130)
     - [#131](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/131)
+ - Improe the challenge fetching process 
+    - [#236](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/236) Even distribution
+    - [#237](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/237) Challenge shuffling
 
 
