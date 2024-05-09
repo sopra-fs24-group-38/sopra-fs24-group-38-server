@@ -52,7 +52,7 @@ public class SocketHandler extends TextWebSocketHandler {
             } catch(NullPointerException e){
                 String sessionInfo = "Couldn't fetch session (sessionID: " + user.getSessionId() + ")";
                 String userInfo = "For user with userID: " + user.getId() + " and username: "  + user.getUsername();
-                log.warn(sessionInfo + userInfo);
+                log.trace(sessionInfo + userInfo);
             }
             if (session != null && session.isOpen()) {
                 try {

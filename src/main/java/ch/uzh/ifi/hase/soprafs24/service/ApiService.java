@@ -179,7 +179,7 @@ public class ApiService {
                 user.setAiDefinitions(definitions);
                 user.setDefinition(user.dequeueAiDefinition());
                 for(int i = 0; i < lobby.getChallenges().size() ; i++){
-                    //log.warn("ITERATION CHECK {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(), user.getUsername(), user.getAiDefinitions().get(i), challenges.get(i).getChallenge());
+                    //log.warn("ITERATION CHECK (Mode: {}, Round: {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(),i, user.getUsername(), user.dequeueAiDefinition(), challenges.get(i).getChallenge());
                 }
             }
         }
@@ -197,9 +197,11 @@ public class ApiService {
 
         JSONObject jsonResponse = new JSONObject(response);
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+
+        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", jsonResponse);
+
         JSONArray jsonArray = new JSONArray(content);
 
-        log.warn("REQUEST CHECK 1 : response body (jsonResponse) {} ", jsonResponse);
 
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -227,14 +229,14 @@ public class ApiService {
         }
 
         String requestBody= "{"
-                + "\"model\": \"gpt-4\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
+                + "\"model\": \"gpt-4-turbo\","
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the actual definition as value) : "
                 + "[{\\\"definition\\\": \\\"definition1\\\",\\\"definition\\\": \\\"definition2\\\"}],{\\\"definition\\\": \\\"definition3\\\",\\\"definition\\\": \\\"definition4\\\"}] "
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
-                + ". Give a plausible but false definition which tricks human into thinking it is correct. "
-                + "The wrong definition should be plausible and be related to the same category. "
-                + "The wrong definition should be less than 4 words\"}],"
+                + "Give a plausible but false definition which tricks human into thinking it is correct"
+                + "The wrong definition should be plausible and be related to the same category"
+                + "The wrong definition should be less than 4 words. Remember to answer  to \"}],"
                 + "\"temperature\": 0.7"
                 + "}";
         log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
@@ -245,14 +247,19 @@ public class ApiService {
 
     private Map<LobbyModes, Integer> distributeNumModes(int numberRounds, Set<LobbyModes> lobbyModes) {
         Map<LobbyModes, Integer> distribution = new HashMap<>();
-        Random random = new Random();
+
+        int modesCount = lobbyModes.size();
+        int baseRoundsPerMode = numberRounds / modesCount;
+        int remainderRounds = numberRounds % modesCount;
+
         for (LobbyModes mode : lobbyModes) {
-            distribution.put(mode, 0);
+            distribution.put(mode, baseRoundsPerMode);
         }
-        for (int i = 0; i < numberRounds; i++) {
-            int randomIndex = random.nextInt(lobbyModes.size());
-            LobbyModes selectedMode = (LobbyModes) lobbyModes.toArray()[randomIndex];
-            distribution.put(selectedMode, distribution.get(selectedMode) + 1);
+        for (LobbyModes mode : lobbyModes) {
+            if (remainderRounds > 0) {
+                distribution.put(mode, distribution.get(mode) + 1);
+                remainderRounds--;
+            }
         }
         for (Map.Entry<LobbyModes, Integer> entry : distribution.entrySet()) {
             log.warn(entry.getKey() + " shall be played " + entry.getValue() + " times");
