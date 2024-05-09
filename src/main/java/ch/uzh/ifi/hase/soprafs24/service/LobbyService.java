@@ -359,6 +359,11 @@ public class LobbyService {
         }
     }
 
+    public void registerFinishWish(Long userId) {
+        User user = userService.getUserById(userId); 
+
+    }
+
     private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
         if(avatarId < 100 || avatarId > 100 + numAvasAi - 1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid Avatar ID");
@@ -473,5 +478,6 @@ public class LobbyService {
         }
         lobby.setLobbyModes(lobbyModes);
     }
+
 
 }

@@ -179,4 +179,11 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
+
+    @PutMapping(value = "/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> resetLobbyAfterGame(@RequestHeader(value = "Authorization") String token) {
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.registerFinishWish(userId);
+        return ResponseEntity.ok().build();
+    }
 }
