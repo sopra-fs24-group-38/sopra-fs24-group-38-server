@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.Player;
@@ -191,7 +192,9 @@ public class LobbyService {
         }
 
         socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_preparing");
-        lobby.setChallenges(apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes(), lobby.getLobbyPin()));
+        List<Challenge> challenges = apiService.generateChallenges(lobby.getMaxRoundNumbers(), lobby.getLobbyModes(), lobby.getLobbyPin());
+        Collections.shuffle(challenges);
+        lobby.setChallenges(challenges);
         apiService.generateAiPlayersDefinitions(lobby);
         lobby.setLobbyState(LobbyState.DEFINITION);
         lobbyRepository.save(lobby);
@@ -294,7 +297,7 @@ public class LobbyService {
                 return;
             }
             if(user.getIsConnected() != null) {
-                if (user.getIsConnected() && user.getDefinition() == null) {
+                if (user.getIsConnected() && user.getDefinition() == null && !user.getAiPlayer()) {
                     log.warn("not all users in the lobby have submitted their definition");
                     return;
                 }
