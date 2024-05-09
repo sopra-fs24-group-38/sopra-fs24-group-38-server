@@ -322,6 +322,7 @@ public class LobbyService {
                 if (!userIds.isEmpty()) {
                     int randomIndex = random.nextInt(userIds.size());
                     aiUser.setVotedForUserId(userIds.get(randomIndex));
+                    //test
                 }
             }
         }
