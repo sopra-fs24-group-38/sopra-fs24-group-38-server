@@ -217,4 +217,10 @@ Basically finished Lobby component
     - [#130](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/130)
     - [#131](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/131)
 
+- Introduced Subcategories for ChatGpt request in order to avoid reappearing words 
+    - [#210](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/210)
+
+- Lower cased AI definitions: 
+    - [#238](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/238)
+
 
