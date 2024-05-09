@@ -133,22 +133,22 @@ public class ApiService {
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
-                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. Dont include special characters"
-                + "The word should also either be related to " + randomSubcategories(lobbyModes)
+                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. Dont include special characters. "
+                + randomSubcategories(lobbyModes)
                 + "Now give us "
                 + numberRounds
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        log.warn("PROMPT FOR AI DEFINITION: {} ", prompt);
+        log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
         return prompt;
     }
     private String getModeDescription(LobbyModes lobbyModes) {
         return switch (lobbyModes) {
-            case BIZARRE -> "The value should return a bizarre and unknown word. It is important the the words are not common. ";
-            case PROGRAMMING -> "The value should return a rather unknown word related to Programming. It is important the the words are not common. ";
-            case DUTCH -> "The value should return a funny dutch word. It is important the the words are not common.";
-            case RAREFOODS -> "The value should return a unknown word related to food and cooking. It is important the the words are not common.";
+            case BIZARRE -> "The value should return a bizarre and unknown word. It is important that the words are not common. ";
+            case PROGRAMMING -> "The value should return a rather unknown word related to Programming. It is important that the words are not common. ";
+            case DUTCH -> "The value should return a funny dutch word. It is important that the words are not common.";
+            case RAREFOODS -> "The value should return a unknown word related to food and cooking. It is important that the words are not common.";
         };
     }
 
@@ -166,7 +166,7 @@ public class ApiService {
         if (lastComma != -1) {
             result = result.substring(0, lastComma) + " or" + result.substring(lastComma + 1);
         }
-        String concatenatedResult = "The words should also either be related to " + result + " ";
+        String concatenatedResult = "The words should also either be related to " + result + ". ";
         log.warn("Subcategory prompt sentences: {}", concatenatedResult);
         return concatenatedResult;
     }
@@ -218,10 +218,9 @@ public class ApiService {
 
     private String getPromptBodyAIDefinitions(List<Challenge> challenges){
         StringBuilder promptBuilder = new StringBuilder();
-        promptBuilder.append("[");
         for (int i = 0; i < challenges.size(); i++) {
             Challenge challenge = challenges.get(i);
-            promptBuilder.append(challenge.getChallenge() + "(Category: "+challenge.getLobbyMode() + ")");
+            promptBuilder.append(challenge.getChallenge() + " (Category: "+challenge.getLobbyMode() + ")");
             if (i < challenges.size() - 1) {
                 promptBuilder.append(", ");
             }
@@ -229,12 +228,12 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (use proper  JSONArray text syntax) : "
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"definition\\\": \\\"definition1\\\",\\\"definition\\\": \\\"definition2\\\"}],{\\\"definition\\\": \\\"definition3\\\",\\\"definition\\\": \\\"definition4\\\"}] "
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
-                + "Give a plausible but false definition which tricks human into thinking it is correct"
-                + "The wrong definition should be plausible and be related to the same category"
+                + ". Give a plausible but false definition which tricks human into thinking it is correct. "
+                + "The wrong definition should be plausible and be related to the same category. "
                 + "The wrong definition should be less than 4 words\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
