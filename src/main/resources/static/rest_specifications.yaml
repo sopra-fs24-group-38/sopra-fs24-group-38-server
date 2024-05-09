@@ -376,8 +376,20 @@ paths:
         '400':
           description: Bad request
 
+  /lobbies/newround :
+    put:
+      tags:
+        - lobby
+      summary: new round reset
 
-
+      description: 'This Endpoint allows users to play a new round '
+      responses:
+        '200':
+          description: Successfully registered new round wish.
+        '401':
+          description: Not authenticated.
+        '400':
+          description: Bad request
 
 
 
@@ -518,15 +530,15 @@ components:
       items:
         type: object
         properties:
-            username:
-              type: string
-              example: "name"
-            permanentScore:
-              type: integer
-              example: "1"
-            permanentFools:
-              type: integer
-              example: "1"
+          username:
+            type: string
+            example: "name"
+          permanentScore:
+            type: integer
+            example: "1"
+          permanentFools:
+            type: integer
+            example: "1"
     Definition:
       type: object
       properties:

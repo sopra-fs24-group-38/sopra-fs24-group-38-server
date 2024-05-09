@@ -444,6 +444,7 @@ public class LobbyService {
 
     private void deleteBotLobby(Lobby lobby) {
         List<User> users = lobby.getUsers();
+        lobby.setUsers(null);
         for(User user : users){
             userService.deleteUser(user.getId());
         }
