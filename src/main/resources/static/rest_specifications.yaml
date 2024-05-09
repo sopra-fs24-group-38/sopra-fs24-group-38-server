@@ -376,7 +376,7 @@ paths:
         '400':
           description: Bad request
 
-  /lobbies/finish :
+  /lobbies/newround :
     put:
       tags:
         - lobby

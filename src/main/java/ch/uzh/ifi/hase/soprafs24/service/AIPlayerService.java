@@ -61,7 +61,7 @@ public class AIPlayerService {
     public User createAiUser(Long gamePin) {
         User aiUser = new User();
         aiUser.setAiPlayer(true);
-        String name = getRandomUniqueName(gamePin);
+        String name = getRandomUniqueName();
         aiUser.setUsername(name);
         aiUser.setLobbyId(gamePin);
         aiUser.setAvatarId(getUnUsedAvaIdForAIPlayer(gamePin));
@@ -90,17 +90,13 @@ public class AIPlayerService {
         return potentialId;
     }
 
-    private String getRandomUniqueName(Long lobbyId) {
-        List<User> users = lobbyService.getUsers(lobbyId);
-        Set<String> existingNames = new HashSet<>();
-        for (User user : users) {
-            existingNames.add(user.getUsername());
-        }
+    private String getRandomUniqueName() {
         boolean nameUnique = false;
         String name = "";
         while (!nameUnique) {
             name = names.get(random.nextInt(names.size()));
-            if (!existingNames.contains(name)) {
+            User user = userRepository.findByUsername(name);
+            if (user==null) {
                 nameUnique = true;
             }
         }

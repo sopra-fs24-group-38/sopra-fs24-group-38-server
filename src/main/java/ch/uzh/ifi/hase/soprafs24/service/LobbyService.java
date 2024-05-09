@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -315,6 +314,7 @@ public class LobbyService {
         for(User aiUser : users) {
             if (aiUser.getAiPlayer() && aiUser.getVotedForUserId() == null) {
                 List<Long> userIds = new ArrayList<>();
+                userIds.add(0L);
                 for (User userx : users)
                     if (!userx.getId().equals(aiUser.getId()))
                         userIds.add(userx.getId());
@@ -362,9 +362,15 @@ public class LobbyService {
         }
     }
 
-    public void registerFinishWish(Long userId) {
-        User user = userService.getUserById(userId); 
-
+    public void newGameReset(Long userId) {
+        User user = userService.getUserById(userId);
+        Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
+        lobby.setLobbyState(LobbyState.WAITING);
+        Set<LobbyModes> defaultModeSetting = new HashSet<>();
+        defaultModeSetting.add(LobbyModes.BIZARRE);
+        lobby.setLobbyModes(defaultModeSetting);
+        lobby.setRoundNumber(10L);
+        lobbyRepository.flush();
     }
 
     private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
