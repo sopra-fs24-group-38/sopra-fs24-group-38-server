@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
-import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
-import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.AiPlayerDelete;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
@@ -21,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 
 @RequestMapping("/lobbies")
 @RestController
@@ -179,4 +176,11 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
+
+    @PutMapping(value = "/newround", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> resetLobbyAfterGame(@RequestHeader(value = "Authorization") String token) {
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.newGameReset(userId);
+        return ResponseEntity.ok().build();
+    }
 }

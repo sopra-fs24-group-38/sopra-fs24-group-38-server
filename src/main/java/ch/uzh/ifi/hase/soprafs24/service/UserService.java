@@ -158,6 +158,7 @@ public class UserService {
 
     public void deleteUser(Long userId){
         User user = getUserById(userId);
+
         if(user == null){
             log.warn("tried to delete inexisting user with id {} ", userId);
             return;
