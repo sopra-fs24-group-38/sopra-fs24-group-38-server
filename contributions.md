@@ -220,4 +220,10 @@ Basically finished Lobby component
     - [#236](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/236) Even distribution
     - [#237](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/237) Challenge shuffling
 
+- Introduced Subcategories for ChatGpt request in order to avoid reappearing words 
+    - [#210](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/210)
+
+- Lower cased AI definitions: 
+    - [#238](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/238)
+
 

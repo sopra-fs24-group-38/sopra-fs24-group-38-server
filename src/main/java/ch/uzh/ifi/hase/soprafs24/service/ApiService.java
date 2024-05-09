@@ -1,6 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.BroadSubCategories;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.SubCategoriesFood;
+import ch.uzh.ifi.hase.soprafs24.constant.SubCategories.SubCategoriesProgramming;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ApiService {
@@ -124,27 +128,48 @@ public class ApiService {
     }
 
     private String getPromptBodyChallenges(LobbyModes lobbyModes, int numberRounds){
-        return "{"
+        String prompt = "{"
                 + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this: "
                 + "[{\\\"value\\\": \\\"Value1\\\",\\\"definition\\\": \\\"definition 1\\\"}],{\\\"value\\\": \\\"Value2\\\",\\\"definition\\\": \\\"definition 2\\\"}] "
                 + getModeDescription(lobbyModes)
-                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. "
+                + "The definition should be very short, easy to understand and potentially written by a not-first-language-english human, and consist of maximum 4 words. Dont include special characters. "
+                + randomSubcategories(lobbyModes)
                 + "Now give us "
                 + numberRounds
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
+        log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
+        return prompt;
     }
     private String getModeDescription(LobbyModes lobbyModes) {
         return switch (lobbyModes) {
-            case BIZARRE -> "The value should return a bizarre and unknown word.";
-            case PROGRAMMING -> "The value should return a rather unknown word related to Programming";
-            case DUTCH -> "The value should return a funny dutch word.";
-            case RAREFOODS -> "The value should return the name of an unknown food.";
+            case BIZARRE -> "The value should return a bizarre and unknown word. It is important that the words are not common. ";
+            case PROGRAMMING -> "The value should return a rather unknown word related to Programming. It is important that the words are not common. ";
+            case DUTCH -> "The value should return a funny dutch word. It is important that the words are not common.";
+            case RAREFOODS -> "The value should return a unknown word related to food and cooking. It is important that the words are not common.";
         };
     }
 
+    private String randomSubcategories(LobbyModes lobbyMode) {
+        List<String> categories = switch (lobbyMode) {
+            case BIZARRE -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case DUTCH -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case PROGRAMMING -> Arrays.stream(SubCategoriesProgramming.values()).map(Enum::toString).collect(Collectors.toList());
+            case RAREFOODS -> Arrays.stream(SubCategoriesFood.values()).map(Enum::toString).collect(Collectors.toList());
+        };
+
+        Collections.shuffle(categories);
+        String result = categories.stream().limit(3).collect(Collectors.joining(", "));
+        int lastComma = result.lastIndexOf(",");
+        if (lastComma != -1) {
+            result = result.substring(0, lastComma) + " or" + result.substring(lastComma + 1);
+        }
+        String concatenatedResult = "The words should also either be related to " + result + ". ";
+        log.warn("Subcategory prompt sentences: {}", concatenatedResult);
+        return concatenatedResult;
+    }
     public void generateAiPlayersDefinitions(Lobby lobby) {
         List<User> users = lobby.getUsers();
         List<Challenge> challenges = lobby.getChallenges();
@@ -182,7 +207,7 @@ public class ApiService {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             String aiPlayersDefinition = jsonObject.getString("definition");
-            definitions.add(aiPlayersDefinition);
+            definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
         //might become usefull for prompt improvements:
@@ -195,10 +220,9 @@ public class ApiService {
 
     private String getPromptBodyAIDefinitions(List<Challenge> challenges){
         StringBuilder promptBuilder = new StringBuilder();
-        promptBuilder.append("[");
         for (int i = 0; i < challenges.size(); i++) {
             Challenge challenge = challenges.get(i);
-            promptBuilder.append(challenge.getChallenge() + "(Category: "+challenge.getLobbyMode() + ")");
+            promptBuilder.append(challenge.getChallenge() + " (Category: "+challenge.getLobbyMode() + ")");
             if (i < challenges.size() - 1) {
                 promptBuilder.append(", ");
             }
@@ -215,7 +239,7 @@ public class ApiService {
                 + "The wrong definition should be less than 4 words. Remember to answer  to \"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-
+        log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
         return requestBody;
     }
 
