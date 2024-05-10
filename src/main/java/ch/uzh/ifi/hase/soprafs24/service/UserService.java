@@ -59,6 +59,7 @@ public class UserService {
         User newUser = objectMapper.convertValue(userPost, User.class);
 
         newUser.setToken(UUID.randomUUID().toString());
+        newUser.setIsConnected(false); // seems to cause errors on localhost only
 
         newUser = userRepository.save(newUser);
         userRepository.flush();

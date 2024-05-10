@@ -235,6 +235,9 @@ public class LobbyService {
         gameDetails.setGameMasterId(lobby.getGameMaster());
         gameDetails.setGameMasterUsername(userService.getUserById(lobby.getGameMaster()).getUsername());
 
+        gameDetails.setRoundNumber(lobby.getRoundNumber());
+        gameDetails.setMaxRoundNumbers(lobby.getMaxRoundNumbers());
+
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {
             if(user.getIsConnected()) {
