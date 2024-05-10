@@ -238,4 +238,10 @@ Basically finished Lobby component
     - [#60](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/60)
     - [#106](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/106)
 
+## Cédric Styner
 
+- worked on reliability.
+    -  [#110](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/110)
+- Add Roundinformations
+    -  [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/87)
+    -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
