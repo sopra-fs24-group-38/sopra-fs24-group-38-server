@@ -226,4 +226,16 @@ Basically finished Lobby component
 - Lower cased AI definitions: 
     - [#238](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/238)
 
+## Markus Senn
+- Introduced logic for lobby AI player addition/removal
+    - [#62](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/62)
+    - [#63](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/63)
+    - [#104](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/104)
+    - [#105](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/105)
+- Made settings data persistent between mounts
+    - [#102](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/102)
+- Added leaderboard
+    - [#60](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/60)
+    - [#106](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/106)
+
 
