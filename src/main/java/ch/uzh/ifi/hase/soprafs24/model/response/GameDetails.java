@@ -25,6 +25,11 @@ public class GameDetails {
 
     private List<Player> players;
 
+    @JsonProperty("round_number")
+    private Long roundNumber;
+
+    @JsonProperty("max_round_numbers")
+    private int maxRoundNumbers;
 
     public String getGameState() {
         return gameState;
@@ -86,4 +91,20 @@ public class GameDetails {
     public String getGameMode() {return gameMode;}
 
     public void setGameMode(String gameMode) {this.gameMode = gameMode;}
+
+    public Long getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void setRoundNumber(Long roundNumber) {
+        this.roundNumber = roundNumber;
+    }
+
+    public int getMaxRoundNumbers() {
+        return maxRoundNumbers;
+    }
+
+    public void setMaxRoundNumbers(int maxRoundNumbers) {
+        this.maxRoundNumbers = maxRoundNumbers;
+    }
 }

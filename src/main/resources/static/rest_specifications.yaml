@@ -438,6 +438,12 @@ components:
           type: string
           example: "GameMasterUsername2000"
           description: username of the current gameMaster
+        round_number:
+          type: integer
+          example: 1
+        max_round_numbers:
+          type: integer
+          example: 10
         players:
           type: array
           items:
