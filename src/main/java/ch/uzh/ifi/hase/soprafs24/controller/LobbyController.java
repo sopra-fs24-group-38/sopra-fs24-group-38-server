@@ -40,29 +40,6 @@ public class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    /**
-     * Endpoint solely for testing purposes
-     * */
-    @PutMapping(value = "/testws/{gamePin}")
-    @ResponseStatus(HttpStatus.OK)
-    public void testws(@PathVariable Long gamePin){
-        socketHandler.sendMessageToLobby(gamePin, "HELLO");
-    }
-
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LobbyGetId> createLobby(@RequestHeader(value = "Authorization") String token){
-
-        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-
-
-        LobbyGetId lobbyGetId = new LobbyGetId();
-
-        Long gamePin = lobbyService.createLobby(userId);
-
-        lobbyGetId.setGamePin(gamePin);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(lobbyGetId);
-    }
 
     @PutMapping(value = "/users/{gamePin}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> joinLobby(@RequestHeader(value = "Authorization") String token, @PathVariable Long gamePin){
@@ -169,6 +146,37 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/newround", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> resetLobbyAfterGame(@RequestHeader(value = "Authorization") String token) {
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+        lobbyService.newGameReset(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoints solely for testing purposes
+     * */
+    @PutMapping(value = "/testws/{gamePin}")
+    @ResponseStatus(HttpStatus.OK)
+    public void testws(@PathVariable Long gamePin){
+        socketHandler.sendMessageToLobby(gamePin, "HELLO");
+    }
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LobbyGetId> createLobby(@RequestHeader(value = "Authorization") String token){
+
+        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
+
+
+        LobbyGetId lobbyGetId = new LobbyGetId();
+
+        Long gamePin = lobbyService.createLobby(userId);
+
+        lobbyGetId.setGamePin(gamePin);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(lobbyGetId);
+    }
+
     @PutMapping(value = "/connect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> connectTestPlayer(@RequestHeader(value = "Authorization") String token) {
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
@@ -176,11 +184,4 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
-
-    @PutMapping(value = "/newround", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> resetLobbyAfterGame(@RequestHeader(value = "Authorization") String token) {
-        Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-        lobbyService.newGameReset(userId);
-        return ResponseEntity.ok().build();
-    }
 }

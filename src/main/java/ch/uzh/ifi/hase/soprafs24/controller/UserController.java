@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 
 
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
+import ch.uzh.ifi.hase.soprafs24.model.response.GetUserStatusResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -54,4 +56,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
+    @GetMapping(value = "/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<GetUserStatusResponse> getUser(@PathVariable Long userId, @RequestHeader(value = "Authorization") String token) {
+        Long tokenId = userService.getUserIdByTokenAndAuthenticate(token);
+        if (userId != tokenId) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "userID and tokenID mismatch");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserStatus(tokenId));
+    }
 }
