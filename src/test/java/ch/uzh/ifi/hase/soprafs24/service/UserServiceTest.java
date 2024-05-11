@@ -77,7 +77,7 @@ public class UserServiceTest {
 
         //make sure connected is initially null
         User user1 = userService.getUserById(userResponse.getId());
-        assertNull(user1.getIsConnected());
+        assertFalse(user1.getIsConnected());
 
         //set connected to true
         userService.setIsConnected(userResponse.getId(), connected);
