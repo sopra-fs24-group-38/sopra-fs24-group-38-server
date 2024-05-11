@@ -352,6 +352,8 @@ paths:
           description: Not authenticated.
         '400':
           description: Bad request
+        '409':
+          description: Definition is equal to solution
   /lobbies/users/votes :
     put:
       tags:
