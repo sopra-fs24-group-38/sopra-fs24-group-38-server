@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -207,7 +206,7 @@ public class UserService {
 
         if (user.getLobbyId() != null) {
             getUserStatusResponse.setIsInLobby(true);
-            getUserStatusResponse.setLobbyPin(user.getId());
+            getUserStatusResponse.setLobbyPin(user.getLobbyId());
         }
 
         return getUserStatusResponse;
