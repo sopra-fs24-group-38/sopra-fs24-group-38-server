@@ -65,6 +65,23 @@ paths:
                 $ref: '#/components/schemas/allUsers'
         '401':
           description: Not Authorized
+  /users/{userId}:
+    get:
+      tags:
+        - user
+      summary: Receives all users with scores and fools
+      description: ''
+      operationId: getAllUsers
+      parameters: [ ]
+      responses:
+        '200':
+          description: returning user Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserStatusResponse'
+        '401':
+          description: Not Authorized
 
 
   /users/login:
@@ -395,6 +412,21 @@ paths:
 
 components:
   schemas:
+    GetUserStatusResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier for a user.
+        is_in_lobby:
+          type: boolean
+          description: Indicates if the user is currently in a lobby.
+        lobby_pin:
+          type: integer
+          format: int64
+          description: The lobbyPin, only displayed if the user is in a lobby (optional).
+
     LobbyInfo:
       type: object
       properties:

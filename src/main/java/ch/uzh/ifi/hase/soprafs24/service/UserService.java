@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
+import ch.uzh.ifi.hase.soprafs24.model.response.GetUserStatusResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -193,5 +194,21 @@ public class UserService {
             }
         }
         return userResponses;
+    }
+
+    public GetUserStatusResponse getUserStatus(Long userId) {
+
+        GetUserStatusResponse getUserStatusResponse = new GetUserStatusResponse();
+        User user = getUserById(userId);
+
+        getUserStatusResponse.setId(user.getId());
+        getUserStatusResponse.setIsInLobby(false);
+
+        if (user.getLobbyId() != null) {
+            getUserStatusResponse.setIsInLobby(true);
+            getUserStatusResponse.setLobbyPin(user.getLobbyId());
+        }
+
+        return getUserStatusResponse;
     }
 }
