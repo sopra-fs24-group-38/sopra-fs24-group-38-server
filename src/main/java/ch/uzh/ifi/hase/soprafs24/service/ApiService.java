@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -182,16 +183,19 @@ public class ApiService {
         }
     }
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
-        String response = performRequest(challenges);
+        ResponseEntity<String> response = performRequestAIPlayer(challenges);
 
-        JSONObject jsonResponse = new JSONObject(response);
+        try {
+            JSONObject jsonResponse = new JSONObject(response.getBody());
+            String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+            JSONArray jsonArray = new JSONArray(content);
+            log.warn("AI player definitions: {} ", content);
+        } catch(Exception e){
+            // in case request did not provide a proper JSONArray the whole AI definition list is fetched from
+            //backup json
+            
+        }
 
-        //this parsing is no problem given OpenAI doesn't decide to break backwards compatibility
-        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-
-        log.warn("AI player definitions: {} ", content);
-
-        JSONArray jsonArray = new JSONArray(content);
 
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -280,7 +284,7 @@ public class ApiService {
         }
     }
 
-    private String performRequest(List<Challenge> challenges) {
+    private ResponseEntity<String> performRequestAIPlayer(List<Challenge> challenges) {
         String url = "https://api.openai.com/v1/chat/completions";
 
         HttpHeaders headers = new HttpHeaders();
@@ -289,7 +293,7 @@ public class ApiService {
 
         String jsonBody = getPromptBodyAIDefinitions(challenges);
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     }
 
     private String singleAiDefinitionBackup() throws IOException {
