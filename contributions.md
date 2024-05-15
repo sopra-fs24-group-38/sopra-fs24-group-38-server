@@ -245,3 +245,10 @@ Basically finished Lobby component
 - Add Roundinformations
     -  [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/87)
     -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
+
+# 10.05 - 17.05
+## Elia Aeberhard
+- Added rejection functionality in case the submitted definition is equal to the solution
+    - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
+- Added user service test for the reject-correct-definition issue
+    - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
