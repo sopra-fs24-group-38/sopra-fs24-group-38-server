@@ -92,6 +92,22 @@ public class AIPlayerService {
     }
 
     private String getRandomUniqueName() {
+        Boolean anyConstrainViolations = false;
+        for(String name : names){
+            if(name.length() > 12){
+                System.out.println(name +  " too long");
+                anyConstrainViolations = true;
+            }
+        }
+        Set<String> set = new HashSet<>();
+        for (String name : names) {
+            if (!set.add(name)) {
+                anyConstrainViolations = true;
+                System.out.println(name + " not unique");
+            }
+        }
+        System.out.println(("There are constrain violations: {} ", anyConstrainViolations.toString());
+
         boolean nameUnique = false;
         boolean fetchingWorked = false;
         String name = "";
