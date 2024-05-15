@@ -106,7 +106,7 @@ public class AIPlayerService {
                 System.out.println(name + " not unique");
             }
         }
-        System.out.println(("There are constrain violations: {} ", anyConstrainViolations.toString());
+        System.out.println("There are constrain violations: {} " + anyConstrainViolations);
 
         boolean nameUnique = false;
         boolean fetchingWorked = false;
