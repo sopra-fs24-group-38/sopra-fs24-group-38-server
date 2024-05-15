@@ -247,6 +247,13 @@ Basically finished Lobby component
     -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
 
 # 10.05 - 17.05
+## Harris A
+- Added additional status info in the get Lobby info Endpoint
+    - [#257](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/257)
+- add UserStatus Endpoint for better error path handling
+    - [#256](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/256)
+- reviewed the new ChatGPT GPT 4o model locally, decided against implementation with Elia and Samuel
+
 ## Elia Aeberhard
 - Added rejection functionality in case the submitted definition is equal to the solution
     - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
