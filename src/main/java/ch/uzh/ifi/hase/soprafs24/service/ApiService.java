@@ -140,7 +140,7 @@ public class ApiService {
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
+        //log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
         return prompt;
     }
     private String getModeDescription(LobbyModes lobbyModes) {
@@ -178,9 +178,6 @@ public class ApiService {
                 List<String> definitions = fetchAiDefinitions(challenges);
                 user.setAiDefinitions(definitions);
                 user.setDefinition(user.dequeueAiDefinition());
-                for(int i = 0; i < lobby.getChallenges().size() ; i++){
-                    //log.warn("ITERATION CHECK (Mode: {}, Round: {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(),i, user.getUsername(), user.dequeueAiDefinition(), challenges.get(i).getChallenge());
-                }
             }
         }
     }
@@ -200,7 +197,7 @@ public class ApiService {
         //this parsing is no problem given OpenAI doesn't decide to break backwards compatibility
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 
-        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", content);
+        log.warn("AI player definitions: {} ", content);
 
         JSONArray jsonArray = new JSONArray(content);
 
@@ -232,11 +229,6 @@ public class ApiService {
             definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
-        //might become usefull for prompt improvements:
-
-        log.warn("FETCH CHECK1: length challange array : {} ", challenges.size());
-        log.warn("FETCH CHECK2: length ai definition array : {} ", definitions.size());
-
         return definitions;
     }
 
@@ -252,16 +244,16 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definitions` as key and the actual definition as value) : "
-                + "[{\\\"definitions\\\": \\\"definition1\\\"},{\\\"definitions\\\": \\\"definition2\\\"},{\\\"definitions\\\": \\\"definition3\\\"},{\\\"definitions\\\": \\\"definition4\\\"}] "
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the definition as value) : "
+                + "[{\\\"definition\\\": \\\"definition1\\\"},{\\\"definition\\\": \\\"definition2\\\"},{\\\"definition\\\": \\\"definition3\\\"},{\\\"definition\\\": \\\"definition4\\\"}] "
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
                 + "Give a plausible but false definition which tricks human into thinking it is correct"
-                + "The wrong definition should be plausible and be related to the same category"
-                + "The wrong definition should be less than 4 words. Remember to answer  to \"}],"
+                + "The wrong definition should be plausible and be related to the same category but is false."
+                + "The wrong definition should be less than 4 words. Dont use special characters like dots etc\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
+        //log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
         return requestBody;
     }
 
