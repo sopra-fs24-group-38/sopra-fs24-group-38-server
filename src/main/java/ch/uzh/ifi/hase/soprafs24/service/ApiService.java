@@ -182,15 +182,7 @@ public class ApiService {
         }
     }
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
-        String url = "https://api.openai.com/v1/chat/completions";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + getSecret());
-        headers.set("Content-Type", "application/json");
-
-        String jsonBody = getPromptBodyAIDefinitions(challenges);
-        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-        String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+        String response = performRequest(challenges);
 
         JSONObject jsonResponse = new JSONObject(response);
 
@@ -221,6 +213,7 @@ public class ApiService {
 
         return definitions;
     }
+
 
 
 
@@ -287,6 +280,18 @@ public class ApiService {
         }
     }
 
+    private String performRequest(List<Challenge> challenges) {
+        String url = "https://api.openai.com/v1/chat/completions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getSecret());
+        headers.set("Content-Type", "application/json");
+
+        String jsonBody = getPromptBodyAIDefinitions(challenges);
+        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+    }
+
     private String singleAiDefinitionBackup() throws IOException {
         String pathToJson = "src/main/resources/static/fallback-words.json";
         String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
@@ -299,7 +304,7 @@ public class ApiService {
         String aiPlayersDefinition = word.getJSONObject("word").getString("definition");
 
         log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
-        return aiPlayersDefinition; 
+        return aiPlayersDefinition;
     }
 
 }
