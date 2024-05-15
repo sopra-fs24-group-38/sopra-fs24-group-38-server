@@ -247,5 +247,5 @@ Basically finished Lobby component
     -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
 # 10.05 - 16.05
 ## Samuel Frank 
-- Introduced more robustness for parsing AI players definition responsibly from external API: 
+- Introduced more robustness for parsing AI players definition responsibly from external API (fallback json data): 
     - [#248](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/248)
