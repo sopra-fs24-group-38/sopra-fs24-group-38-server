@@ -245,7 +245,28 @@ Basically finished Lobby component
 - Add Roundinformations
     -  [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/87)
     -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
-# 10.05 - 16.05
-## Samuel Frank 
-- Introduced more robustness for parsing AI players definition responsibly from external API (fallback json data): 
+
+    
+# 10.05 - 17.05
+## Harris A
+- Added additional status info in the get Lobby info Endpoint
+    - [#257](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/257)
+- add UserStatus Endpoint for better error path handling
+    - [#256](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/256)
+- reviewed the new ChatGPT GPT 4o model locally, decided against implementation with Elia and Samuel
+
+## Elia Aeberhard
+- Added rejection functionality in case the submitted definition is equal to the solution
+    - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
+- Added user service test for the reject-correct-definition issue
+    - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
+- Changed test names to meaningful names
+    - [#254](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/1254)
+
+
+## Samuel Frank
+- Introduced more robustness for parsing AI players definition responsibly from external API (fallback json data):
     - [#248](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/248)
+- Improved scalability issue regarding AI players username and the uniqueness constraint of usernames
+    - [#252](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/252)
+

@@ -93,6 +93,11 @@ public class UserService {
 
     public void registerDefinitions(DefinitionPost definitionPost, Long userId) {
         User user = getUserById(userId);
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(user.getLobbyId());
+
+        if(Objects.equals(lobby.getCurrentSolution(), definitionPost.getDefinition().toLowerCase())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "definition is the solution");
+        }
         user.setDefinition(definitionPost.getDefinition().toLowerCase());
         userRepository.save(user);
         userRepository.flush();

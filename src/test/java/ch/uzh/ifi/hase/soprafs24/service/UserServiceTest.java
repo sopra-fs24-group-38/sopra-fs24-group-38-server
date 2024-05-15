@@ -2,25 +2,41 @@ package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
+import ch.uzh.ifi.hase.soprafs24.model.request.DefinitionPost;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
+import org.hibernate.Hibernate;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.*;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserServiceTest {
 
+    @Value(value = "${local.server.port}")
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
     @Autowired
     UserService userService;
 
@@ -139,7 +155,7 @@ public class UserServiceTest {
 
         //make sure user is in the response
         boolean foundUser = false;
-        for(allUsersScores allUser : allUsers) {
+        for (allUsersScores allUser : allUsers) {
             if (Objects.equals(allUser.getUsername(), userPost.getUsername())) {
                 foundUser = true;
                 break;
@@ -148,5 +164,67 @@ public class UserServiceTest {
 
         //make sure user was found
         assertTrue(foundUser);
+    }
+
+    @DisplayName("UserService Test: Definition equal to solution")
+    @Test
+    public void testCorrectDefinition() {
+
+        //create user 1 and get the token
+        String uri = "http://localhost:" + port + "/users";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("username", "test7");
+        requestBody.put("password", "pw");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        JSONObject jsonObject = new JSONObject(response.getBody());
+        String gameMasterToken = jsonObject.getString("token");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        //create user 2 and get the token
+        requestBody.put("username", "test8");
+        requestBody.put("password", "pw");
+        requestEntity = new HttpEntity<>(requestBody, headers);
+        response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        jsonObject = new JSONObject(response.getBody());
+        String playerToken = jsonObject.getString("token");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        //create lobby and save pin
+        uri = "http://localhost:" + port + "/lobbies";
+        headers.set("Authorization", gameMasterToken);
+        response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        jsonObject = new JSONObject(response.getBody());
+        long lobbyId = jsonObject.getLong("game_pin");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        //join player to lobby
+        uri = "http://localhost:" + port + "/lobbies/users/" + String.valueOf(lobbyId);
+        headers.set("Authorization", playerToken);
+        response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        //start lobby
+        uri = "http://localhost:" + port + "/lobbies/start";
+        headers.set("Authorization", gameMasterToken);
+        response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        //get lobby
+        uri = "http://localhost:" + port + "/lobbies/"+lobbyId;
+        response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        jsonObject = new JSONObject(response.getBody());
+        String solution = jsonObject.getJSONObject("game_details").getString("solution");
+
+        //try to submit definition that is solution and assert that it is rejected
+        uri = "http://localhost:" + port + "/lobbies/users/definitions";
+        headers.set("Authorization", playerToken);
+        requestBody = new HashMap<>();
+        requestBody.put("definition", solution);
+        requestEntity = new HttpEntity<>(requestBody, headers);
+        response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 }
