@@ -207,7 +207,7 @@ public class ApiService {
             String aiPlayersDefinition = "an ancient way of greeting";
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             try {
-                aiPlayersDefinition = jsonObject.getString("definition");
+                aiPlayersDefinition = jsonObject.getString("definitions");
             }catch (Exception e){
                 try {
                     aiPlayersDefinition = singleAiDefinitionBackup();
@@ -299,6 +299,7 @@ public class ApiService {
         String aiPlayersDefinition = word.getJSONObject("word").getString("definition");
 
         log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
+        return aiPlayersDefinition; 
     }
 
 }
