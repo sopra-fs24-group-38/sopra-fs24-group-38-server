@@ -29,9 +29,9 @@ public class LobbyControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @DisplayName("LobbyControllerTest: Issue #47")
+    @DisplayName("LobbyControllerTest: testMultipleLobbies")
     @Test
-    public void issue47() {
+    public void testMultipleLobbies() {
         /**
          * The backend can handle multiple lobbies at the same time
          * #47
@@ -49,9 +49,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #45")
+    @DisplayName("LobbyControllerTest: testLobbyModifications")
     @Test
-    public void issue45() {
+    public void testLobbyModifications() {
         /**
          * The backend manages the lobby entities to allow for modifications of the lobby
          * #45
@@ -73,9 +73,9 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, responseLobbyAdjustments.getStatusCode());
     }
 
-    @DisplayName("LobbyControllerTest: Issue #44")
+    @DisplayName("LobbyControllerTest: testCreateLobby")
     @Test
-    public void issue44() {
+    public void testCreateLobby() {
         /**
          * The backend provides dedicated endpoints for creating and adjusting lobbies
          * #44
@@ -106,9 +106,9 @@ public class LobbyControllerTest {
 
 
 
-    @DisplayName("LobbyControllerTest: Issue #40")
+    @DisplayName("LobbyControllerTest: testGamePin")
     @Test
-    public void issue40() {
+    public void testGamePin() {
         /**
          * The backend generates a game pin when the user creates a lobby
          * #40
@@ -121,9 +121,9 @@ public class LobbyControllerTest {
         assertNotNull(lobbyId);
     }
 
-    @DisplayName("LobbyControllerTest: Issue #172")
+    @DisplayName("LobbyControllerTest: testPlayerInformation")
     @Test
-    public void issue172() {
+    public void testPlayerInformation() {
         /**
          * The backend provides information about the player in the lobby in order to render their details in the lobby.
          * #172
@@ -143,9 +143,9 @@ public class LobbyControllerTest {
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user7", "user8");
     }
 
-    @DisplayName("LobbyControllerTest: Issue #54")
+    @DisplayName("LobbyControllerTest: testJoinPlayer")
     @Test
-    public void issue54() {
+    public void testJoinPlayer() {
         /**
          The backend adds the user to the lobby entity he wants to join
          #54
@@ -164,9 +164,9 @@ public class LobbyControllerTest {
         checkIfLobbyJoinWorked(lobbyId, tokenGameMaster1, "user9", "user10");
     }
 
-    @DisplayName("LobbyControllerTest: Issue #53")
+    @DisplayName("LobbyControllerTest: testBlockJoinLobby")
     @Test
-    public void issue53() {
+    public void testBlockJoinLobby() {
         /**
          The backend blocks the user from joining a lobby if he is in a lobby already
          #53
@@ -199,9 +199,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #62")
+    @DisplayName("LobbyControllerTest: testMinAndMaxPlayers")
     @Test
-    public void issue62() {
+    public void testMinAndMaxPlayers() {
         /**
          The backend recognizes when the lobby is full and prohibits further player from joining the lobby (2-6)
          #62
@@ -226,9 +226,9 @@ public class LobbyControllerTest {
         assertTrue(responseJoin.toString().contains("Lobby full"));
     }
 
-    @DisplayName("LobbyControllerTest: Issue #81")
+    @DisplayName("LobbyControllerTest: testEvaluatePoints")
     @Test
-    public void issue81() {
+    public void testEvaluatePoints() {
         /**
          * The backend evaluates how many points each player scored with their vote
          * #81
@@ -252,9 +252,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #58")
+    @DisplayName("LobbyControllerTest: testRemoveUser")
     @Test
-    public void issue58() {
+    public void testRemoveUser() {
         /**
          The backend provides an endpoint which removes the user from lobby and removes the current token from the user entity
          #58
@@ -276,9 +276,9 @@ public class LobbyControllerTest {
     }
 
 
-    @DisplayName("LobbyControllerTest: Issue #177")
+    @DisplayName("LobbyControllerTest: testStartGame")
     @Test
-    public void issue177() {
+    public void testStartGame() {
         /**
          The backend provides a way to start the game.
          #177
@@ -298,9 +298,9 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseLobbyStart = startLobby(tokenGameMaster1);
         assertEquals(HttpStatus.OK, responseLobbyStart.getStatusCode());
     }
-    @DisplayName("LobbyControllerTest: Issue #71")
+    @DisplayName("LobbyControllerTest: testReceiveChallengesApi")
     @Test
-    public void issue71() {
+    public void testReceiveChallengesApi() {
         /**
          The backend provides a way to start the game.
          #71 The backend receives the answers to the current challange via an api endpoint and stores them in the lobby entity
@@ -323,9 +323,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #70")
+    @DisplayName("LobbyControllerTest: testSendChallenge")
     @Test
-    public void issue70() {
+    public void testSendChallenge() {
         /**
          The backend provides the current challange to the frontend via an api endpoint #70
          */
@@ -349,9 +349,9 @@ public class LobbyControllerTest {
         assertNotNull(responseBody.get("game_details").get("challenge").toString());
     }
 
-    @DisplayName("LobbyControllerTest: Issue #80")
+    @DisplayName("LobbyControllerTest: testReceiveVotes")
     @Test
-    public void issue80() {
+    public void testReceiveVotes() {
         /**
          The backend is able to receive the votes which the players submitted #80
          */
@@ -380,9 +380,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #92")
+    @DisplayName("LobbyControllerTest: testStoreNumbers")
     @Test
-    public void issue92() {
+    public void testStoreNumbers() {
         /**
          The backend stores the number of points each player scored
          #92
@@ -432,9 +432,9 @@ public class LobbyControllerTest {
 
     }
 
-    @DisplayName("LobbyControllerTest: Issue #72 #82 & #91")
+    @DisplayName("LobbyControllerTest: testBackendStates")
     @Test
-    public void issue72_82_91() {
+    public void testBackendStates() {
         /**
          The backend tells frontend when its voting time / all votings cast / and whether or not game over
          Issues #72, #82 & #91

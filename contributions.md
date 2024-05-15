@@ -252,3 +252,5 @@ Basically finished Lobby component
     - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
 - Added user service test for the reject-correct-definition issue
     - [#140](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/140)
+- Changed test names to meaningful names
+    - [#254](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/1254)
