@@ -254,8 +254,8 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer :"
-                + "{\\\"definition\\\": \\\"definition1\\\"},{\\\"definition\\\": \\\"definition2\\\"},{\\\"definition\\\": \\\"definition3\\\"},{\\\"definition\\\": \\\"definition4\\\"}"
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the definition as value) :"
+                + "[{\\\"definition\\\": \\\"definition1\\\"},{\\\"definition\\\": \\\"definition2\\\"},{\\\"definition\\\": \\\"definition3\\\"},{\\\"definition\\\": \\\"definition4\\\"}]"
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
                 + "Give a plausible but false definition which tricks human into thinking it is correct"
