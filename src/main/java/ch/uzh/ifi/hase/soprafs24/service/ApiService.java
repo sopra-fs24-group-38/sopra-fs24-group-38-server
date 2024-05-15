@@ -37,6 +37,9 @@ public class ApiService {
 
     private final RestTemplate restTemplate;
 
+    private final Random random = new Random();
+
+
     @Value("${api.token}")
     private String tokenEnv;
 
@@ -56,19 +59,7 @@ public class ApiService {
         }
         return challenges;
     }
-    public String getSecret() {
-        if(tokenEnv.equals("NO_ENV_SET")){
-            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
-                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
-                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
-            } catch (IOException e) {
-                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
-            }
-        }
-        else{
-            return tokenEnv;
-        }
-    }
+
 
     public void generateAiPlayersDefinitions(Lobby lobby) {
         List<User> users = lobby.getUsers();
@@ -82,6 +73,19 @@ public class ApiService {
         }
     }
 
+    public String getSecret() {
+        if(tokenEnv.equals("NO_ENV_SET")){
+            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
+                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
+                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
+            } catch (IOException e) {
+                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
+            }
+        }
+        else{
+            return tokenEnv;
+        }
+    }
 
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode, Long lobbyId) {
         List<String> values = new ArrayList<>();
@@ -218,25 +222,22 @@ public class ApiService {
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             //This definition is used if the API request fails and the fallback json definition fails as well
-            String aiPlayersDefinition = "an ancient way of greeting";
+            String aiPlayersDefinition = "";
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             try {
                 aiPlayersDefinition = jsonObject.getString("definitions");
             }catch (Exception e){
                 try {
                     aiPlayersDefinition = singleAiDefinitionBackup();
-
                 } catch (Exception e2) {
                     log.warn("Fallback json did not work fallback fallback definition used instead ");
+                    aiPlayersDefinition = "an ancient way of greeting";
                 }
             }
             definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
         return definitions;
-    }
-
-    private List<String> completeAIDefinitionBackup(List<Challenge> challenges) {
     }
 
 
@@ -306,8 +307,7 @@ public class ApiService {
         String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
         JSONArray words = new JSONObject(fallbackContent).getJSONArray("data");
 
-        Random randoms = new Random();
-        int index = randoms.nextInt(words.length());
+        int index = random.nextInt(words.length());
         JSONObject word = words.getJSONObject(index);
 
         String aiPlayersDefinition = word.getJSONObject("word").getString("definition");
@@ -316,6 +316,35 @@ public class ApiService {
         return aiPlayersDefinition;
     }
 
+    private List<String> completeAIDefinitionBackup(List<Challenge> challenges) {
+        int numberFallBackDefinitionsNeeded = challenges.size();
+        String pathToJson = "src/main/resources/static/fallback-words.json";
+        List<String> definitions =  new LinkedList<>();
+        String fallbackContent = null;
+        try {
+            fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
+        } catch (Exception e){
+            return hardCodedFallBackFallBack(numberFallBackDefinitionsNeeded);
+        }
+        JSONArray data = new JSONObject(fallbackContent).getJSONArray("data");
+
+        for(int i = 0 ; i < numberFallBackDefinitionsNeeded ; i++){
+            int randomDefinitionIndex = random.nextInt(data.length());
+            JSONObject word = data.getJSONObject(randomDefinitionIndex);
+            String definition = word.getJSONObject("word").getString("definition");
+            definitions.add(definition);
+        }
+        return definitions;
+    }
+
+    private List<String> hardCodedFallBackFallBack(int numberFallBackDefinitionsNeeded) {
+        List<String> definitions =  new LinkedList<>();
+        for(int i = 0; i<numberFallBackDefinitionsNeeded; i++){
+            definitions.add("bluetooth based tracker");
+        }
+        log.warn("Fallback fallback definition list had to be used");
+        return definitions;
+    }
 
 
 }
