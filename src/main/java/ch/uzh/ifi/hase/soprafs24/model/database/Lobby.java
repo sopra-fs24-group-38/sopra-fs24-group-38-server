@@ -23,12 +23,13 @@ public class Lobby {
     @Column
     private int maxRoundNumbers = 10;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     //Definition is the default mode :
     private Set<LobbyModes> lobbyModes = new HashSet<>(Arrays.asList(LobbyModes.BIZARRE));
 
-    @OneToMany
+
+    @OneToMany(fetch = FetchType.EAGER)
     private List<User> users = new ArrayList<>();
 
     @Column
