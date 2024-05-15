@@ -210,17 +210,7 @@ public class ApiService {
                 aiPlayersDefinition = jsonObject.getString("definition");
             }catch (Exception e){
                 try {
-                    String pathToJson = "src/main/resources/static/fallback-words.json";
-                    String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
-                    JSONArray words = new JSONObject(fallbackContent).getJSONArray("data");
-
-                    Random randoms = new Random();
-                    int index = randoms.nextInt(words.length());
-                    JSONObject word = words.getJSONObject(index);
-
-                    aiPlayersDefinition = word.getJSONObject("word").getString("definition");
-
-                    log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
+                    aiPlayersDefinition = singleAiDefinitionBackup();
 
                 } catch (Exception e2) {
                     log.warn("Fallback json did not work fallback fallback definition used instead ");
@@ -231,6 +221,8 @@ public class ApiService {
 
         return definitions;
     }
+
+
 
     private String getPromptBodyAIDefinitions(List<Challenge> challenges){
         StringBuilder promptBuilder = new StringBuilder();
@@ -295,5 +287,18 @@ public class ApiService {
         }
     }
 
+    private String singleAiDefinitionBackup() throws IOException {
+        String pathToJson = "src/main/resources/static/fallback-words.json";
+        String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
+        JSONArray words = new JSONObject(fallbackContent).getJSONArray("data");
+
+        Random randoms = new Random();
+        int index = randoms.nextInt(words.length());
+        JSONObject word = words.getJSONObject(index);
+
+        String aiPlayersDefinition = word.getJSONObject("word").getString("definition");
+
+        log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
+    }
 
 }
