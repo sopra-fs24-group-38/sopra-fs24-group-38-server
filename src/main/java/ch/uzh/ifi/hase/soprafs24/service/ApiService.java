@@ -225,7 +225,13 @@ public class ApiService {
             String aiPlayersDefinition = "";
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             try {
-                aiPlayersDefinition = jsonObject.getString("definitions");
+                int ran = random.nextInt(10);
+                if(ran < 5){
+                    aiPlayersDefinition = jsonObject.getString("definitions");
+
+                } else {
+                    aiPlayersDefinition = jsonObject.getString("definition");
+                }
             }catch (Exception e){
                 try {
                     aiPlayersDefinition = singleAiDefinitionBackup();
