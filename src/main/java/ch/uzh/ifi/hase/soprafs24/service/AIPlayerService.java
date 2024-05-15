@@ -62,7 +62,7 @@ public class AIPlayerService {
     public User createAiUser(Long gamePin) {
         User aiUser = new User();
         aiUser.setAiPlayer(true);
-        String name = getRandomUniqueName(aiUser.getId());
+        String name = getRandomUniqueName();
         aiUser.setUsername(name);
         aiUser.setLobbyId(gamePin);
         aiUser.setAvatarId(getUnUsedAvaIdForAIPlayer(gamePin));
@@ -91,7 +91,7 @@ public class AIPlayerService {
         return potentialId;
     }
 
-    private String getRandomUniqueName(Long aiUserId) {
+    private String getRandomUniqueName() {
         boolean nameUnique = false;
         boolean fetchingWorked = false;
         String name = "";
@@ -107,7 +107,8 @@ public class AIPlayerService {
             tries+=1;
         }
         if(!fetchingWorked){
-            name = "Robo" + aiUserId;
+            int fiveDigitNumber = random.nextInt(90000) + 10000;
+            name = "Robo" + fiveDigitNumber;
         }
         return name;
     }
