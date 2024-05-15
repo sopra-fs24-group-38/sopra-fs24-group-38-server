@@ -88,7 +88,6 @@ ByteBrigade
 CodeCrusade
 GlitchGuard
 FizzFury
-ChipChaser
 DebugDrift
 DataDagger
 SyncSprite
@@ -202,7 +201,6 @@ EchoEagle
 IconIgloo
 KudoKestrel
 LogLeopard
-MeshMagnet
 NixNinja
 MergeMaster
 OpusOcelot
@@ -212,7 +210,6 @@ SyncSerpent
 UriUplink
 VibeVortex
 WaveWhirl
-YarnYak
 ZipZodiac
 AppArrow
 CommitCop
