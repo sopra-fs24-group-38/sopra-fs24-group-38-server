@@ -245,3 +245,7 @@ Basically finished Lobby component
 - Add Roundinformations
     -  [#87](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/87)
     -  [#88](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/88)
+# 10.05 - 16.05
+## Samuel Frank 
+- Introduced more robustness for parsing AI players definition responsibly from external API: 
+    - [#248](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/248)
