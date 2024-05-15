@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -35,6 +36,9 @@ public class ApiService {
     private final Logger log = LoggerFactory.getLogger(ApiService.class);
 
     private final RestTemplate restTemplate;
+
+    private final Random random = new Random();
+
 
     @Value("${api.token}")
     private String tokenEnv;
@@ -56,6 +60,32 @@ public class ApiService {
         return challenges;
     }
 
+
+    public void generateAiPlayersDefinitions(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        List<Challenge> challenges = lobby.getChallenges();
+        for(User user : users){
+            if(user.getAiPlayer()){
+                List<String> definitions = fetchAiDefinitions(challenges);
+                user.setAiDefinitions(definitions);
+                user.setDefinition(user.dequeueAiDefinition());
+            }
+        }
+    }
+
+    public String getSecret() {
+        if(tokenEnv.equals("NO_ENV_SET")){
+            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
+                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
+                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
+            } catch (IOException e) {
+                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
+            }
+        }
+        else{
+            return tokenEnv;
+        }
+    }
 
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode, Long lobbyId) {
         List<String> values = new ArrayList<>();
@@ -140,7 +170,7 @@ public class ApiService {
                 + " of these words with their definitions. Do not repeat definitions, only use words that actually exist.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
+        //log.warn("PROMPT FOR WORDS AND DEFINITION: {} ", prompt);
         return prompt;
     }
     private String getModeDescription(LobbyModes lobbyModes) {
@@ -170,53 +200,47 @@ public class ApiService {
         log.warn("Subcategory prompt sentences: {}", concatenatedResult);
         return concatenatedResult;
     }
-    public void generateAiPlayersDefinitions(Lobby lobby) {
-        List<User> users = lobby.getUsers();
-        List<Challenge> challenges = lobby.getChallenges();
-        for(User user : users){
-            if(user.getAiPlayer()){
-                List<String> definitions = fetchAiDefinitions(challenges);
-                user.setAiDefinitions(definitions);
-                user.setDefinition(user.dequeueAiDefinition());
-                for(int i = 0; i < lobby.getChallenges().size() ; i++){
-                    //log.warn("ITERATION CHECK (Mode: {}, Round: {} AI User with username {} generated definition {} for word {}",challenges.get(i).getLobbyMode(),i, user.getUsername(), user.dequeueAiDefinition(), challenges.get(i).getChallenge());
-                }
-            }
-        }
-    }
+
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
-        String url = "https://api.openai.com/v1/chat/completions";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + getSecret());
-        headers.set("Content-Type", "application/json");
-
-        String jsonBody = getPromptBodyAIDefinitions(challenges);
-        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
-        String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
-
-        JSONObject jsonResponse = new JSONObject(response);
-        String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-
-        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", jsonResponse);
-
-        JSONArray jsonArray = new JSONArray(content);
+        ResponseEntity<String> response = performRequestAIPlayer(challenges);
+        JSONArray jsonArray = null;
+        try {
+            JSONObject jsonResponse = new JSONObject(response.getBody());
+            String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+            jsonArray = new JSONArray(content);
+            log.warn("AI player definitions: {} ", content);
+        } catch(Exception e){
+            // in case request did not provide a proper JSONArray the whole AI definition list is fetched from
+            //backup json
+            log.warn("AI definition request went wrong either due to the request itself or the content not being");
+            log.warn(" proper JsonArray syntax, request status {} , exception {} ", response.getStatusCode(), e.getMessage() );
+            log.warn("fallback array has to be used for all definitions of AI player");
+            return completeAIDefinitionBackup(challenges);
+        }
 
 
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
+            //This definition is used if the API request fails and the fallback json definition fails as well
+            String aiPlayersDefinition = "";
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String aiPlayersDefinition = jsonObject.getString("definition");
+            try {
+                aiPlayersDefinition = jsonObject.getString("definition");
+
+            }catch (Exception e){
+                try {
+                    aiPlayersDefinition = singleAiDefinitionBackup();
+                } catch (Exception e2) {
+                    log.warn("Fallback json did not work fallback fallback definition used instead ");
+                    aiPlayersDefinition = "an ancient way of greeting";
+                }
+            }
             definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
-        //might become usefull for prompt improvements:
-
-        log.warn("FETCH CHECK1: length challange array : {} ", challenges.size());
-        log.warn("FETCH CHECK2: length ai definition array : {} ", definitions.size());
-
         return definitions;
     }
+
 
     private String getPromptBodyAIDefinitions(List<Challenge> challenges){
         StringBuilder promptBuilder = new StringBuilder();
@@ -230,16 +254,16 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the actual definition as value) : "
-                + "[{\\\"definition\\\": \\\"definition1\\\",\\\"definition\\\": \\\"definition2\\\"}],{\\\"definition\\\": \\\"definition3\\\",\\\"definition\\\": \\\"definition4\\\"}] "
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the definition as value) :"
+                + "[{\\\"definition\\\": \\\"definition1\\\"},{\\\"definition\\\": \\\"definition2\\\"},{\\\"definition\\\": \\\"definition3\\\"},{\\\"definition\\\": \\\"definition4\\\"}]"
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
                 + "Give a plausible but false definition which tricks human into thinking it is correct"
-                + "The wrong definition should be plausible and be related to the same category"
-                + "The wrong definition should be less than 4 words. Remember to answer  to \"}],"
+                + "The wrong definition should be plausible and be related to the same category but is false."
+                + "The wrong definition should be less than 4 words. Dont use special characters like dots etc\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
+        //log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
         return requestBody;
     }
 
@@ -267,18 +291,60 @@ public class ApiService {
         return distribution;
     }
 
-    public String getSecret() {
-        if(tokenEnv.equals("NO_ENV_SET")){
-            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
-                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
-                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
-            } catch (IOException e) {
-                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
-            }
+    private ResponseEntity<String> performRequestAIPlayer(List<Challenge> challenges) {
+        String url = "https://api.openai.com/v1/chat/completions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getSecret());
+        headers.set("Content-Type", "application/json");
+
+        String jsonBody = getPromptBodyAIDefinitions(challenges);
+        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+    }
+
+    private String singleAiDefinitionBackup() throws IOException {
+        String pathToJson = "src/main/resources/static/fallback-words.json";
+        String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
+        JSONArray words = new JSONObject(fallbackContent).getJSONArray("data");
+
+        int index = random.nextInt(words.length());
+        JSONObject word = words.getJSONObject(index);
+
+        String aiPlayersDefinition = word.getJSONObject("word").getString("definition");
+
+        log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
+        return aiPlayersDefinition;
+    }
+
+    private List<String> completeAIDefinitionBackup(List<Challenge> challenges) {
+        int numberFallBackDefinitionsNeeded = challenges.size();
+        String pathToJson = "src/main/resources/static/fallback-words.json";
+        List<String> definitions =  new LinkedList<>();
+        String fallbackContent = null;
+        try {
+            fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
+        } catch (Exception e){
+            return hardCodedFallBackFallBack(numberFallBackDefinitionsNeeded);
         }
-        else{
-            return tokenEnv;
+        JSONArray data = new JSONObject(fallbackContent).getJSONArray("data");
+
+        for(int i = 0 ; i < numberFallBackDefinitionsNeeded ; i++){
+            int randomDefinitionIndex = random.nextInt(data.length());
+            JSONObject word = data.getJSONObject(randomDefinitionIndex);
+            String definition = word.getJSONObject("word").getString("definition");
+            definitions.add(definition);
         }
+        return definitions;
+    }
+
+    private List<String> hardCodedFallBackFallBack(int numberFallBackDefinitionsNeeded) {
+        List<String> definitions =  new LinkedList<>();
+        for(int i = 0; i<numberFallBackDefinitionsNeeded; i++){
+            definitions.add("bluetooth based tracker");
+        }
+        log.warn("Fallback fallback definition list had to be used");
+        return definitions;
     }
 
 
