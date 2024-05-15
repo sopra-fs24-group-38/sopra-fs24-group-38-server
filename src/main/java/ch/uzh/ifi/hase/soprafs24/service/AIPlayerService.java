@@ -38,6 +38,7 @@ public class AIPlayerService {
     @Value("${avatar.ai.number}")
     private int numAvasAi;
 
+
     @Autowired
     public AIPlayerService(@Qualifier("userRepository") UserRepository userRepository, ResourceLoader resourceLoader) {
         this.userRepository = userRepository;
@@ -61,7 +62,7 @@ public class AIPlayerService {
     public User createAiUser(Long gamePin) {
         User aiUser = new User();
         aiUser.setAiPlayer(true);
-        String name = getRandomUniqueName();
+        String name = getRandomUniqueName(aiUser.getId());
         aiUser.setUsername(name);
         aiUser.setLobbyId(gamePin);
         aiUser.setAvatarId(getUnUsedAvaIdForAIPlayer(gamePin));
@@ -90,15 +91,23 @@ public class AIPlayerService {
         return potentialId;
     }
 
-    private String getRandomUniqueName() {
+    private String getRandomUniqueName(Long aiUserId) {
         boolean nameUnique = false;
+        boolean fetchingWorked = false;
         String name = "";
-        while (!nameUnique) {
+        int tries = 0;
+        int maxTries = 50;
+        while (!nameUnique && tries <= maxTries) {
             name = names.get(random.nextInt(names.size()));
             User user = userRepository.findByUsername(name);
             if (user==null) {
                 nameUnique = true;
+                fetchingWorked = true;
             }
+            tries+=1;
+        }
+        if(!fetchingWorked){
+            name = "Robo" + aiUserId;
         }
         return name;
     }
