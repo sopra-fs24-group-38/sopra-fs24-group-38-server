@@ -185,15 +185,21 @@ public class ApiService {
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
         ResponseEntity<String> response = performRequestAIPlayer(challenges);
 
+        JSONArray jsonArray = null;
         try {
             JSONObject jsonResponse = new JSONObject(response.getBody());
             String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-            JSONArray jsonArray = new JSONArray(content);
+            jsonArray = new JSONArray(content);
             log.warn("AI player definitions: {} ", content);
         } catch(Exception e){
             // in case request did not provide a proper JSONArray the whole AI definition list is fetched from
             //backup json
-            
+            log.warn("AI definition request went wrong either due to the request itself or the content not being");
+            log.warn(" proper JsonArray syntax, request status {} , exception {} ", response.getStatusCode(), e.getMessage() );
+            log.warn("fallback array has to be used for all definitions of AI player");
+
+
+
         }
 
 
