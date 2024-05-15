@@ -196,17 +196,39 @@ public class ApiService {
         String response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
 
         JSONObject jsonResponse = new JSONObject(response);
+
+        //this parsing is no problem given OpenAI doesn't decide to break backwards compatibility
         String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 
-        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", jsonResponse);
+        log.warn("REQUEST CHECK 1 : response body (content variable) {} ", content);
 
         JSONArray jsonArray = new JSONArray(content);
 
-
         List<String> definitions =  new LinkedList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
+            //This definition is used if the API request fails and the fallback json definition fails as well
+            String aiPlayersDefinition = "an ancient way of greeting";
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String aiPlayersDefinition = jsonObject.getString("definition");
+            try {
+                aiPlayersDefinition = jsonObject.getString("definition");
+            }catch (Exception e){
+                try {
+                    String pathToJson = "src/main/resources/static/fallback-words.json";
+                    String fallbackContent = new String(Files.readAllBytes(Paths.get(pathToJson)));
+                    JSONArray words = new JSONObject(fallbackContent).getJSONArray("data");
+
+                    Random randoms = new Random();
+                    int index = randoms.nextInt(words.length());
+                    JSONObject word = words.getJSONObject(index);
+
+                    aiPlayersDefinition = word.getJSONObject("word").getString("definition");
+
+                    log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
+
+                } catch (Exception e2) {
+                    log.warn("Fallback json did not work fallback fallback definition used instead ");
+                }
+            }
             definitions.add(aiPlayersDefinition.toLowerCase());
         }
 
@@ -231,7 +253,7 @@ public class ApiService {
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
                 + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definitions` as key and the actual definition as value) : "
-                + "[{\\\"definitions\\\": \\\"definition1\\\",\\\"definitions\\\": \\\"definition2\\\"},{\\\"definitions\\\": \\\"definition3\\\",\\\"definitions\\\": \\\"definition4\\\"}] "
+                + "[{\\\"definitions\\\": \\\"definition1\\\"},{\\\"definitions\\\": \\\"definition2\\\"},{\\\"definitions\\\": \\\"definition3\\\"},{\\\"definitions\\\": \\\"definition4\\\"}] "
                 + "Those are the words for which i need a wrong definition: "
                 +  promptBuilder
                 + "Give a plausible but false definition which tricks human into thinking it is correct"
