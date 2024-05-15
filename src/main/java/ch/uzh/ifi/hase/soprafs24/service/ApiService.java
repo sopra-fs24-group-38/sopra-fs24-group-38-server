@@ -56,6 +56,31 @@ public class ApiService {
         }
         return challenges;
     }
+    public String getSecret() {
+        if(tokenEnv.equals("NO_ENV_SET")){
+            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
+                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
+                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
+            } catch (IOException e) {
+                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
+            }
+        }
+        else{
+            return tokenEnv;
+        }
+    }
+
+    public void generateAiPlayersDefinitions(Lobby lobby) {
+        List<User> users = lobby.getUsers();
+        List<Challenge> challenges = lobby.getChallenges();
+        for(User user : users){
+            if(user.getAiPlayer()){
+                List<String> definitions = fetchAiDefinitions(challenges);
+                user.setAiDefinitions(definitions);
+                user.setDefinition(user.dequeueAiDefinition());
+            }
+        }
+    }
 
 
     private void fetchChallenges(List<Challenge> challenges, LobbyModes lobbyMode, int numberOfRoundsOfMode, Long lobbyId) {
@@ -171,20 +196,9 @@ public class ApiService {
         log.warn("Subcategory prompt sentences: {}", concatenatedResult);
         return concatenatedResult;
     }
-    public void generateAiPlayersDefinitions(Lobby lobby) {
-        List<User> users = lobby.getUsers();
-        List<Challenge> challenges = lobby.getChallenges();
-        for(User user : users){
-            if(user.getAiPlayer()){
-                List<String> definitions = fetchAiDefinitions(challenges);
-                user.setAiDefinitions(definitions);
-                user.setDefinition(user.dequeueAiDefinition());
-            }
-        }
-    }
+
     private List<String> fetchAiDefinitions(List<Challenge> challenges) {
         ResponseEntity<String> response = performRequestAIPlayer(challenges);
-
         JSONArray jsonArray = null;
         try {
             JSONObject jsonResponse = new JSONObject(response.getBody());
@@ -197,9 +211,7 @@ public class ApiService {
             log.warn("AI definition request went wrong either due to the request itself or the content not being");
             log.warn(" proper JsonArray syntax, request status {} , exception {} ", response.getStatusCode(), e.getMessage() );
             log.warn("fallback array has to be used for all definitions of AI player");
-
-
-
+            return completeAIDefinitionBackup(challenges);
         }
 
 
@@ -224,7 +236,8 @@ public class ApiService {
         return definitions;
     }
 
-
+    private List<String> completeAIDefinitionBackup(List<Challenge> challenges) {
+    }
 
 
     private String getPromptBodyAIDefinitions(List<Challenge> challenges){
@@ -276,20 +289,6 @@ public class ApiService {
         return distribution;
     }
 
-    public String getSecret() {
-        if(tokenEnv.equals("NO_ENV_SET")){
-            try (SecretManagerServiceClient client = SecretManagerServiceClient.create()) {
-                SecretVersionName secretVersionName = SecretVersionName.of("sopra-fs24-group-38-server", "TOKEN_API", "latest");
-                return client.accessSecretVersion(secretVersionName).getPayload().getData().toStringUtf8();
-            } catch (IOException e) {
-                throw new RuntimeException("Error retrieving secret from Google Secret Manager", e);
-            }
-        }
-        else{
-            return tokenEnv;
-        }
-    }
-
     private ResponseEntity<String> performRequestAIPlayer(List<Challenge> challenges) {
         String url = "https://api.openai.com/v1/chat/completions";
 
@@ -316,5 +315,7 @@ public class ApiService {
         log.warn("Fallback AI definition had to be used: {}", aiPlayersDefinition);
         return aiPlayersDefinition;
     }
+
+
 
 }
