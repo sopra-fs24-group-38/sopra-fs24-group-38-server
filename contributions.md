@@ -270,6 +270,9 @@ Basically finished Lobby component
     - [#248](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/248)
 - Improved scalability issue regarding AI players username and the uniqueness constraint of usernames
     - [#252](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/252)
+- Introduced new avatars with both front- and backend logic
+    - [#121](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/121)
+- 200 commits itemized with an estimated effort of at least 2 whole working days
 
 
 ## Cédric Styner
