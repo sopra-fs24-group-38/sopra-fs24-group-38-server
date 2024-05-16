@@ -282,3 +282,12 @@ Basically finished Lobby component
     -  [#109](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/109)
 - Bugfixes for corrupt states
     -  [#120](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/120)
+ 
+## Markus Senn
+
+ - Added copying PIN to clipboard
+    - [#112](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/112)
+- Limited number of AI players to 2
+    - [#113](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/113)
+- Highlighting user in leaderboard
+    - [#118](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/118)
