@@ -99,7 +99,7 @@ Basically finished Lobby component
 
 - pair-programming session regarding gameStart, definitions, api call
     -  [#66](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/66)
-- Allow for modification of lobby entity with modes PUT /lobbies/{lobbyId} :
+- Lobby full check: 
     -  [#62](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/62)
 - Gamelogic evaluation with points after votes:
     - [#81](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/81)
@@ -172,7 +172,7 @@ Basically finished Lobby component
     - [#108](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/108)
     - [#208](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/208)
 - Started with AI player and finished lobby join logic for AI player 
-    - [#207](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/129)
+    - [#129](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/129)
 
 ## Harris A
 - started with additional Gamemode (exclusive) - discussion / different implementation ongoing:
@@ -270,6 +270,9 @@ Basically finished Lobby component
     - [#248](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/248)
 - Improved scalability issue regarding AI players username and the uniqueness constraint of usernames
     - [#252](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/252)
+- Introduced new avatars with both front- and backend logic
+    - [#121](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/121)
+- 200 commits itemized with an estimated effort of at least 2 whole working days
 
 
 ## Cédric Styner
