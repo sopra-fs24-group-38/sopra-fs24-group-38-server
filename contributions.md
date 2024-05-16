@@ -272,3 +272,13 @@ Basically finished Lobby component
     - [#252](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/issues/252)
 
 
+## Cédric Styner
+
+- leave Game.
+    -  [#90](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/90)
+- Routing
+    -  [#114](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/114)
+- Inform about current states
+    -  [#109](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/109)
+- Bugfixes for corrupt states
+    -  [#120](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/120)
