@@ -288,9 +288,21 @@ Basically finished Lobby component
  
 ## Markus Senn
 
- - Added copying PIN to clipboard
-    - [#112](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/112)
+- Added copying PIN to clipboard
+   - [#112](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/112)
 - Limited number of AI players to 2
     - [#113](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/113)
 - Highlighting user in leaderboard
     - [#118](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/issues/118)
+
+# 18.05 - 25.05
+## Harris A
+- use of joker
+## Markus Senn
+- use of joker
+## Cédric Styner
+- use of joker
+## Samuel Frank
+- use of joker
+## Elia Aeberhard
+- use of joker
