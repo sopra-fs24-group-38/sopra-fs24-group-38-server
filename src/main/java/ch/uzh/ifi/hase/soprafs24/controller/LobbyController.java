@@ -153,27 +153,12 @@ public class LobbyController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Endpoints solely for testing purposes
-     * */
-    @PutMapping(value = "/testws/{gamePin}")
-    @ResponseStatus(HttpStatus.OK)
-    public void testws(@PathVariable Long gamePin){
-        socketHandler.sendMessageToLobby(gamePin, "HELLO");
-    }
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LobbyGetId> createLobby(@RequestHeader(value = "Authorization") String token){
-
         Long userId = userService.getUserIdByTokenAndAuthenticate(token);
-
-
         LobbyGetId lobbyGetId = new LobbyGetId();
-
         Long gamePin = lobbyService.createLobby(userId);
-
         lobbyGetId.setGamePin(gamePin);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(lobbyGetId);
     }
 

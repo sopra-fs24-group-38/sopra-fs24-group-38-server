@@ -254,13 +254,13 @@ public class ApiService {
 
         String requestBody= "{"
                 + "\"model\": \"gpt-4-turbo\","
-                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid JSON array like this (always use `definition` as key and the definition as value) :"
+                + "\"messages\": [{\"role\": \"user\", \"content\": \"You're an AI agent and can only answer in a valid, parseable " +
+                " JSON array as follows. Always use `definition` as key and the definition as value: "
                 + "[{\\\"definition\\\": \\\"definition1\\\"},{\\\"definition\\\": \\\"definition2\\\"},{\\\"definition\\\": \\\"definition3\\\"},{\\\"definition\\\": \\\"definition4\\\"}]"
-                + "Those are the words for which i need a wrong definition: "
+                + "Return a plausible but wrong definition, tricking humans into thinking it is correct, for each of the following words: "
                 +  promptBuilder
-                + "Give a plausible but false definition which tricks human into thinking it is correct"
-                + "The wrong definition should be plausible and be related to the same category but is false."
-                + "The wrong definition should be less than 4 words. Dont use special characters like dots etc\"}],"
+                + "The wrong definition should be plausible and be related to the same category but is false. "
+                + "The wrong definition should be less than 4 words. Do never use any special characters.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
         //log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
