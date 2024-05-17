@@ -149,11 +149,15 @@ public class LobbyService {
         int roundUpdate = settingsToBeRegistered.getRounds();
         List<String> gameModes = settingsToBeRegistered.getGameModes();
         Lobby lobby = getLobbyAndExistenceCheck(gamePin);
+
         if (gameModes != null) {
             setGameModes(gameModes, lobby);
         }
         if (roundUpdate != 0) {
             setRounds(roundUpdate, lobby);
+        }
+        if (settingsToBeRegistered.getHideMode() != null) {
+            lobby.setHideMode(settingsToBeRegistered.getHideMode());
         }
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
@@ -237,6 +241,8 @@ public class LobbyService {
 
         gameDetails.setRoundNumber(lobby.getRoundNumber());
         gameDetails.setMaxRoundNumbers(lobby.getMaxRoundNumbers());
+        gameDetails.setLobbyModes(lobby.getLobbyModes());
+        gameDetails.setHideMode(lobby.getHideMode());
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {

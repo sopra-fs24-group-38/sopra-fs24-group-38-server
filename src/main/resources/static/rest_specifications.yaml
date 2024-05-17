@@ -478,6 +478,18 @@ components:
         max_round_numbers:
           type: integer
           example: 10
+        lobbymodes:
+          type: array
+          items:
+            type: string
+            enum:
+              - BIZARRE
+              - DUTCH
+              - PROGRAMMING
+              - RAREFOODS
+        hide_mode:
+          type: boolean
+          example: false
         players:
           type: array
           items:
@@ -611,6 +623,9 @@ components:
         rounds:
           type: integer
           example: 15
+        hide_mode:
+          type: boolean
+          example: false
 
   requestBodies:
     UserArray:

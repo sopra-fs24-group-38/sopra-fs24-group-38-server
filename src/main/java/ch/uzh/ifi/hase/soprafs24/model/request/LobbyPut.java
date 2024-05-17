@@ -8,6 +8,8 @@ public class LobbyPut {
     private List<String> gameModes;
     @JsonProperty("rounds")
     int rounds;
+    @JsonProperty("hide_mode")
+    boolean hideMode;
 
     public int getRounds() {
         return rounds;
@@ -24,5 +26,9 @@ public class LobbyPut {
     public void setGameModes(List<String> gameModes) {
         this.gameModes = gameModes;
     }
+
+    public Boolean getHideMode() {return hideMode;}
+
+    public void setHideMode(Boolean hideMode) {this.hideMode = hideMode;}
 
 }
