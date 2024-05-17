@@ -45,6 +45,8 @@ public class Lobby {
     @Column
     private Long roundNumber;
 
+    @Column
+    private boolean hideMode = false;
 
     public Set<LobbyModes> getLobbyModes() {
         return lobbyModes;
@@ -143,4 +145,11 @@ public class Lobby {
         else return null;
     }
 
+    public boolean getHideMode() {
+        return hideMode;
+    }
+
+    public void setHideMode(boolean hideMode) {
+        this.hideMode = hideMode;
+    }
 }

@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs24.model.response;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
+import java.util.*;
 
 public class GameDetails {
     @JsonProperty("game_state")
@@ -30,6 +31,13 @@ public class GameDetails {
 
     @JsonProperty("max_round_numbers")
     private int maxRoundNumbers;
+
+    @JsonProperty("hide_mode")
+    private Boolean hideMode;
+
+    @JsonProperty("lobbymodes")
+    private Set<LobbyModes> lobbyModes = new HashSet<>();
+
 
     public String getGameState() {
         return gameState;
@@ -106,5 +114,21 @@ public class GameDetails {
 
     public void setMaxRoundNumbers(int maxRoundNumbers) {
         this.maxRoundNumbers = maxRoundNumbers;
+    }
+
+    public Boolean getHideMode() {
+        return hideMode;
+    }
+
+    public void setHideMode(Boolean hideMode) {
+        this.hideMode = hideMode;
+    }
+
+    public Set<LobbyModes> getLobbyModes() {
+        return lobbyModes;
+    }
+
+    public void setLobbyModes(Set<LobbyModes> lobbyModes) {
+        this.lobbyModes = lobbyModes;
     }
 }
