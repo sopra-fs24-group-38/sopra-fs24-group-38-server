@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @RequestMapping("/users")
 @RestController
@@ -60,7 +61,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GetUserStatusResponse> getUser(@PathVariable Long userId, @RequestHeader(value = "Authorization") String token) {
         Long tokenId = userService.getUserIdByTokenAndAuthenticate(token);
-        if (userId != tokenId) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "userID and tokenID mismatch");
+        if (!Objects.equals(userId, tokenId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "userID and tokenID mismatch");
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserStatus(tokenId));
     }
 }
