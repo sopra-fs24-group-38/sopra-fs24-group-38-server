@@ -11,7 +11,9 @@ public enum SubCategoriesProgramming {
     GAME_DEVELOPMENT("Game Development"),
     CLOUD_COMPUTING("Cloud Computing"),
     DEPLOYMENT("Deployment"),
-    NETWORK_ENGINEERING("Network Engineering");
+    NETWORK_ENGINEERING("Network Engineering"),
+    SORTING_ALGORITHMS("Sorting algorithms"),
+    AI("AI");
 
     private final String displayName;
 

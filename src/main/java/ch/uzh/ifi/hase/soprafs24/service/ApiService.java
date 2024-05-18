@@ -246,7 +246,7 @@ public class ApiService {
         StringBuilder promptBuilder = new StringBuilder();
         for (int i = 0; i < challenges.size(); i++) {
             Challenge challenge = challenges.get(i);
-            promptBuilder.append(challenge.getChallenge() + " (Category: "+challenge.getLobbyMode() + ")");
+            promptBuilder.append(challenge.getChallenge() + " (Category: "+challenge.getLobbyMode() + ", Subcategory: " + randomSubcategory(challenge.getLobbyMode()) + ") ");
             if (i < challenges.size() - 1) {
                 promptBuilder.append(", ");
             }
@@ -260,10 +260,11 @@ public class ApiService {
                 + "Return a plausible but wrong definition, tricking humans into thinking it is correct, for each of the following words: "
                 +  promptBuilder
                 + "The wrong definition should be plausible and be related to the same category but is false. "
+                + "The wrong definition should also be related to the corresponding subcategory of each word. "
                 + "The wrong definition should be less than 4 words. Do never use any special characters.\"}],"
                 + "\"temperature\": 0.7"
                 + "}";
-        //log.warn("PROMPT FOR AI DEFINITION: {} ", requestBody);
+        log.warn("BUBU PROMPT FOR AI DEFINITION: {} ", promptBuilder);
         return requestBody;
     }
 
@@ -347,5 +348,16 @@ public class ApiService {
         return definitions;
     }
 
+    private String randomSubcategory(LobbyModes lobbyMode) {
+        List<String> categories = switch (lobbyMode) {
+            case BIZARRE -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case DUTCH -> Arrays.stream(BroadSubCategories.values()).map(Enum::toString).collect(Collectors.toList());
+            case PROGRAMMING ->
+                    Arrays.stream(SubCategoriesProgramming.values()).map(Enum::toString).collect(Collectors.toList());
+            case RAREFOODS ->
+                    Arrays.stream(SubCategoriesFood.values()).map(Enum::toString).collect(Collectors.toList());
+        };
+        return categories.get(random.nextInt(categories.size()));
+    }
 
 }
