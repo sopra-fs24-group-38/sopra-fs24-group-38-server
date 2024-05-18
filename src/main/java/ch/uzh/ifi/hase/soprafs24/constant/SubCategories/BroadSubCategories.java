@@ -18,7 +18,10 @@ public enum BroadSubCategories {
     CULTURE("Culture"),
     POLITICS("Politics"),
     RELIGION("Religion"),
-    NATURE("Nature");
+    NATURE("Nature"),
+    INSECTS("Insects"),
+    HOBBIES("Hobbies");
+
 
     private final String displayName;
 

@@ -10,7 +10,16 @@ public enum SubCategoriesFood {
     VEGETARIAN_COOKING("Vegetarian Cooking"),
     SEAFOOD("Seafood"),
     FAST_FOOD("Fast Food"),
-    GOURMET_COOKING("Gourmet Cooking");
+    GOURMET_COOKING("Gourmet Cooking"),
+    GRILLING("Grilling"),
+    FRYING("Frying"),
+    BREAKFAST("Breakfast"),
+    WINE("Wine"),
+    LUXURY_FOOD("Luxury food"),
+    HERBS_SPICES("Herbs and spices"); 
+
+
+
 
     private final String displayName;
 
