@@ -273,6 +273,9 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseLobbyLeave = removePlayer(tokenJoinPlayer, lobbyId);
         assertEquals(HttpStatus.OK, responseLobbyLeave.getStatusCode());
 
+        ResponseEntity<String> logoutPlayer = logoutPlayer(tokenJoinPlayer);
+        assertEquals(HttpStatus.OK, logoutPlayer.getStatusCode());
+
     }
 
 
@@ -293,7 +296,6 @@ public class LobbyControllerTest {
         ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user26", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
-
 
         ResponseEntity<String> responseLobbyStart = startLobby(tokenGameMaster1);
         assertEquals(HttpStatus.OK, responseLobbyStart.getStatusCode());
@@ -516,6 +518,15 @@ public class LobbyControllerTest {
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
         return restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
     }
+
+    private ResponseEntity<String> logoutPlayer(String token){
+        String uri = "http://localhost:" + port + "/users/logout";
+        HttpHeaders headers = prepareHeader(token);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+    }
+
+
     private ResponseEntity<String> registerDefinition(String token, String defintion) {
         String uri = "http://localhost:" + port + "/lobbies/users/definitions";
         HttpHeaders header = prepareHeader(token);
