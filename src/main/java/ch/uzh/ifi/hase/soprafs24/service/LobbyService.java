@@ -95,6 +95,11 @@ public class LobbyService {
             return;
         }
 
+        if(!checkIfEnoughPlayer(lobby)){
+            log.warn("player {} couldnt leave lobby {} because of too less players availabl", user.getUsername(), lobbyId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User may not leave lobby due to to less player available! ");
+        }
+
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             boolean newGameMasterIsBot = true;
             while(newGameMasterIsBot){
@@ -113,6 +118,8 @@ public class LobbyService {
         else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
+
+
 
     public List<User> getUsers(Long lobbyId) {
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(lobbyId);
@@ -496,6 +503,16 @@ public class LobbyService {
             }
         }
         lobby.setLobbyModes(lobbyModes);
+    }
+
+    private boolean checkIfEnoughPlayer(Lobby lobby) {
+        if(lobby.getLobbyState() == LobbyState.WAITING || lobby.getLobbyState() == LobbyState.GAMEOVER){
+            return true;
+        }
+        if(lobby.getUsers().size() <= 2){
+            return false;
+        }
+        return true;
     }
 
 
