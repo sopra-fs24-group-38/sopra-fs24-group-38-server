@@ -97,7 +97,7 @@ public class LobbyService {
 
         if(!checkIfEnoughPlayer(lobby)){
             log.warn("player {} couldnt leave lobby {} because of too less players availabl", user.getUsername(), lobbyId);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User may not leave lobby due to to less player available! ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot leave: there are not enough users left.");
         }
 
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
