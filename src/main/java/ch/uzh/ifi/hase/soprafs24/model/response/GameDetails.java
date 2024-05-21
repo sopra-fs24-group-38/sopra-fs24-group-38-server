@@ -38,6 +38,16 @@ public class GameDetails {
     @JsonProperty("lobbymodes")
     private Set<LobbyModes> lobbyModes = new HashSet<>();
 
+    @JsonProperty("static_stats")
+    private List<GameStatsPlayer> statsPlayers;
+
+    public List<GameStatsPlayer> getStatsPlayers() {
+        return statsPlayers;
+    }
+
+    public void setStatsPlayers(List<GameStatsPlayer> statsPlayers) {
+        this.statsPlayers = statsPlayers;
+    }
 
     public String getGameState() {
         return gameState;

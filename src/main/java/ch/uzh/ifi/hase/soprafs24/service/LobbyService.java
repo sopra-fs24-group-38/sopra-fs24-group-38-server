@@ -5,10 +5,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
-import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
-import ch.uzh.ifi.hase.soprafs24.model.response.GameDetails;
-import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
-import ch.uzh.ifi.hase.soprafs24.model.response.Player;
+import ch.uzh.ifi.hase.soprafs24.model.response.*;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -85,7 +82,10 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
         if (user.getAiPlayer())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong endpoint for removing AI player");
-
+        if(!checkIfEnoughPlayer(lobby)){
+            log.warn("player {} couldnt leave lobby {} because of too less players availabl", user.getUsername(), lobbyId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot leave: there are not enough users left.");
+        }
         resetUser(userId);
         lobby.removePlayer(user);
 
@@ -95,10 +95,6 @@ public class LobbyService {
             return;
         }
 
-        if(!checkIfEnoughPlayer(lobby)){
-            log.warn("player {} couldnt leave lobby {} because of too less players availabl", user.getUsername(), lobbyId);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot leave: there are not enough users left.");
-        }
 
         if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
             boolean newGameMasterIsBot = true;
@@ -250,6 +246,7 @@ public class LobbyService {
         gameDetails.setMaxRoundNumbers(lobby.getMaxRoundNumbers());
         gameDetails.setLobbyModes(lobby.getLobbyModes());
         gameDetails.setHideMode(lobby.getHideMode());
+        gameDetails.setStatsPlayers(lobby.getStats());
 
         List<Player> players = new ArrayList<>();
         for (User user : lobby.getUsers()) {
@@ -287,6 +284,7 @@ public class LobbyService {
 
         if(lobby.getRoundNumber() - 1 >= lobby.getMaxRoundNumbers()) {
             lobby.setLobbyState(LobbyState.GAMEOVER);
+            persistGameStats(lobby);
             socketHandler.sendMessageToLobby(lobby.getLobbyPin(), "game_over");
         }
         else{
@@ -296,6 +294,8 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
     }
+
+
     public void checkState(Long userId, LobbyState requiredLobbyState) {
         User user = userService.getUserById(userId);
         Lobby lobby = lobbyRepository.findLobbyByLobbyPin(user.getLobbyId());
@@ -509,10 +509,30 @@ public class LobbyService {
         if(lobby.getLobbyState() == LobbyState.WAITING || lobby.getLobbyState() == LobbyState.GAMEOVER){
             return true;
         }
-        if(lobby.getUsers().size() <= 2){
+        int humanPlayer = 0;
+        for(User user: lobby.getUsers()){
+            if(!user.getAiPlayer()){
+                humanPlayer+= 1;
+            }
+        }
+        if(lobby.getUsers().size() == 2 && humanPlayer == 2){
             return false;
         }
         return true;
+    }
+
+    private void persistGameStats(Lobby lobby) {
+        ArrayList<GameStatsPlayer> stats = new ArrayList<>();
+        for(User user : lobby.getUsers()){
+            GameStatsPlayer statsPlayer = new GameStatsPlayer();
+            statsPlayer.setAvatarId(user.getAvatarId());
+            statsPlayer.setScore(user.getScore());
+            statsPlayer.setUserName(user.getUsername());
+            stats.add(statsPlayer);
+        }
+        lobby.setStats(stats);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
     }
 
 
