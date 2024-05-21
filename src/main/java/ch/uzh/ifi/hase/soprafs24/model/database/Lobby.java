@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.model.database;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
+import ch.uzh.ifi.hase.soprafs24.model.response.GameStatsPlayer;
 
 import javax.persistence.*;
 import java.util.*;
@@ -47,6 +48,17 @@ public class Lobby {
 
     @Column
     private boolean hideMode = false;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column
+    private List<GameStatsPlayer> stats =  new ArrayList<>();
+
+    public List<GameStatsPlayer> getStats() {
+        return stats;
+    }
+
+    public void setStats(List<GameStatsPlayer> stats) {
+        this.stats = stats;
+    }
 
     public Set<LobbyModes> getLobbyModes() {
         return lobbyModes;
