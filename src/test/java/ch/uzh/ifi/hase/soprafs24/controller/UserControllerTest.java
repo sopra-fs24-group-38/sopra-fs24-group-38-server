@@ -138,6 +138,50 @@ public class UserControllerTest {
         assertEquals("User1", username, "The username does not match the expected value");
     }
 
+    @DisplayName("UserController: testGetAllUsers")
+    @Test
+    public void testGetAllUsers() {
+        /**
+         The backend returns all users with their properties
+         */
+        ResponseEntity<String> response = createUserAndAssertSuccessStatus("user344", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        String uri = "http://localhost:" + port + "/users";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenGameMaster1);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response1 = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+    }
+
+    @DisplayName("UserController: testGetUser")
+    @Test
+    public void testGetUser() {
+        /**
+         The backend returns a user with their properties
+         */
+        ResponseEntity<String> response = createUserAndAssertSuccessStatus("user3441", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+        JSONObject jsonObject = new JSONObject(response.getBody());
+        Long userId  = jsonObject.getLong("id");
+
+
+        String uri = "http://localhost:" + port + "/users/" + userId.toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenGameMaster1);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response1 = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+    }
+
+
 
     //UTILITY METHODS :
     private ResponseEntity<String> createUserAndAssertSuccessStatus(String username, String password) {

@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -331,14 +332,14 @@ public class LobbyControllerTest {
         /**
          The backend provides the current challange to the frontend via an api endpoint #70
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user29", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user2433", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user30", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user3450", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
         connectAllPlayer(tokenGameMaster1);
@@ -357,14 +358,14 @@ public class LobbyControllerTest {
         /**
          The backend is able to receive the votes which the players submitted #80
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user31", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user3861", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user32", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user3286", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
@@ -390,7 +391,7 @@ public class LobbyControllerTest {
          #92
          */
 
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user33", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user7533", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
 
         ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
@@ -399,7 +400,7 @@ public class LobbyControllerTest {
 
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user64", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user6475", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
 
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
@@ -441,7 +442,7 @@ public class LobbyControllerTest {
          The backend tells frontend when its voting time / all votings cast / and whether or not game over
          Issues #72, #82 & #91
          */
-        ResponseEntity<String> response = createUserWithSuccessAssertion("user34", "password");
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user3864", "password");
         String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
         Long gameMasterUserId = responseToJsonNode(response).get("id").asLong();
 
@@ -450,7 +451,7 @@ public class LobbyControllerTest {
         Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
         assertNotNull(lobbyId);
 
-        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user35", "password");
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user4635", "password");
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
         connectAllPlayer(tokenGameMaster1);
@@ -480,6 +481,146 @@ public class LobbyControllerTest {
         //Test that game not over yet issue #91
         String gameOver = lobbyInfoEval.get("game_details").get("game_over").asText();
         assertEquals("false", gameOver);
+    }
+
+    @DisplayName("LobbyControllerTest: testJoinAiLobby")
+    @Test
+    public void testJoinAiLobby() {
+        /**
+         The backend is able to add ai players to the lobby
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user318611", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user3872", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId + "/ai";
+        HttpHeaders headers = prepareHeader(tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> responseJoinAi = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responseJoinAi.getStatusCode());
+    }
+
+    @DisplayName("LobbyControllerTest: testDeleteAiLobby")
+    @Test
+    public void testDeleteAiLobby() {
+        /**
+         The backend is able to delete ai players from the lobby
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user31181g", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user238732", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId + "/ai";
+        HttpHeaders headers = prepareHeader(tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+
+        ResponseEntity<String> getLobby = getLobby(tokenGameMaster1, lobbyId);
+
+
+        JSONObject lobbyObject = new JSONObject(getLobby.getBody());
+        JSONArray array = lobbyObject.getJSONObject("game_details").getJSONArray("players");
+        Long avatarId = array.getJSONObject(0).getLong("avatarId");
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("avatarId", avatarId);
+        requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> responseDeleteAi = restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responseDeleteAi.getStatusCode());
+    }
+
+    @DisplayName("LobbyControllerTest: testNextRound")
+    @Test
+    public void testNextRound() {
+        /**
+         The backend is able to start the next round
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user312271", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+        Long gameMasterUserId = responseToJsonNode(response).get("id").asLong();
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user322", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+        connectAllPlayer(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "dummyDefinitionGM");
+        registerDefinition(tokenJoinPlayer, "dummyDefinitionPlayer2");
+
+        castVote(0L, tokenGameMaster1);
+        castVote(gameMasterUserId, tokenJoinPlayer);
+
+        String uri = "http://localhost:" + port + "/lobbies/rounds/start";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> responseGM = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responseGM.getStatusCode());
+
+        headers.set("Authorization", tokenJoinPlayer);
+        requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> responsePlayer = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responsePlayer.getStatusCode());
+
+    }
+
+    @DisplayName("LobbyControllerTest: testNewGame")
+    @Test
+    public void testNewGame() {
+        /**
+         The backend is able to start a new game
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user13111", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+        Long gameMasterUserId = responseToJsonNode(response).get("id").asLong();
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user132", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        startLobby(tokenGameMaster1);
+        connectAllPlayer(tokenGameMaster1);
+
+        registerDefinition(tokenGameMaster1, "dummyDefinitionGM");
+        registerDefinition(tokenJoinPlayer, "dummyDefinitionPlayer2");
+
+        castVote(0L, tokenGameMaster1);
+        castVote(gameMasterUserId, tokenJoinPlayer);
+
+        String uri = "http://localhost:" + port + "/lobbies/newround";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> responseNewGame = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responseNewGame.getStatusCode());
     }
 
     private ResponseEntity<String> castVote(Long userId, String tokenGameMaster1) {
