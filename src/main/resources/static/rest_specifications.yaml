@@ -494,6 +494,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Player'
+        static_stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaticStats'
+
+    StaticStats:
+      type: object
+      properties:
+        avatarId:
+          type: integer
+          example: 3
+        username:
+          type: string
+          example: "Player_1"
+        score:
+          type: integer
+          example: 10
+
     Player:
       type: object
       properties:
