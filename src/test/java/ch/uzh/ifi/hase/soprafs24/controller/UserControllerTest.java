@@ -38,9 +38,9 @@ public class UserControllerTest {
     }
 
 
-    @DisplayName("UserController Test: Issue #31")
+    @DisplayName("UserController Test: create user and receive token. Issue #31")
     @Test
-    public void issue31() {
+    public void testCreateWithToken() {
         /**
          * The backend generates a token to enable authenatication and re-login.
          * #31
@@ -51,9 +51,10 @@ public class UserControllerTest {
         assertNotNull(token);
         assertValidUUID(token);
     }
-    @DisplayName("UserController Test: Issue #28")
+
+    @DisplayName("UserController Test: create user and login. Issue #28")
     @Test
-    public void issue28() {
+    public void testCreateUserAndLogin() {
         /**
          * The backend is able to receive credentials and create a user entity accordingly
          * #28
@@ -70,9 +71,9 @@ public class UserControllerTest {
         String tokenFromLogin = extractTokenFromResponse(responseLogin);
         assertEquals(tokenFromRegister, tokenFromLogin);
     }
-    @DisplayName("UserController Test: Issue #37")
+    @DisplayName("UserController Test: create user and receive token. Issue #37")
     @Test
-    public void issue37() {
+    public void testCreateWithActualToken() {
         /**
          * The backend is able to check the user's credentials and return a token upon success
          * #37
@@ -88,7 +89,7 @@ public class UserControllerTest {
 
     @DisplayName("UserController Test: Issue #38")
     @Test
-    public void issue38() {
+    public void TestRejectWrongCredentials() {
         /**
          * The backend returns a http error if the credentials do not match #38
          */
@@ -98,9 +99,9 @@ public class UserControllerTest {
         ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
-    @DisplayName("Complex Unit Test")
+    @DisplayName("create User and lobby")
     @Test
-    public void complexUnitTest() {
+    public void createUserAndLobby() {
         /**
          * Creates a user first, then creates a lobby and then performs a GET request on the lobby to check
          * that the user is registered in the lobby
