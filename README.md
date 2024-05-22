@@ -32,7 +32,7 @@ Client:
 
 ### Backend Main Components
 
-These are the main files resources to get a good grasp of the application from a backend/logic related perspective:
+These are the main resources to get a good grasp of the application from a backend/logic related perspective:
 1. [LobbyController](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/LobbyController.java),
 [UserController](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/UserController.java)
 this classes together with the [deployed swagger UI](https://sopra-fs24-group-38-server.oa.r.appspot.com/swagger-ui/index.html)
