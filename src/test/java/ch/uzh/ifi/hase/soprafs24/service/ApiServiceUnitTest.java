@@ -41,7 +41,42 @@ public class ApiServiceUnitTest {
     ApiService apiService;
     @MockBean
     private RestTemplate restTemplate;
+    @Test
+    public void testRandomDistributionForAllModes() {
+        // Arrange: Define game modes
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        lobbyModes.add(LobbyModes.PROGRAMMING);
+        lobbyModes.add(LobbyModes.DUTCH);
+        lobbyModes.add(LobbyModes.BIZARRE);
+        lobbyModes.add(LobbyModes.RAREFOODS);
 
+        Long lobbyId = 123L;
+        int numberRounds = 7;
+
+        List<Challenge> challenges = apiService.generateChallenges(numberRounds, lobbyModes, lobbyId);
+        int numberProgrammingChallenges = 0;
+        int numberDutchChallenges = 0;
+        int numberBizarreChallenges = 0;
+        int numberRareFoods = 0;
+        for(Challenge challenge: challenges){
+            if(challenge.getLobbyMode() == LobbyModes.DUTCH){
+                numberDutchChallenges+= 1;
+            }
+            if(challenge.getLobbyMode() == LobbyModes.PROGRAMMING){
+                numberProgrammingChallenges += 1;
+            }
+            if(challenge.getLobbyMode() == LobbyModes.BIZARRE){
+                numberBizarreChallenges += 1;
+            }
+            if(challenge.getLobbyMode() == LobbyModes.RAREFOODS){
+                numberRareFoods += 1;
+            }
+        }
+        assertEquals(2, numberDutchChallenges);
+        assertEquals(2, numberProgrammingChallenges);
+        assertEquals(2, numberBizarreChallenges);
+        assertEquals(2, numberRareFoods);
+    }
     @Test
     public void testGenerateChallenges() {
         int numberRounds = 5;
