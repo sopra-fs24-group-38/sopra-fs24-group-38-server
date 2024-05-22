@@ -383,12 +383,12 @@ public class LobbyService {
         User user = userService.getUserById(userId);
         Lobby lobby = getLobbyAndExistenceCheck(user.getLobbyId());
         lobby.setLobbyState(LobbyState.WAITING);
-        Set<LobbyModes> defaultModeSetting = new HashSet<>();
-        defaultModeSetting.add(LobbyModes.BIZARRE);
-        lobby.setLobbyModes(defaultModeSetting);
-        lobby.setRoundNumber(10L);
+        //if the gammaster wants next round the buttons of other player shall ungrey
+        sendNewGameSocket(lobby.getLobbyPin());
         lobbyRepository.flush();
     }
+
+
 
     private void checkIfAvatarIdValidAIPlayer(Long avatarId, Lobby lobby) {
         if(avatarId < 100 || avatarId > 100 + numAvasAi - 1){
@@ -534,6 +534,8 @@ public class LobbyService {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
     }
-
+    private void sendNewGameSocket(Long lobbyPin) {
+        socketHandler.sendMessageToLobby(lobbyPin, "gamemaster_newround");
+    }
 
 }
