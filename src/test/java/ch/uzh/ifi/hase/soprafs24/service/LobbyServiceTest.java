@@ -340,4 +340,44 @@ public class LobbyServiceTest {
         userService.registerVote(user1.getId(), 0L);
         assertEquals(1L, userRepository.findUserById(user1.getId()).getPermanentScore());
     }
+
+    @DisplayName("Evaluate AI players points")
+    @Test
+    public void evaluationForAiPlayer() {
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyPin(1234L);
+        lobbyRepository.save(testLobby);
+        lobbyRepository.flush();
+
+        User aiUser1 = new User();
+        //User one (AI player)
+        aiUser1.setAiPlayer(true);
+        aiUser1.setLobbyId(testLobby.getLobbyPin());
+        aiUser1.setToken(UUID.randomUUID().toString());
+        aiUser1.setUsername("DUMMYAI");
+        aiUser1.setPassword("DUMMYDUMMY");
+        aiUser1.setLobbyId(1234L);
+        aiUser1.setIsConnected(true);
+
+        User properUser2 = new User();
+
+        properUser2.setLobbyId(testLobby.getLobbyPin());
+        properUser2.setToken(UUID.randomUUID().toString());
+        properUser2.setUsername("DUMMY");
+        properUser2.setPassword("DUMMYDUMMY");
+        properUser2.setLobbyId(1234L);
+        properUser2.setIsConnected(true);
+
+        userRepository.save(aiUser1);
+        userRepository.save(properUser2);
+
+        userRepository.flush();
+        lobbyService.addPlayerToLobby(aiUser1.getId(), 1234L);
+        lobbyService.addPlayerToLobby(properUser2.getId(), 1234L);
+
+        //simulate that the proper user chooses the definition from the AI player and check whether
+        //AI player correctly receives 2 points for fooling proper user
+        userService.registerVote(properUser2.getId(), aiUser1.getId());
+        assertEquals(2L, userRepository.findUserById(aiUser1.getId()).getPermanentScore());
+    }
 }
