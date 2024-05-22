@@ -17,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -78,4 +78,19 @@ public class ApiServiceTest {
         assertEquals(6, challenges.size(), "Should return 6 challenges based on the mode settings");
 
     }
+    @Test
+    public void testGenerateChallengesForModes() {
+        // Arrange: Define game modes
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        lobbyModes.add(LobbyModes.PROGRAMMING);
+        lobbyModes.add(LobbyModes.DUTCH);
+
+        Long lobbyId = 123L;
+        int numberRounds = 3;
+
+        List<Challenge> challenges = apiService.generateChallenges(numberRounds, lobbyModes, lobbyId);
+        int numberWithFallBackChallenge = numberRounds + 1;
+        assertEquals(numberWithFallBackChallenge, challenges.size(), "Should generate exactly the number of rounds requested");
+    }
+
 }
