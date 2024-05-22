@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.model.response.allUsersScores;
+import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import org.hibernate.Hibernate;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +43,8 @@ public class UserServiceTest {
 
     @Autowired
     LobbyService lobbyService;
+    @Autowired
+    UserRepository userRepository;
 
     @DisplayName("UserService Test: addSessionToUser")
     @Test
@@ -245,6 +248,24 @@ public class UserServiceTest {
 
         User user = userService.getUserById(userResponse.getId());
         assertEquals("testdefinition", user.getDefinition(), "Definition should be converted to lowercase");
+    }
+
+    @Test
+    public void userStatsPersistet(){
+        //Create user
+        UserPost userPost = new UserPost();
+        userPost.setUsername("testName");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
+        User userEntityDb = userRepository.findByUsername("testName");
+        userEntityDb.addPermanentScore(2L);
+        userEntityDb.addPermanentScore(2L);
+        userRepository.save(userEntityDb);
+        userRepository.flush();
+        User userEntityAfterStatUpdate = userRepository.findByUsername("testName");
+        assertEquals(2, userEntityAfterStatUpdate.getPermanentScore(), "Score not persisted");
+        assertEquals(2, userEntityAfterStatUpdate.getPermanentFools(), "Fools not persisted");
+
     }
 
 }
