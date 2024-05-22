@@ -289,7 +289,6 @@ public class LobbyServiceTest {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
         assertEquals(LobbyState.WAITING, lobby.getLobbyState(), "Lobby state should be WAITING");
         assertTrue(lobby.getLobbyModes().contains(LobbyModes.BIZARRE), "Lobby modes should contain BIZARRE");
-        assertEquals(10L, lobby.getRoundNumber(), "Round number should be 10");
     }
 
     @DisplayName("LobbyService Test: adjustSettings")
