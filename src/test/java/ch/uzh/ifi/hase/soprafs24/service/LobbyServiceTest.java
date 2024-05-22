@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class LobbyServiceTest {
@@ -30,6 +32,9 @@ public class LobbyServiceTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    SocketHandler socketHandler;
 
 
 
@@ -203,5 +208,27 @@ public class LobbyServiceTest {
         lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
         assertEquals(LobbyState.WAITING, lobby.getLobbyState());
     }
+    @DisplayName("LobbyService Test: testRegisterNextRound")
+    @Test
+    public void testRegisterNextRoundLogic() {
+        // Create a User
+        UserPost userPost = new UserPost();
+        userPost.setUsername("lobbyTest4");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
 
+        Long lobbyPin = lobbyService.createLobby(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
+
+        UserPost userPost2 = new UserPost();
+        userPost2.setUsername("lobbyTest5");
+        userPost2.setPassword("pw");
+        UserResponse userResponse2 = userService.createUser(userPost2);
+        lobbyService.addPlayerToLobby(userResponse2.getId(), lobbyPin);
+
+        lobbyService.registerNextRound(userResponse.getId());
+
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
+        assertEquals(LobbyState.DEFINITION, lobby.getLobbyState());
+    }
 }
