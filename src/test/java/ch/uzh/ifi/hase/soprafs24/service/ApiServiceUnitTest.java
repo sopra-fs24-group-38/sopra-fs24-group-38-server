@@ -116,6 +116,20 @@ public class ApiServiceUnitTest {
         assertEquals(2, numberProgrammingChallenges);
     }
 
+    @Test
+    public void testGenerateUniqueChallenges() {
+        int numberRounds = 5;
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        lobbyModes.add(LobbyModes.PROGRAMMING);
+        lobbyModes.add(LobbyModes.RAREFOODS);
+
+        Long lobbyId = 123L;
+        List<Challenge> challenges = apiService.generateChallenges(numberRounds, lobbyModes, lobbyId);
+
+        Set<Challenge> uniqueChallenges = new HashSet<>(challenges);
+        assertEquals(challenges.size(), uniqueChallenges.size(), "Challenges should be unique");
+    }
+
 
 
 }
