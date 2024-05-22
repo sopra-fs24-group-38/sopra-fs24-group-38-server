@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
+import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -282,5 +285,34 @@ public class LobbyServiceTest {
         assertEquals(LobbyState.WAITING, lobby.getLobbyState(), "Lobby state should be WAITING");
         assertTrue(lobby.getLobbyModes().contains(LobbyModes.BIZARRE), "Lobby modes should contain BIZARRE");
         assertEquals(10L, lobby.getRoundNumber(), "Round number should be 10");
+    }
+
+    @DisplayName("LobbyService Test: adjustSettings")
+    @Test
+    public void testAdjustSettings() {
+        // Create a User
+        UserPost userPost = new UserPost();
+        userPost.setUsername("testAdjustSettings");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
+
+        // Create a Lobby and retrieve it
+        Long lobbyPin = lobbyService.createLobby(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
+
+        // Prepare settings to be registered
+        LobbyPut settingsToBeRegistered = new LobbyPut();
+        settingsToBeRegistered.setRounds(5);
+        settingsToBeRegistered.setGameModes(Arrays.asList("BIZARRE", "PROGRAMMING"));
+        settingsToBeRegistered.setHideMode(true);
+
+        // Call adjustSettings
+        lobbyService.adjustSettings(settingsToBeRegistered, lobbyPin);
+
+        // Retrieve the lobby and verify settings
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
+        assertEquals(5, lobby.getMaxRoundNumbers(), "Rounds should be updated to 5");
+        assertTrue(lobby.getLobbyModes().containsAll(Arrays.asList(LobbyModes.BIZARRE, LobbyModes.PROGRAMMING)), "Lobby modes should contain BIZARRE and CLASSIC");
+        assertTrue(lobby.getHideMode(), "Hide mode should be set to true");
     }
 }
