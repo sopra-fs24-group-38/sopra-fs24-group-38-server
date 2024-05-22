@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
@@ -256,9 +257,30 @@ public class LobbyServiceTest {
         }
 
         lobbyService.registerNextRound(userResponse.getId());
-        //indirectly tests logic whether disconnect and waiting does not hinder gameflow 
+        //indirectly tests logic whether disconnect and waiting does not hinder gameflow
         for (User user : lobby.getUsers()) {
             assertTrue(user.getWantsNextRound(), "User's wantsNextRound should be true");
         }
+    }
+
+    @DisplayName("LobbyService Test: testNewGameResetLogic")
+    @Test
+    public void testNewGameResetLogic() {
+        UserPost userPost = new UserPost();
+        userPost.setUsername("lobbyTest7");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
+        Long lobbyPin = lobbyService.createLobby(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
+        UserPost userPost2 = new UserPost();
+        userPost2.setUsername("lobbyTest8");
+        userPost2.setPassword("pw");
+        UserResponse userResponse2 = userService.createUser(userPost2);
+        lobbyService.addPlayerToLobby(userResponse2.getId(), lobbyPin);
+        lobbyService.newGameReset(userResponse.getId());
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
+        assertEquals(LobbyState.WAITING, lobby.getLobbyState(), "Lobby state should be WAITING");
+        assertTrue(lobby.getLobbyModes().contains(LobbyModes.BIZARRE), "Lobby modes should contain BIZARRE");
+        assertEquals(10L, lobby.getRoundNumber(), "Round number should be 10");
     }
 }
