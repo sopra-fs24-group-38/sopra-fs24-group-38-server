@@ -5,12 +5,15 @@ import ch.uzh.ifi.hase.soprafs24.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
 import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.request.LobbyPut;
+import org.hibernate.SessionFactory;
 import ch.uzh.ifi.hase.soprafs24.model.request.UserPost;
+import ch.uzh.ifi.hase.soprafs24.model.response.GameStatsPlayer;
 import ch.uzh.ifi.hase.soprafs24.model.response.LobbyGet;
 import ch.uzh.ifi.hase.soprafs24.model.response.UserResponse;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs24.websockets.SocketHandler;
+import org.hibernate.Session;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -309,5 +314,30 @@ public class LobbyServiceTest {
         assertEquals(5, lobby.getMaxRoundNumbers(), "Rounds should be updated to 5");
         assertTrue(lobby.getLobbyModes().containsAll(Arrays.asList(LobbyModes.BIZARRE, LobbyModes.PROGRAMMING)), "Lobby modes should contain BIZARRE and CLASSIC");
         assertTrue(lobby.getHideMode(), "Hide mode should be set to true");
+    }
+
+    @DisplayName("Finishing Round Persists GameStats")
+    @Test
+    public void gameStatsPersistedAfterGameFinishes() {
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyPin(1234L);
+        lobbyRepository.save(testLobby);
+        lobbyRepository.flush();
+
+        User user1 = new User();
+        user1.setLobbyId(testLobby.getLobbyPin());
+        user1.setToken(UUID.randomUUID().toString());
+        user1.setUsername("DUMMY");
+        user1.setPassword("DUMMYDUMMY");
+        user1.setLobbyId(1234L);
+        user1.setIsConnected(true);
+        userRepository.save(user1);
+        userRepository.flush();
+        lobbyService.addPlayerToLobby(user1.getId(), 1234L);
+
+        //simulate that the user chooses the right answer and check whether it results in the permanent
+        //score increasing 1
+        userService.registerVote(user1.getId(), 0L);
+        assertEquals(1L, userRepository.findUserById(user1.getId()).getPermanentScore());
     }
 }
