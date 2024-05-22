@@ -259,7 +259,7 @@ public class UserServiceTest {
         UserResponse userResponse = userService.createUser(userPost);
         User userEntityDb = userRepository.findByUsername("testName");
         userEntityDb.addPermanentScore(2L);
-        userEntityDb.addPermanentScore(2L);
+        userEntityDb.addPermanentFools(2L);
         userRepository.save(userEntityDb);
         userRepository.flush();
         User userEntityAfterStatUpdate = userRepository.findByUsername("testName");
