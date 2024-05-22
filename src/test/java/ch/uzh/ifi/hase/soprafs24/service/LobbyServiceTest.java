@@ -137,7 +137,7 @@ public class LobbyServiceTest {
     public void testRegisterNextRound() {
         // create a User
         UserPost userPost = new UserPost();
-        userPost.setUsername("lobbyTest4");
+        userPost.setUsername("lobbyTest4123123");
         userPost.setPassword("pw");
         UserResponse userResponse = userService.createUser(userPost);
 
@@ -164,7 +164,7 @@ public class LobbyServiceTest {
     public void testRemoveAiPlayer() {
         // create a User
         UserPost userPost = new UserPost();
-        userPost.setUsername("lobbyTest5");
+        userPost.setUsername("lobbyTest512312");
         userPost.setPassword("pw");
         UserResponse userResponse = userService.createUser(userPost);
 
@@ -222,7 +222,7 @@ public class LobbyServiceTest {
     public void testRegisterNextRoundLogic() {
         // Create a User
         UserPost userPost = new UserPost();
-        userPost.setUsername("lobbyTest4");
+        userPost.setUsername("lobbyTest41321");
         userPost.setPassword("pw");
         UserResponse userResponse = userService.createUser(userPost);
 
@@ -230,7 +230,7 @@ public class LobbyServiceTest {
         lobbyService.connectTestHomies(userResponse.getId());
 
         UserPost userPost2 = new UserPost();
-        userPost2.setUsername("lobbyTest5");
+        userPost2.setUsername("lobbyTest5121212");
         userPost2.setPassword("pw");
         UserResponse userResponse2 = userService.createUser(userPost2);
         lobbyService.addPlayerToLobby(userResponse2.getId(), lobbyPin);
@@ -345,7 +345,7 @@ public class LobbyServiceTest {
     @Test
     public void evaluationForAiPlayer() {
         Lobby testLobby = new Lobby();
-        testLobby.setLobbyPin(1234L);
+        testLobby.setLobbyPin(12345L);
         lobbyRepository.save(testLobby);
         lobbyRepository.flush();
 
@@ -354,26 +354,26 @@ public class LobbyServiceTest {
         aiUser1.setAiPlayer(true);
         aiUser1.setLobbyId(testLobby.getLobbyPin());
         aiUser1.setToken(UUID.randomUUID().toString());
-        aiUser1.setUsername("DUMMYAI");
-        aiUser1.setPassword("DUMMYDUMMY");
-        aiUser1.setLobbyId(1234L);
+        aiUser1.setUsername("DUMMYAI12");
+        aiUser1.setPassword("DUMMYDUMMY12");
+        aiUser1.setLobbyId(12345L);
         aiUser1.setIsConnected(true);
 
         User properUser2 = new User();
 
         properUser2.setLobbyId(testLobby.getLobbyPin());
         properUser2.setToken(UUID.randomUUID().toString());
-        properUser2.setUsername("DUMMY");
-        properUser2.setPassword("DUMMYDUMMY");
-        properUser2.setLobbyId(1234L);
+        properUser2.setUsername("DUMMY12");
+        properUser2.setPassword("DUMMYDUMMY12");
+        properUser2.setLobbyId(12345L);
         properUser2.setIsConnected(true);
 
         userRepository.save(aiUser1);
         userRepository.save(properUser2);
 
         userRepository.flush();
-        lobbyService.addPlayerToLobby(aiUser1.getId(), 1234L);
-        lobbyService.addPlayerToLobby(properUser2.getId(), 1234L);
+        lobbyService.addPlayerToLobby(aiUser1.getId(), 12345L);
+        lobbyService.addPlayerToLobby(properUser2.getId(), 12345L);
 
         //simulate that the proper user chooses the definition from the AI player and check whether
         //AI player correctly receives 2 points for fooling proper user
