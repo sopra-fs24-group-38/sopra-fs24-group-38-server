@@ -14,3 +14,4 @@
 | CLIENT            | game is over go to end screen                                                         | game_over                           |     
 | CLIENT            | AI player removed                                                                     | {"ai_removed": "103"}               |
 | CLIENT            | chatGPT API unavailable                                                               | api_unavailable                     |     
+| CLIENT            | Gamemaster decided newround                                                           | gamemaster_newround                 |     
