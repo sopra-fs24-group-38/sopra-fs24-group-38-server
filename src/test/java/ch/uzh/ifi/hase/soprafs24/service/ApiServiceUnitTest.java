@@ -119,6 +119,57 @@ public class ApiServiceUnitTest {
     }
 
     @Test
+    public void aiPlayersDefinitionLowerCase(){
+        Lobby lobby = new Lobby();
+        User aiUser = new User();
+        aiUser.setAiPlayer(true);
+        lobby.setUsers(Collections.singletonList(aiUser));
+        Challenge challenge = new Challenge();
+        challenge.setChallenge("dummyChallenge");
+        challenge.setSolution("dummySolution");
+        challenge.setLobbyMode(LobbyModes.BIZARRE);
+        lobby.setChallenges(Collections.singletonList(challenge));
+
+        // Mock the faulty JSON response in order to test fallback logic
+        String responseBodyContainingNotLowerCaseDefinition = "{"
+                + "\"id\": \"chatcmpl-9RcAPPYfgEyuA4W0Jemd6pidyIHTQ\","
+                + "\"object\": \"chat.completion\","
+                + "\"created\": 1716368597,"
+                + "\"model\": \"gpt-4-turbo-2024-04-09\","
+                + "\"choices\": ["
+                + "    {"
+                + "        \"index\": 0,"
+                + "        \"message\": {"
+                + "            \"role\": \"assistant\","
+                + "            \"content\": \"[\\n{\\\"definition\\\": \\\"Clever Dishonest Person\\\"},{\\\"definition\\\": \\\"Clever Dishonest Person\\\"},{\\\"definition\\\": \\\"Clever Dishonest Person\\\"}\\n]\""
+                + "        },"
+                + "        \"logprobs\": null,"
+                + "        \"finish_reason\": \"stop\""
+                + "    }"
+                + "],"
+                + "\"system_fingerprint\": \"fp_e9446dc58f\""
+                + "}";
+
+        when(restTemplate.exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                eq(String.class))
+        ).thenReturn(ResponseEntity.ok(responseBodyContainingNotLowerCaseDefinition));
+
+        // Act
+        apiService.generateAiPlayersDefinitions(lobby);
+        boolean isLowercase = true;
+        for (char c : aiUser.getDefinition().toCharArray()) {
+            if (!Character.isLowerCase(c) && c != ' ') {  // Check for lowercase and space
+                isLowercase = false;
+                break;
+            }
+        }
+        //assert whether the generateAIPlayersDefinition method turns the mocked gpt definition response into lowercase
+        assertTrue(isLowercase, "The Ai generated Definition was uppercase");
+    }
+    @Test
     public void testGenerateUniqueChallenges() {
         int numberRounds = 5;
         Set<LobbyModes> lobbyModes = new HashSet<>();
@@ -144,33 +195,6 @@ public class ApiServiceUnitTest {
         challenge.setSolution("dummySolution");
         challenge.setLobbyMode(LobbyModes.BIZARRE);
         lobby.setChallenges(Collections.singletonList(challenge));
-
-        // Mock the faulty JSON response in order to test fallback logic
-        String faultyJsonResponse = "{"
-                + "\"id\": \"chatcmpl-9RcAPPYfgEyuA4W0Jemd6pidyIHTQ\","
-                + "\"object\": \"chat.completion\","
-                + "\"created\": 1716368597,"
-                + "\"model\": \"gpt-4-turbo-2024-04-09\","
-                + "\"choices\": ["
-                + "    {"
-                + "        \"index\": 0,"
-                + "        \"message\": {"
-                + "            \"role\": \"assistant\","
-                + "            \"content\": \"invalid json array syntax\""
-                + "        },"
-                + "        \"logprobs\": null,"
-                + "        \"finish_reason\": \"stop\""
-                + "    }"
-                + "],"
-                + "\"system_fingerprint\": \"fp_e9446dc58f\""
-                + "}";
-
-        when(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod.class),
-                any(HttpEntity.class),
-                eq(String.class))
-        ).thenReturn(ResponseEntity.ok(faultyJsonResponse));
 
         // Act
         apiService.generateAiPlayersDefinitions(lobby);
