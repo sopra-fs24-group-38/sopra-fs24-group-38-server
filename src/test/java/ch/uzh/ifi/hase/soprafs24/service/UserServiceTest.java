@@ -227,4 +227,24 @@ public class UserServiceTest {
         response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
+    @DisplayName("UserService Test: registerDefinitions lowercase check")
+    @Test
+    public void testRegisterDefinitionsLowercase() {
+        UserPost userPost = new UserPost();
+        userPost.setUsername("testLowercase");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
+
+        Long lobbyPin = lobbyService.createLobby(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
+
+        DefinitionPost definitionPost = new DefinitionPost();
+        definitionPost.setDefinition("TestDefinition");
+
+        userService.registerDefinitions(definitionPost, userResponse.getId());
+
+        User user = userService.getUserById(userResponse.getId());
+        assertEquals("testdefinition", user.getDefinition(), "Definition should be converted to lowercase");
+    }
+
 }
