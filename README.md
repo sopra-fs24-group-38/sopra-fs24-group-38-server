@@ -15,11 +15,40 @@ using (a combination) of game modes and adding AI players to have an engaging ex
 
 ## Technologies used
 
-- Sever: Spring Boot, STOMP, JPA, H2, openAPI, chatGPT
-- Client: React, SocketJS, Tailwind
+Sever: 
+- [Spring Boot](https://spring.io/projects/spring-boot) together with [JPA](https://spring.io/projects/spring-data-jpa)
+- [Websockets](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket/3.2.4)
+- [H2 DB](https://www.h2database.com/html/main.html)
+- [openAPI](https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui/1.7.0) for [swagger UI](https://sopra-fs24-group-38-server.oa.r.appspot.com/swagger-ui/index.html)
+- [chatGPT](https://help.openai.com/en/articles/7039783-how-can-i-access-the-chatgpt-api) for external api calls
+
+Client: 
+- [React](https://react.dev/) - JS library
+- [react-use-websocket](https://www.npmjs.com/package/react-use-websocket) - for websockets
+- [Tailwind CSS](https://tailwindcss.com/) - for styling
+- [react-toastify](https://fkhadra.github.io/react-toastify/introduction) - for neat feedback toasts
 
 ## High-level components
-### References (main class, file or function)
+
+### Backend Main Components
+
+These are the main files resources to get a good grasp of the application from a backend/logic related perspective:
+1. [LobbyController](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/LobbyController.java),
+[UserController](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/UserController.java)
+this classes together with the [deployed swagger UI](https://sopra-fs24-group-38-server.oa.r.appspot.com/swagger-ui/index.html)
+form a good introduction into the game logic and corresponding entry points into the backend code. 
+2. To dive deeper into the main logic behind the most important endpoints [UserService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/UserService.java) [LobbyService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/LobbyService.java)
+shall be looked at. 
+
+### [Frontend](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client) Main Components
+
+These are the main files necessary to get a good grasp of the application from a frontend perspective:
+
+1. [LobbyWaiting](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/tree/main/src/components/pages/LobbyWaiting.jsx) is the main hub for player management.
+2. [Game](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/tree/main/src/components/pages/Game.jsx) holds the full logic for the game cycle.
+3. [AppRouter](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/tree/main/src/components/router/AppRouter.jsx) displays the layout of the application.
+
+
 ## Launch and deploy 
 ### Getting started 
 1. Clone both this and the [corresponding frontend repository](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client) locally.
@@ -60,28 +89,35 @@ npm start
 ```
 You can now see the application at http://localhost:3000 in your browser of choice.
 
-### External Dependencies 
+## External Dependencies 
 No further external dependencies needed as gradle and node take care.
-### Releases 
+
+## Releases 
 For further releases we refer to [this tutorial](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 
-## Environment variables
-
-- TOKEN_API: The token for the authorization header in the chatGPT api request also important for testsuite. 
-- AVATAR_NUMBER: Number of Avatars for real player. (Can be left on default unless new JPG files are added in frontend)
-- AVATAR_AI_NUMBER: Number of Avatars for AI player. (Can be left on default unless new JPG files are added in frontend)
 
 
 
 ## Authors and acknowledgment 
 
-- Harris A (https://github.com/so-ri) 
-- Elia Aeberhard (https://github.com/Elyisha)
-- Samuel Frank (https://github.com/samuelfrnk)
-- Markus Senn (https://github.com/iKusii)
-- Cédric Yves Styner (https://github.com/glt-cs)
+### Authors
 
-## License 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) for details
+Continuous teamwork and BackEnd authors:
+* **Harris A** - *Main contributor* - [so-ri](https://github.com/so-ri)
+* **Elia Aeberhard** - *Main contributor* - [Elyisha](https://github.com/Elyisha)
+* **Samuel Frank** - *Main contributor* - [samuelfrnk](https://github.com/samuelfrnk)
+
+For the FrontEnd part:
+* **Cédric Styner** - *Main contributor* - [glt-cs](https://github.com/glt-cs)
+* **Markus Senn** - *Main contributor* - [iKusii](https://github.com/iKusii)
+
+**Stefan Schuler** - *Responsible TA* - [Steesch](https://github.com/Steesch)
+
+### Acknowledgments
+
+* Thanks to all the people that helped, on- and offline
+
+## License
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 
