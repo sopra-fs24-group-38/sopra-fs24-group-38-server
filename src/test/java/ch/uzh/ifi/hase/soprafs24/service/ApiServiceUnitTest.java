@@ -91,4 +91,31 @@ public class ApiServiceUnitTest {
         assertEquals(numberWithFallBackChallenge, challenges.size(), "Should generate exactly the number of rounds requested");
     }
 
+    @Test
+    public void testGenerateModeDistribution() {
+        // Arrange: Define game modes
+        Set<LobbyModes> lobbyModes = new HashSet<>();
+        lobbyModes.add(LobbyModes.PROGRAMMING);
+        lobbyModes.add(LobbyModes.DUTCH);
+
+        Long lobbyId = 123L;
+        int numberRounds = 3;
+
+        List<Challenge> challenges = apiService.generateChallenges(numberRounds, lobbyModes, lobbyId);
+        int numberProgrammingChallenges = 0;
+        int numberDutchChallenges = 0;
+        for(Challenge challenge: challenges){
+            if(challenge.getLobbyMode() == LobbyModes.DUTCH){
+                numberDutchChallenges+= 1;
+            }
+            if(challenge.getLobbyMode() == LobbyModes.PROGRAMMING){
+                numberProgrammingChallenges += 1;
+            }
+        }
+        assertEquals(2, numberDutchChallenges);
+        assertEquals(2, numberProgrammingChallenges);
+    }
+
+
+
 }
