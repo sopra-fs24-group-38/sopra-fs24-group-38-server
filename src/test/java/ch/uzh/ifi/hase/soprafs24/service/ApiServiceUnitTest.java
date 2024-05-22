@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
 import ch.uzh.ifi.hase.soprafs24.constant.LobbyModes;
+import ch.uzh.ifi.hase.soprafs24.model.database.Lobby;
+import ch.uzh.ifi.hase.soprafs24.model.database.User;
 import ch.uzh.ifi.hase.soprafs24.model.response.Challenge;
 import ch.uzh.ifi.hase.soprafs24.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -131,5 +133,50 @@ public class ApiServiceUnitTest {
     }
 
 
+    @Test
+    public void testGenerateAiPlayersDefinitionsWithFallback() {
+        Lobby lobby = new Lobby();
+        User aiUser = new User();
+        aiUser.setAiPlayer(true);
+        lobby.setUsers(Collections.singletonList(aiUser));
+        Challenge challenge = new Challenge();
+        challenge.setChallenge("dummyChallenge");
+        challenge.setSolution("dummySolution");
+        challenge.setLobbyMode(LobbyModes.BIZARRE);
+        lobby.setChallenges(Collections.singletonList(challenge));
 
+        // Mock the faulty JSON response in order to test fallback logic
+        String faultyJsonResponse = "{"
+                + "\"id\": \"chatcmpl-9RcAPPYfgEyuA4W0Jemd6pidyIHTQ\","
+                + "\"object\": \"chat.completion\","
+                + "\"created\": 1716368597,"
+                + "\"model\": \"gpt-4-turbo-2024-04-09\","
+                + "\"choices\": ["
+                + "    {"
+                + "        \"index\": 0,"
+                + "        \"message\": {"
+                + "            \"role\": \"assistant\","
+                + "            \"content\": \"invalid json array syntax\""
+                + "        },"
+                + "        \"logprobs\": null,"
+                + "        \"finish_reason\": \"stop\""
+                + "    }"
+                + "],"
+                + "\"system_fingerprint\": \"fp_e9446dc58f\""
+                + "}";
+
+        when(restTemplate.exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                eq(String.class))
+        ).thenReturn(ResponseEntity.ok(faultyJsonResponse));
+
+        // Act
+        apiService.generateAiPlayersDefinitions(lobby);
+
+        // Assert
+        // Check if fallback logic applied by verifying AI player has definitions assigned
+        assertNotNull(aiUser.getDefinition(), "AI user should have definitions assigned");
+    }
 }
