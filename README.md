@@ -37,7 +37,7 @@ These are the main resources to get a good grasp of the application from a backe
 [UserController](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/UserController.java)
 this classes together with the [deployed swagger UI](https://sopra-fs24-group-38-server.oa.r.appspot.com/swagger-ui/index.html)
 form a good introduction into the game logic and corresponding entry points into the backend code. 
-2. To dive deeper into the main logic behind the most important endpoints [UserService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/UserService.java) [LobbyService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/LobbyService.java)
+2. To dive deeper into the main logic behind the most important endpoints [UserService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/UserService.java), [LobbyService](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/service/LobbyService.java)
 shall be looked at. 
 
 ### [Frontend](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client) Main Components
@@ -57,6 +57,7 @@ These are the main files necessary to get a good grasp of the application from a
 2. Development : 
 We recommend to use the build option without tests during local development and use the testsuite manually if needed locally.
 And otherwise rely on the automated tests during deployment.
+3. When the SpringBoot Application boots the H2 DB also boots and can be monitored under http://localhost:8080/h2-console/
 
 - Build without tests:
 ```bash
@@ -96,7 +97,12 @@ No further external dependencies needed as gradle and node take care.
 For further releases we refer to [this tutorial](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 
 
+## Roadmap
 
+This is how we envisioned to extend this application:
+* Extend on the user side by introducing a profile page and a chatroom to improve the community feeling between players and giving them a possibility to exchange PINs easily
+* Letting the users choose their own avatar from our pool, being able to play with more than 5 players
+* Adding even more game modes
 
 ## Authors and acknowledgment 
 
