@@ -231,4 +231,34 @@ public class LobbyServiceTest {
         Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
         assertEquals(LobbyState.DEFINITION, lobby.getLobbyState());
     }
+
+    @DisplayName("LobbyService Test: testRegisterNextRoundGetIsConnected")
+    @Test
+    public void testRegisterNextRoundGetIsConnected() {
+        UserPost userPost = new UserPost();
+        userPost.setUsername("lobbyTest4");
+        userPost.setPassword("pw");
+        UserResponse userResponse = userService.createUser(userPost);
+
+        Long lobbyPin = lobbyService.createLobby(userResponse.getId());
+        lobbyService.connectTestHomies(userResponse.getId());
+
+        UserPost userPost2 = new UserPost();
+        userPost2.setUsername("lobbyTest5");
+        userPost2.setPassword("pw");
+        UserResponse userResponse2 = userService.createUser(userPost2);
+        lobbyService.addPlayerToLobby(userResponse2.getId(), lobbyPin);
+
+        Lobby lobby = lobbyService.getLobbyAndExistenceCheck(lobbyPin);
+        for (User user : lobby.getUsers()) {
+            user.setWantsNextRound(true);
+            user.setIsConnected(true);
+        }
+
+        lobbyService.registerNextRound(userResponse.getId());
+        //indirectly tests logic whether disconnect and waiting does not hinder gameflow 
+        for (User user : lobby.getUsers()) {
+            assertTrue(user.getWantsNextRound(), "User's wantsNextRound should be true");
+        }
+    }
 }
