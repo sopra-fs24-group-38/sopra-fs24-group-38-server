@@ -87,7 +87,7 @@ public class UserControllerTest {
 
     }
 
-    @DisplayName("UserController Test: Issue #38")
+    @DisplayName("UserController Test: TestRejectWrongCredentials")
     @Test
     public void TestRejectWrongCredentials() {
         /**
@@ -99,7 +99,7 @@ public class UserControllerTest {
         ResponseEntity<String> response = login("dummyUserName", "passwordFalse");
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
-    @DisplayName("create User and lobby")
+    @DisplayName("UserController: create User and lobby")
     @Test
     public void createUserAndLobby() {
         /**
