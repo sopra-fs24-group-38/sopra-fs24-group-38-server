@@ -543,6 +543,35 @@ public class LobbyControllerTest {
         assertEquals(HttpStatus.OK, responseDeleteAi.getStatusCode());
     }
 
+    @DisplayName("LobbyControllerTest: testMultipleAiPlayers")
+    @Test
+    public void testMultipleAiPlayers() {
+        /**
+         The backend is able to handle many ai players
+         */
+        ResponseEntity<String> response = createUserWithSuccessAssertion("user318612312311", "password");
+        String tokenGameMaster1 = extractTokenFromResponse(response.getBody());
+
+        ResponseEntity<String> responseLobbyCreation = createLobbyWithSuccessCheck(tokenGameMaster1);
+        Long lobbyId = extractLobbyId(responseLobbyCreation.getBody());
+        assertNotNull(lobbyId);
+
+        ResponseEntity<String> responseUserJoin = createUserWithSuccessAssertion("user381231231372", "password");
+        String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
+        joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
+
+        String uri = "http://localhost:" + port + "/lobbies/users/" + lobbyId + "/ai";
+        HttpHeaders headers = prepareHeader(tokenGameMaster1);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> responseJoinAi = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        ResponseEntity<String> responseJoinAi1 = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        ResponseEntity<String> responseJoinAi2 = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        assertEquals(HttpStatus.OK, responseJoinAi.getStatusCode());
+        assertEquals(HttpStatus.OK, responseJoinAi1.getStatusCode());
+        assertEquals(HttpStatus.OK, responseJoinAi2.getStatusCode());
+    }
+
     @DisplayName("LobbyControllerTest: testNextRound")
     @Test
     public void testNextRound() {
