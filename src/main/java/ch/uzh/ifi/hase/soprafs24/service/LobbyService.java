@@ -309,7 +309,7 @@ public class LobbyService {
         List<User> users = lobby.getUsers();
         for(User user : users) {
             if(!user.getIsConnected() && user.getDefinition() == null){
-                return;
+                continue;
             }
             if(user.getIsConnected()) {
                 if (user.getDefinition() == null && !user.getAiPlayer()) {
@@ -345,7 +345,7 @@ public class LobbyService {
 
         for(User user : users) {
             if(!user.getIsConnected() && user.getVotedForUserId() == null){
-                return;
+                continue;
             }
             if(user.getIsConnected()) {
                 if (user.getVotedForUserId() == null) {

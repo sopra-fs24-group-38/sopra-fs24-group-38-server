@@ -245,6 +245,7 @@ public class LobbyControllerTest {
         String tokenJoinPlayer = extractTokenFromResponse(responseUserJoin.getBody());
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
+        connectAllPlayer(tokenGameMaster1);
         startLobby(tokenGameMaster1);
 
         registerDefinition(tokenGameMaster1, "placeboDefintion1");
@@ -370,6 +371,7 @@ public class LobbyControllerTest {
         joinPlayerToLobbyAndSuccessCheck(tokenJoinPlayer, lobbyId);
 
         startLobby(tokenGameMaster1);
+        connectAllPlayer(tokenGameMaster1);
 
         registerDefinition(tokenGameMaster1, "placeboDefintion1");
         registerDefinition(tokenJoinPlayer, "placeboDefintion2");
