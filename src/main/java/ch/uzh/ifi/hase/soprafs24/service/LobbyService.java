@@ -308,9 +308,6 @@ public class LobbyService {
         Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
         List<User> users = lobby.getUsers();
         for(User user : users) {
-            if(!user.getIsConnected() && user.getDefinition() == null){
-                return;
-            }
             if(user.getIsConnected()) {
                 if (user.getDefinition() == null && !user.getAiPlayer()) {
                     log.warn("not all users in the lobby have submitted their definition");
@@ -344,9 +341,6 @@ public class LobbyService {
         }
 
         for(User user : users) {
-            if(!user.getIsConnected() && user.getVotedForUserId() == null){
-                return;
-            }
             if(user.getIsConnected()) {
                 if (user.getVotedForUserId() == null) {
                     log.warn("not all users in the lobby have submitted their votes");
