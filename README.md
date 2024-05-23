@@ -103,6 +103,7 @@ This is how we envisioned to extend this application:
 * Extend on the user side by introducing a profile page and a chatroom to improve the community feeling between players and giving them a possibility to exchange PINs easily
 * Letting the users choose their own avatar from our pool, being able to play with more than 5 players
 * Adding even more game modes
+* Currently the logic whether the definitions provided by the users are the correct ones is a check wether the string is equal to the definition provided by the external API. This logic could be further enhanced with an additional call to chatGPT whether or not the definition is semantically correct and reject definitions accordingly.
 
 ## Authors and acknowledgment 
 
