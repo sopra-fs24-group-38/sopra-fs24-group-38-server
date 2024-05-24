@@ -79,7 +79,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
-        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobby(user.getId(), user.getLobbyId());
+        if(user.getLobbyId() != null) lobbyService.removePlayerFromLobbyLogin(user.getId(), user.getLobbyId());
         return objectMapper.convertValue(user, UserResponse.class);
     }
 
