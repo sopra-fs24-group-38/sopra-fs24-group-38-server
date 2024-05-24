@@ -101,9 +101,11 @@ For further releases we refer to [this tutorial](https://docs.github.com/en/repo
 
 This is how we envisioned to extend this application:
 * Extend on the user side by introducing a profile page and a chatroom to improve the community feeling between players and giving them a possibility to exchange PINs easily
-* Letting the users choose their own avatar from our pool, being able to play with more than 5 players
 * Adding even more game modes
 * Currently the logic whether the definitions provided by the users are the correct ones is a check wether the string is equal to the definition provided by the external API. This logic could be further enhanced with an additional call to chatGPT whether or not the definition is semantically correct and reject definitions accordingly.
+
+## Illustrations
+We refer to the [frontend README.md](https://github.com/sopra-fs24-group-38/sopra-fs24-group-38-client/blob/main/README.md)
 
 ## Authors and acknowledgment 
 
