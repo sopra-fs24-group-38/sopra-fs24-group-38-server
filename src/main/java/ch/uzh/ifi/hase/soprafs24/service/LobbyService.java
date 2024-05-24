@@ -114,7 +114,43 @@ public class LobbyService {
         else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
         log.warn("user with id " + userId + " removed from lobby " + lobbyId);
     }
+    public void removePlayerFromLobbyLogin(Long userId, Long lobbyId) {
+        Lobby lobby = getLobbyAndExistenceCheck(lobbyId);
+        User user = userService.getUserById(userId);
 
+        //check if user in lobby or user AI player
+        if (!lobby.getUsers().contains(user))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in the specified lobby");
+        if (user.getAiPlayer())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong endpoint for removing AI player");
+        resetUser(userId);
+        lobby.removePlayer(user);
+
+        //check if all users in lobby are AI players if yes delete
+        if(isLobbyFullWithBots(lobby)){
+            deleteBotLobby(lobby);
+            return;
+        }
+
+
+        if(Objects.equals(user.getId(), lobby.getGameMaster()) && !lobby.getUsers().isEmpty()) {
+            boolean newGameMasterIsBot = true;
+            while(newGameMasterIsBot){
+                for(User user1 : lobby.getUsers()){
+                    if(!user1.getAiPlayer()){
+                        lobby.setGameMasterId(user1.getId());
+                        newGameMasterIsBot = false;
+                        log.warn(user1.getUsername() + " is new gamemaster");
+                    }
+                }
+            }
+            lobbyRepository.save(lobby);
+            lobbyRepository.flush();
+            socketHandler.sendMessageToLobby(lobbyId, "{\"gamehost_left\": \"" + user.getUsername() + "\"}");
+        }
+        else socketHandler.sendMessageToLobby(lobbyId, "{\"user_left\": \"" + user.getUsername() + "\"}");
+        log.warn("user with id " + userId + " removed from lobby " + lobbyId);
+    }
 
 
     public List<User> getUsers(Long lobbyId) {
